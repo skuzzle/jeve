@@ -174,7 +174,7 @@ implementing `OneTimeEventListener`:
 
 ```java
 // ...
-import de.skuzzle.jeve.OneTimeListener;
+import de.skuzzle.jeve.OneTimeEventListener;
 
 public class SampleUserListener implements UserListener, OneTimeEventListener {
 

@@ -105,7 +105,7 @@ public abstract class AbstractEventProvider implements EventProvider {
                 bc.accept(listener, event);
                 if (listener instanceof OneTimeEventListener) {
                     final OneTimeEventListener otl = (OneTimeEventListener) listener;
-                    if (otl.workDone()) {
+                    if (otl.workDone(this)) {
                         this.listeners.remove(listenerClass, listener);
                     }
                 }

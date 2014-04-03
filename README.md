@@ -3,7 +3,8 @@ jeve
 
 jeve is a lightweight Java 8 event dispatching framework which takes advantage
 of lambda expressions and internal iteration. This avoids client code which is 
-cluttered up with event delegation routines like in the following example.
+cluttered up with event delegation routines like in the following bad practice 
+example.
 
 ```java
 public class UserManager {
@@ -37,9 +38,12 @@ This sample code has several weaknesses:
 * no handling of errors during event delegation
 * not parallelizable
 * process of event delegation can not be aborted
+* If the UserManager class should fire another type of events to another type
+  of listeners, we would need to create a second list which holds the other 
+  listener kinds.
 
 jeve addresses all those weaknesses by using new Java 8 features. See the 
-quickstart guide below to learn how to improve event delegation.
+quick start guide below to learn how to improve event delegation.
 
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
@@ -47,6 +51,8 @@ an `EventProvider` as first step:
 
 ```java
 public class UserManager {
+    // The default event provider dispatches events sequentially within
+    // the current thread.
     private final EventProvider events = EventProvider.newDefaultEventProvider();
 }
 ```
@@ -143,9 +149,11 @@ public class SampleUserListener implements UserListener, OneTimeEventListener {
     private boolean done = false;
 
     @Override
-    public boolean workDone() {
+    public boolean workDone(EventProvider parent) {
         // this listener will be removed from the EventProvider it was 
         // registered at if this method returns true.
+        // The parent parameter exists to distinguish between different parents
+        // if the listener has been registered with multiple EventProviders.
         return this.done;
     }
     
@@ -205,6 +213,9 @@ public class UserManager {
     // ...
 }
 ```
+
+jeve also supports the creation of GUI events by providing EventProvider 
+implementations which run all listeners within the AWT Event Thread.
 
 ## Implementing own dispatching strategies
 If you want to customize the process of event dispatching, you can create your

@@ -14,7 +14,8 @@ public interface OneTimeEventListener extends EventListener {
      * This method specifies whether this listner's work is done and it should be 
      * removed from its parent's {@link EventProvider} after the next time the listener
      * was notified.
+     * @parent The event provider from which the listener has been notified last.
      * @return Whether to remove this listener from its parent after next notification.
      */
-    public boolean workDone();
+    public boolean workDone(EventProvider parent);
 }

@@ -38,7 +38,9 @@ class AsynchronousEventProvider extends AbstractEventProvider {
      * @param dispatcher ExecutorService to use.
      */
     public AsynchronousEventProvider(ExecutorService dispatcher) {
-        super();
+        if (dispatcher == null) {
+            throw new NullPointerException();
+        }
         this.dispatchPool = dispatcher;
     }
     

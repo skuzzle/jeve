@@ -10,7 +10,8 @@ import java.util.function.BiConsumer;
 
 
 /**
- * Implementation of basic {@link EventProvider} methods.
+ * Implementation of basic {@link EventProvider} methods. All implementations are 
+ * thread-safe.
  * 
  * @author Simon
  */

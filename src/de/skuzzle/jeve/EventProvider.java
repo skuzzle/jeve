@@ -7,11 +7,17 @@ import java.util.function.BiConsumer;
 
 
 /**
- * EventProviders are used to fire swing-style events. Listeners can be registered and
- * removed for a certain event. Furthermore the strategy on how to actually dispatch
- * fired event is implementation dependent. You can obtain different implementations
- * using the static factory methods or you may extend {@link AbstractEventProvider} to
- * provide your own customized provider.
+ * <p>EventProviders are used to fire swing-style events. Listeners can be registered and
+ * removed for a certain event. A class which implements multiple listener interfaces
+ * can be registered for each listener type independently.</p>
+ * 
+ * <p>The strategy on how events are dispatched is implementation dependent and totally
+ * transparent to client code which uses the EventProvider. You can obtain different 
+ * implementations using the static factory methods or you may extend 
+ * {@link AbstractEventProvider} to provide your own customized provider.</p>
+ * 
+ * <p>Unless stated otherwise, all EventProvider instances obtained from static factory
+ * methods are thread-safe.</p>
  * 
  * @author Simon
  */
@@ -53,6 +59,15 @@ public interface EventProvider extends AutoCloseable {
      * Creates a new {@link EventProvider} which fires each event in a different thread.
      * The created provider will use the given {@link ExecutorService} to fire the events
      * asynchronously.
+     * 
+     * <p>Even when using multiple threads to dispatch events, the returned EventProvider 
+     * will only use one thread for one dispatch action. That means that for each call to
+     * {@link #dispatch(Class, Event, BiConsumer, ExceptionCallback) dispatch}, all 
+     * targeted listeners are notified within the same thread. This ensures notification
+     * in the order the listeners have been added.</p>
+     * 
+     * <p>If you require an EventListener which notifies each listener in a different 
+     * thread, you need to create your own sub class of {@link AbstractEventProvider}.</p>
      * 
      * <p>When closing the returned {@link EventProvider}, the passed 
      * {@link ExecutorService} instance will be shut down. Its not possible to reuse the

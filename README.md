@@ -243,4 +243,6 @@ implementations which run all listeners within the AWT Event Thread.
 ## Implementing own dispatching strategies
 If you want to customize the process of event dispatching, you can create your
 own `EventProvider` by extending `AbstractEventProvider` and overriding the
-`dispatch(Class, Event, BiConsumer, ExceptionCallback)` method.
+`dispatch(Class, Event, BiConsumer, ExceptionCallback)` method. Within that 
+method you can use `EventProvider.getListeners` to get a collection of all 
+registered listeners for a specified class.

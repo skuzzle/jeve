@@ -1,10 +1,12 @@
 package de.skuzzle.jeve;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
-
-import javax.swing.event.EventListenerList;
 
 
 /**
@@ -14,14 +16,34 @@ import javax.swing.event.EventListenerList;
  */
 public abstract class AbstractEventProvider implements EventProvider {
     
+    /**
+     * Copies a list of listeners into a new list, casting each element to the target
+     * listener type.
+     * 
+     * @param <T> Type of listeners in the result.
+     * @param listeners List to copy.
+     * @param listenerClass Target listener type.
+     * @return A new typed list of listeners.
+     */
+    private static <T extends EventListener> List<T> copyList(List<Object> listeners, 
+            Class<T> listenerClass) {
+        final List<T> result = new ArrayList<>(listeners.size());
+        listeners.forEach(l -> result.add(listenerClass.cast(l)));
+        return result;
+    }
+    
+    
+    
     /** Holds the listener classes mapped to listener instances */
-    protected final EventListenerList listeners;
+    protected final Map<Class<?>, List<Object>> listeners;
+    
+    
     
     /**
      * Creates a new {@link AbstractEventProvider}.
      */
     public AbstractEventProvider() {
-        this.listeners = new EventListenerList();
+        this.listeners = new HashMap<>();
     }
 
     
@@ -32,9 +54,12 @@ public abstract class AbstractEventProvider implements EventProvider {
             throw new NullPointerException("listenerClass");
         }
         synchronized (this.listeners) {
+            final List<Object> listeners = this.listeners.get(listenerClass);
+            if (listeners == null) {
+                return Listeners.empty(this, listenerClass);
+            }
             return new Listeners<T>(
-                Arrays.asList(this.listeners.getListeners(listenerClass)), 
-                listenerClass, this);
+                copyList(listeners, listenerClass), listenerClass, this);
         }
     }
     
@@ -47,9 +72,17 @@ public abstract class AbstractEventProvider implements EventProvider {
             throw new NullPointerException("listenerClass");
         } else if (listener == null) {
             throw new NullPointerException("listener");
+        } else if (!listenerClass.isInstance(listener)) {
+            throw new IllegalArgumentException("Listener " + listener + 
+                    " is not of type " + listenerClass);
         }
         synchronized (this.listeners) {
-            this.listeners.add(listenerClass, listener);
+            List<Object> listeners = this.listeners.get(listenerClass);
+            if (listeners == null) {
+                listeners = new LinkedList<>();
+                this.listeners.put(listenerClass, listeners);
+            }
+            listeners.add(listener);
         }
     }
 
@@ -62,7 +95,14 @@ public abstract class AbstractEventProvider implements EventProvider {
             return;
         }
         synchronized (this.listeners) {
-            this.listeners.remove(listenerClass, listener);
+            final List<Object> listeners = this.listeners.get(listenerClass);
+            if (listeners == null) {
+                return;
+            }
+            listeners.remove(listener);
+            if (listeners.isEmpty()) {
+                this.listeners.remove(listenerClass, listeners);
+            }
         }
     }
     
@@ -112,7 +152,7 @@ public abstract class AbstractEventProvider implements EventProvider {
                 if (listener instanceof OneTimeEventListener) {
                     final OneTimeEventListener otl = (OneTimeEventListener) listener;
                     if (otl.workDone(this)) {
-                        this.listeners.remove(listenerClass, listener);
+                        this.removeListener(listenerClass, listener);
                     }
                 }
             } catch (RuntimeException e) {
@@ -126,5 +166,12 @@ public abstract class AbstractEventProvider implements EventProvider {
             }
         }
         return result;
+    }
+    
+    
+    
+    @Override
+    public String toString() {
+        return this.listeners.toString();
     }
 }

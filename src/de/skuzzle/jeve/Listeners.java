@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.AbstractCollection;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.Iterator;
 
@@ -14,6 +15,20 @@ import java.util.Iterator;
  * @param <T> Type of listeners that are contained in this collection.
  */
 public class Listeners<T extends EventListener> extends AbstractCollection<T> {
+    
+    /**
+     * Creates an empty listener list.
+     * @param <T> Type of the listeners.
+     * @param parent The parent event provider.
+     * @param eventClass The event class.
+     * @return An empty Listeners instance.
+     */
+    public static <T extends EventListener> Listeners<T> empty(EventProvider parent, 
+            Class<T> eventClass) {
+        return new Listeners<>(Collections.emptyList(), eventClass, parent);
+    }
+    
+    
 
     private final Collection<T> backend;
     private final Class<T> eventClass;

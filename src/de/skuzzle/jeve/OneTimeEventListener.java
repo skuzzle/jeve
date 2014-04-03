@@ -6,6 +6,11 @@ import java.util.EventListener;
  * This is kind of a tagging interface for event listener which will only be
  * notified once. After being notified, the listener is removed from the 
  * {@link EventProvider} it was registered at.
+ * 
+ * <p>Usage of this interface is discouraged on asynchronous event providers which use
+ * multiple threads, as the correct order of calling a listener method and the 
+ * {@link #workDone(EventProvider)} method can not be guaranteed in general.</p>
+ * 
  * @author Simon
  */
 public interface OneTimeEventListener extends EventListener {

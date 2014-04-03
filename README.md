@@ -3,8 +3,8 @@ jeve
 
 jeve is a lightweight Java 8 event dispatching framework which takes advantage
 of lambda expressions and internal iteration. This avoids client code which is 
-cluttered up with event delegation routines like in the following bad practice 
-example.
+cluttered up with event delegation routines like in the following 
+**bad practice** example.
 
 ```java
 public class UserManager {

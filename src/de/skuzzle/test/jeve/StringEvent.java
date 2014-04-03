@@ -1,5 +1,7 @@
 package de.skuzzle.test.jeve;
 
+import org.junit.Ignore;
+
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 
@@ -8,6 +10,7 @@ import de.skuzzle.jeve.EventProvider;
  * 
  * @author Simon Taddiken
  */
+@Ignore
 public class StringEvent extends Event<EventProvider> {
 
     private final String string;

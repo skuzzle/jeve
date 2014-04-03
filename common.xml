@@ -208,7 +208,8 @@
         <antcall target="distBin" inheritRefs="true"/>
         <antcall target="distDoc" inheritRefs="true"/>
         <antcall target="distSrc" inheritRefs="true"/>
-        <antcall target="distSample" inheritRefs="true"/>
+        <!-- There are no samples yet -->
+        <!-- <antcall target="distSample" inheritRefs="true"/> -->
         <antcall target="tests" inheritRefs="true"/>
     </target>
     
@@ -228,9 +229,9 @@
         <antcall target="distDoc" inheritRefs="true"/>
         <antcall target="distSrc" inheritRefs="true"/>
         
-        <!-- There are no samples or tests yet -->
+        <!-- There are no samples yet -->
         <!-- <antcall target="distSample" inheritRefs="true"/> -->
-        <!-- <antcall target="tests" inheritRefs="true"/> -->
+        <antcall target="tests" inheritRefs="true"/>
     </target>
     
     

@@ -1,5 +1,7 @@
 package de.skuzzle.test.jeve;
 
+import org.junit.Ignore;
+
 import de.skuzzle.jeve.EventProvider;
 
 /**
@@ -7,6 +9,7 @@ import de.skuzzle.jeve.EventProvider;
  * 
  * @author Simon Taddiken
  */
+@Ignore
 public interface EventProviderFactory {
 
     /**

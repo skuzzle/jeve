@@ -2,12 +2,15 @@ package de.skuzzle.test.jeve;
 
 import java.util.EventListener;
 
+import org.junit.Ignore;
+
 
 /**
  * StringListeners are notified about {@link StringEvent StringEvents}.
  * 
  * @author Simon Taddiken
  */
+@Ignore
 public interface StringListener extends EventListener {
 
     /**

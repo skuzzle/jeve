@@ -295,4 +295,59 @@ public abstract class EventProviderTestBase {
         Assert.assertTrue(getFailString("Listener method has not been called"), 
                 container[0]);
     }
+    
+    
+    
+    
+    /**
+     * Tests whether clearing of a certain listener class works.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testClearAllByClass() throws Exception {
+        final StringListener string1 = e -> {};
+        final StringListener string2 = e -> {};
+        final DifferentStringListener diffString1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final DifferentStringListener diffString2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        
+        this.subject.addListener(StringListener.class, string1);
+        this.subject.addListener(DifferentStringListener.class, diffString1);
+        
+        this.subject.addListener(StringListener.class, string2);
+        this.subject.addListener(DifferentStringListener.class, diffString2);
+        
+        this.subject.clearAllListeners(DifferentStringListener.class);
+        final StringEvent e = new StringEvent(this.subject, "");
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        this.subject.dispatch(DifferentStringListener.class, e, 
+                DifferentStringListener::onDifferentStringEvent);
+    }
+    
+    
+    
+    /**
+     * Tests whether clearing of all listeners works.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testClearAll() throws Exception {
+        final StringListener string1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final StringListener string2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final DifferentStringListener diffString1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final DifferentStringListener diffString2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        
+        this.subject.addListener(StringListener.class, string1);
+        this.subject.addListener(DifferentStringListener.class, diffString1);
+        
+        this.subject.addListener(StringListener.class, string2);
+        this.subject.addListener(DifferentStringListener.class, diffString2);
+        
+        this.subject.clearAllListeners();
+        final StringEvent e = new StringEvent(this.subject, "");
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        this.subject.dispatch(DifferentStringListener.class, e, 
+                DifferentStringListener::onDifferentStringEvent);
+    }
 }

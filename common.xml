@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="commons" basedir="." default="dist.debug">
+<project name="commons" basedir="." default="dist.release">
 
     <!-- 
         The root directory of the polly project, relative to project dir 

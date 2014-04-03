@@ -45,6 +45,10 @@ This sample code has several weaknesses:
 jeve addresses all those weaknesses by using new Java 8 features. See the 
 quick start guide below to learn how to improve event delegation.
 
+# License
+jeve is distributed under the MIT License. See `LICENSE.md` in this directory
+for detailed information.
+
 # Documentation
 JavaDoc is available at www.jeve.skuzzle.de/doc
 

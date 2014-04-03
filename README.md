@@ -1,7 +1,45 @@
 jeve
 ====
 
-Lightweight Java 8 Event Dispatching Framework
+jeve is a lightweight Java 8 event dispatching framework which takes advantage
+of lambda expressions and internal iteration. This avoids client code which is 
+cluttered up with event delegation routines like in the following example.
+
+```java
+public class UserManager {
+    
+    private List<UserListener> listeners = new ArrayList<>();
+    
+    // ...
+    
+    public void addUser(user user) {
+        // logic for adding a user goes here
+        // ...
+        // now notify our listeners
+        for (UserListener listener : this.listeners) {
+            listener.userAdded(user);
+        }
+    }
+    
+    public void deleteUser(user user) {
+        // logic for deleting a user goes here
+        // ...
+        // now notify our listeners
+        for (UserListener listener : this.listeners) {
+            listener.userDeleted(user);
+        }
+    }
+}
+```
+
+This sample code has several weaknesses:
+* duplicated for-loop statements for each event type
+* no handling of errors during event delegation
+* not parallelizable
+* process of event delegation can not be aborted
+
+jeve addresses all those weaknesses by using new Java 8 features. See the 
+quickstart guide below to learn how to improve event delegation.
 
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
@@ -94,7 +132,7 @@ public class SampleUserListener implements UserListener {
 
 ## Automatically remove listeners
 Sometimes it is helpful to automatically remove listeners from its parent 
-`EventProvider` to allow the to be garbage collected if they are not needed 
+`EventProvider` to allow them to be garbage collected if they are not needed 
 anymore. Instead of calling `removeUserListener` yourself, you can delegate the
 decision of whether a listener should be removed to the listener itself by 
 implementing `OneTimeEventListener`:
@@ -130,7 +168,7 @@ All provided `EventProvider` implementations provide error tolerant event
 delegation. That is, if any notified listener throws a `RuntimeException`, this
 exception will be ignored and the next listener is notified. However, instead
 if ignoring the exception, you might want to customize the reaction. There 
-exists an overload to the `EventProvider.dispatch` method which takes an 
+exists an overload of the `EventProvider.dispatch` method which takes an 
 `ExceptionCallback` as additional argument. This class has a single method to 
 which exceptions get passed.
 
@@ -149,10 +187,10 @@ which exceptions get passed.
 ```
 
 ## Asynchronous event delegation
-One key feature of jeve is that it hides the actual event delegation method from
-the actual source of the event. So if you decide that all of your `UserEvents`
-should be fired within a dedicated event thread, you simply need to modify the
-creation of the `EventProvider`:
+One key feature of jeve is that it hides the actual event delegation strategy 
+from the actual source of the event. So if you decide that all of your 
+`UserEvents` should be fired within a dedicated event thread, you simply need 
+to modify the creation of the `EventProvider`:
 
 ```java
 public class UserManager {
@@ -164,6 +202,7 @@ public class UserManager {
         EventProvider.newAsynchronousEventProvider(eventService);
         
     // remaining code stays the same
+    // ...
 }
 ```
 

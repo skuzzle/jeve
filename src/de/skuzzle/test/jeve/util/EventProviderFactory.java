@@ -1,4 +1,4 @@
-package de.skuzzle.test.jeve;
+package de.skuzzle.test.jeve.util;
 
 import org.junit.Ignore;
 

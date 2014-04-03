@@ -1,20 +1,21 @@
-package de.skuzzle.test.jeve;
+package de.skuzzle.test.jeve.util;
 
 import java.util.EventListener;
 
 import org.junit.Ignore;
 
+
 /**
- * DifferentStringListeners are notified about {@link StringEvent StringEvents}.
+ * StringListeners are notified about {@link StringEvent StringEvents}.
  * 
  * @author Simon Taddiken
  */
 @Ignore
-public interface DifferentStringListener extends EventListener {
+public interface StringListener extends EventListener {
+
     /**
      * This method is notified about occurring {@link StringEvent StringEvents}.
      * @param e The occurred event.
      */
-    public void onDifferentStringEvent(StringEvent e);
-
+    public void onStringEvent(StringEvent e);
 }

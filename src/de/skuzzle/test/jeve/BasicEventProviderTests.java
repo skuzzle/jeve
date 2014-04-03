@@ -8,6 +8,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.test.jeve.util.EventProviderFactory;
+import de.skuzzle.test.jeve.util.EventProviderTestBase;
 
 
 /**

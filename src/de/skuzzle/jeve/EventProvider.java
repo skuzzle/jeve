@@ -21,6 +21,9 @@ public interface EventProvider extends AutoCloseable {
      * Creates a new {@link EventProvider} which fires events sequentially in the thread
      * which calls {@link EventProvider#dispatch(Class, Event, BiConsumer)}.
      * 
+     * <p>Closing the {@link EventProvider} returned by this method will have no 
+     * effect.</p>
+     * 
      * @return A new EventProvider instance.
      */
     public static EventProvider newDefaultEventProvider() {
@@ -31,7 +34,12 @@ public interface EventProvider extends AutoCloseable {
     
     /**
      * Creates a new {@link EventProvider} which fires each event in a different thread.
-     * By default, the returned {@link EventProvider} uses a cached executor service.
+     * By default, the returned {@link EventProvider} uses a single thread executor 
+     * service.
+     * 
+     * <p>When closing the returned {@link EventProvider}, its internal 
+     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
+     * provider after closing it.</p>
      * 
      * @return A new EventProvider instance.
      */
@@ -45,6 +53,10 @@ public interface EventProvider extends AutoCloseable {
      * Creates a new {@link EventProvider} which fires each event in a different thread.
      * The created provider will use the given {@link ExecutorService} to fire the events
      * asynchronously.
+     * 
+     * <p>When closing the returned {@link EventProvider}, the passed 
+     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
+     * provider after closing it.</p>
      * 
      * @param dispatcher The ExecutorService to use.
      * @return A new EventProvider instance.
@@ -60,6 +72,9 @@ public interface EventProvider extends AutoCloseable {
      * thread and waits (blocks current thread) after dispatching until all listeners
      * have been notified.
      * 
+     * <p>Closing the {@link EventProvider} returned by this method will have no 
+     * effect.</p>
+     * 
      * @return A new EventProvider instance.
      */
     public static EventProvider newWaitingAWTEventProvider() {
@@ -72,6 +87,9 @@ public interface EventProvider extends AutoCloseable {
      * Creates a new {@link EventProvider} which dispatches all events in the AWT event
      * thread. Dispatching with this EventProvider will return immediately and dispatching
      * of an event will be scheduled to be run later by the AWT event thread.
+     * 
+     * <p>Closing the {@link EventProvider} returned by this method will have no 
+     * effect.</p>
      * 
      * @return A new EventProvider instance.
      */

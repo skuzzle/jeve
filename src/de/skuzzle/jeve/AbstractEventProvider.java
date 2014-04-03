@@ -79,7 +79,8 @@ public abstract class AbstractEventProvider implements EventProvider {
     /**
      * Notifies all listeners registered for the provided class with the provided event.
      * This method is failure tolerant and will continue notifying listeners even if one
-     * of them threw an exception.
+     * of them threw an exception. Exceptions are passed to the provided 
+     * {@link ExceptionCallback}.
      * 
      * <p>This method does not check whether this provider is ready for dispatching and
      * might thus throw an exception when trying to dispatch an event while the provider

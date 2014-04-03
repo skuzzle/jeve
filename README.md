@@ -50,6 +50,8 @@ Using jeve for simple event dispatching is rather simple. It involves creating
 an `EventProvider` as first step:
 
 ```java
+import de.skuzzle.jeve.EventProvider;
+
 public class UserManager {
     // The default event provider dispatches events sequentially within
     // the current thread.
@@ -60,6 +62,8 @@ public class UserManager {
 Next, you should create an event class and a listener interface:
 
 ```java
+import de.skuzzle.jeve.Event;
+
 public class UserEvent extends Event<UserManager> {
     private final User user;
     
@@ -75,6 +79,8 @@ public class UserEvent extends Event<UserManager> {
 ```
 
 ```java
+import java.util.EventListener;
+
 public interface UserListener extends EventListener {
     public void userAdded(UserEvent e);
     
@@ -87,6 +93,8 @@ to add and remove listeners. Then add methods that actually fire events to
 notify registered listeners.
 
 ```java
+// ...
+
 public class UserManager {
     private final EventProvider events = EventProvider.newDefaultEventProvider();
     
@@ -120,6 +128,8 @@ Listeners are notified in order they have been registered with the
 listeners, you may use the `Event.setHandled(boolean)` method.
 
 ```java
+// ...
+
 public class SampleUserListener implements UserListener {
     @Override
     public void userAdded(UserEvent e) {
@@ -144,6 +154,9 @@ decision of whether a listener should be removed to the listener itself by
 implementing `OneTimeEventListener`:
 
 ```java
+// ...
+import de.skuzzle.jeve.OneTimeListener;
+
 public class SampleUserListener implements UserListener, OneTimeEventListener {
 
     private boolean done = false;
@@ -201,6 +214,9 @@ from the actual source of the event. So if you decide that all of your
 to modify the creation of the `EventProvider`:
 
 ```java
+// ...
+import java.util.concurrent.ExecutorService;
+
 public class UserManager {
     // Executor which will be used to fire events
     private final ExecutorService eventService = Executors.newSingleThreadExecutor();

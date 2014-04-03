@@ -122,7 +122,14 @@ public interface EventProvider extends AutoCloseable {
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this provider 
      * is not ready for dispatching as determined by {@link #canDispatch()}, this method 
-     * returns immediately without doing anything.
+     * returns immediately without doing anything. This method will stop notifying further
+     * listeners if the passed event has been marked 'handled' using 
+     * {@link Event#setHandled(boolean)}.
+     * 
+     * <p>If a notified listener implements {@link OneTimeEventListener} and its 
+     * {@link OneTimeEventListener#workDone() workDone} method returns true, the listener
+     * will be removed from this EventProvider.</p>
+     * 
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>
@@ -154,7 +161,13 @@ public interface EventProvider extends AutoCloseable {
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this provider 
      * is not ready for dispatching as determined by {@link #canDispatch()}, this method 
-     * returns immediately without doing anything.
+     * returns immediately without doing anything. This method will stop notifying further
+     * listeners if the passed event has been marked 'handled' using 
+     * {@link Event#setHandled(boolean)}.
+     * 
+     * <p>If a notified listener implements {@link OneTimeEventListener} and its 
+     * {@link OneTimeEventListener#workDone() workDone} method returns true, the listener
+     * will be removed from this EventProvider.</p>
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>

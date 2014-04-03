@@ -64,7 +64,7 @@ class AsynchronousEventProvider extends AbstractEventProvider {
     
     
     @Override
-    public void dispose() {
+    public void close() {
         this.dispatchPool.shutdownNow();
         try {
             this.dispatchPool.awaitTermination(2000, TimeUnit.MILLISECONDS);

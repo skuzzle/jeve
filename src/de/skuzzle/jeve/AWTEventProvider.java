@@ -65,5 +65,5 @@ class AWTEventProvider extends AbstractEventProvider {
     
     
     @Override
-    public void dispose() {}
+    public void close() {}
 }

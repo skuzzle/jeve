@@ -235,10 +235,6 @@ public interface EventProvider extends AutoCloseable {
      * able to dispatch further events after disposing. On some implementations closing
      * might have no effect.
      */
-    public void dispose();
-    
     @Override
-    public default void close() {
-        dispose();
-    }
+    public void close();
 }

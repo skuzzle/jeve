@@ -141,6 +141,19 @@ public interface EventProvider extends AutoCloseable {
     public <T extends EventListener> Collection<T> getListeners(Class<T> listenerClass);
     
     /**
+     * Removes all listeners which have been registered for the provided listener class.
+     * @param <T> Type of the listeners that should be removed.
+     * @param listenerClass The class representing the event for which the listeners 
+     *          should be removed
+     */
+    public <T extends EventListener> void clearAllListeners(Class<T> listenerClass);
+    
+    /**
+     * Removes all registered listeners from this EventProvider.
+     */
+    public void clearAllListeners();
+    
+    /**
      * Notifies all listeners of a certain kind about an occurred event. If this provider 
      * is not ready for dispatching as determined by {@link #canDispatch()}, this method 
      * returns immediately without doing anything. This method will stop notifying further

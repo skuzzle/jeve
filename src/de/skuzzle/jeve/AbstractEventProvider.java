@@ -63,6 +63,24 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
     
+    
+    
+    @Override
+    public <T extends EventListener> void clearAllListeners(Class<T> listenerClass) {
+        synchronized (this.listeners) {
+            this.listeners.remove(listenerClass);
+        }
+    }
+    
+    
+    
+    @Override
+    public void clearAllListeners() {
+        synchronized (this.listeners) {
+            this.listeners.clear();
+        }
+    }
+    
 
     
     @Override

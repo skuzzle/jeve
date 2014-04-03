@@ -61,6 +61,9 @@ This requires you to
 The distribution files will be created within a folder named `target`. jeve 
 doesn't require any third party libraries to be built.
 
+jeve also comes with eclipse project files which can be easily imported into 
+your eclipse workspace.
+
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
 an `EventProvider` as first step:

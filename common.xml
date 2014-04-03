@@ -111,7 +111,7 @@
             <batchtest haltonfailure="yes">
                 <fileset dir="${src.dir}" 
                     includes="de/skuzzle/test/**/*.java"
-                    excludes="de/skuzzle/test/util/**"/>
+                    excludes="de/skuzzle/test/jeve/util/**"/>
             </batchtest>
         </junit>
     </target>

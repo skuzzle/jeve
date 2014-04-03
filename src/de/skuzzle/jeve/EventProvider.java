@@ -104,6 +104,7 @@ public interface EventProvider extends AutoCloseable {
      * Adds a listener which will be notified for every event represented by the
      * given listener class.
      * 
+     * @param <T> Type of the listener to add. 
      * @param listenerClass The class representing the event(s) to listen on.
      * @param listener The listener to add.
      * @throws NullPointerException If either listenerClass or listener is 
@@ -117,7 +118,8 @@ public interface EventProvider extends AutoCloseable {
      * can thus still be registered with this event provider if it was added for
      * further listener classes. The listener will no longer receive events represented
      * by the given listener class.
-     *  
+     * 
+     * @param <T> Type of the listener to remove.
      * @param listenerClass The class representing the event(s) for which the listener
      *          should be removed.
      * @param listener The listener to remove.
@@ -129,6 +131,7 @@ public interface EventProvider extends AutoCloseable {
      * Gets all listeners that have been registered using 
      * {@link #addListener(Class, EventListener)} for the given listener class.
      * 
+     * @param <T> Type of the listeners to return.
      * @param listenerClass The class representing the event for which the listeners
      *          should be retrieved.
      * @return A collection of listeners that should be notified about the event 
@@ -145,8 +148,8 @@ public interface EventProvider extends AutoCloseable {
      * {@link Event#setHandled(boolean)}.
      * 
      * <p>If a notified listener implements {@link OneTimeEventListener} and its 
-     * {@link OneTimeEventListener#workDone() workDone} method returns true, the listener
-     * will be removed from this EventProvider.</p>
+     * {@link OneTimeEventListener#workDone(EventProvider) workDone} method returns true, 
+     * the listener will be removed from this EventProvider.</p>
      * 
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
@@ -166,6 +169,8 @@ public interface EventProvider extends AutoCloseable {
      * This method ignores exceptions thrown by notified listeners. If an exception 
      * occurs, its stacktrace will be printed and the next listener will be notified.
      * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
      * @param listenerClass The kind of listeners to notify.
      * @param event The occurred event which shall be passed to each listener.
      * @param bc Function to delegate the event to the specific callback method of the 
@@ -184,8 +189,8 @@ public interface EventProvider extends AutoCloseable {
      * {@link Event#setHandled(boolean)}.
      * 
      * <p>If a notified listener implements {@link OneTimeEventListener} and its 
-     * {@link OneTimeEventListener#workDone() workDone} method returns true, the listener
-     * will be removed from this EventProvider.</p>
+     * {@link OneTimeEventListener#workDone(EventProvider) workDone} method returns true, 
+     * the listener will be removed from this EventProvider.</p>
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>
@@ -198,13 +203,16 @@ public interface EventProvider extends AutoCloseable {
      * 
      * Notifying all registered UserListeners about an added user is as easy as calling
      * <pre>
-     * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded, e -> logger.error(e));
+     * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded, 
+     *      e -&gt; logger.error(e));
      * </pre>
      * 
      * The {@link ExceptionCallback} gets notified when any of the listeners throws an
      * unexpected exception. If the exception handler itself throws an exception, it will
      * be ignored.
      * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
      * @param listenerClass The kind of listeners to notify.
      * @param event The occurred event which shall be passed to each listener.
      * @param bc Function to delegate the event to the specific callback method of the 
@@ -218,7 +226,7 @@ public interface EventProvider extends AutoCloseable {
      * Gets whether this EventProvider is ready for dispatching.
      * 
      * @return Whether further events can be dispatched using 
-     *          {@link #dispatchEvent(Dispatchable)}
+     *          {@link #dispatch(Class, Event, BiConsumer, ExceptionCallback) dispatch}
      */
     public boolean canDispatch();
     

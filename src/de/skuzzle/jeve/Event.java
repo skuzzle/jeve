@@ -6,11 +6,11 @@ package de.skuzzle.jeve;
  * event and provides methods to stop delegation to further listeners if this event has 
  * been handled by one listener.</p>
  * 
- * <p>Events are used in conjunction with the {@link EventProvider} and an instance of
- * {@link Dispatch}. A Dispatch instance is used by an EventProvider and
- * serves for notifying a single listener with a certain event. The EventProvider will 
- * stop notifying further listeners as soon as one listener sets this class' 
- * {@link #isHandled()} to <code>true</code>.</p>
+ * <p>Events are used in conjunction with the {@link EventProvider} and its 
+ * {@link EventProvider#dispatch(Class, Event, java.util.function.BiConsumer, ExceptionCallback) dispatch} 
+ * method. The dispatch method serves for notifying all registered listeners with a 
+ * certain event. The EventProvider will stop notifying further listeners as soon as one 
+ * listener sets this class' {@link #isHandled()} to <code>true</code>.</p>
  * 
  * @author Simon
  * @param <T> Type of the source of this event.

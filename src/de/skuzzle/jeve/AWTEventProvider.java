@@ -21,10 +21,10 @@ class AWTEventProvider extends AbstractEventProvider {
      * scheduled for later execution via 
      * {@link SwingUtilities#invokeLater(Runnable)} or your current thread should wait
      * until all listeners are notified (uses 
-     * {@link SwingUtilities#invokeAndWait(Runnable)} to run the {@link Dispatchable}).
+     * {@link SwingUtilities#invokeAndWait(Runnable)} to run notify the listeners).
      * 
-     * @param invokeNow If <code>true</code>, {@link #dispatchEvent(Dispatchable)} uses
-     *      <code>invokeAndWait</code>, otherwise <code>invokeLater</code>.
+     * @param invokeNow If <code>true</code>, {@link #dispatch(Class, Event, BiConsumer, ExceptionCallback) dispatch} 
+     *      uses <code>invokeAndWait</code>, otherwise <code>invokeLater</code>.
      */
     public AWTEventProvider(boolean invokeNow) {
         this.invokeNow = invokeNow;

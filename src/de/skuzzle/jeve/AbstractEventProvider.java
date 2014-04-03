@@ -17,7 +17,9 @@ public abstract class AbstractEventProvider implements EventProvider {
     /** Holds the listener classes mapped to listener instances */
     protected final EventListenerList listeners;
     
-    
+    /**
+     * Creates a new {@link AbstractEventProvider}.
+     */
     public AbstractEventProvider() {
         this.listeners = new EventListenerList();
     }
@@ -86,9 +88,12 @@ public abstract class AbstractEventProvider implements EventProvider {
      * might thus throw an exception when trying to dispatch an event while the provider
      * is not ready.</p>
      * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
      * @param listenerClass The class of listeners that should be notified.
      * @param event The event to pass to each listener.
-     * @param d The method of the listener to call.
+     * @param bc The method of the listener to call.
+     * @param ec The callback which gets notified about exceptions.
      * @return Returns <code>true</code> if all listeners have been notified successfully.
      *          Return <code>false</code> if one listener threw an exception.
      */

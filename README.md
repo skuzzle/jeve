@@ -45,6 +45,9 @@ This sample code has several weaknesses:
 jeve addresses all those weaknesses by using new Java 8 features. See the 
 quick start guide below to learn how to improve event delegation.
 
+# Documentation
+JavaDoc is available at www.jeve.skuzzle.de/doc
+
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
 an `EventProvider` as first step:

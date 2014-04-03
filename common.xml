@@ -221,7 +221,7 @@
         <!-- Create version String. -->
         <buildnumber/>
         <property name="version" 
-            value="${version.num}${build.number}${version.name}"/>
+            value="${version.num}${version.name}"/>
         
         <property name="bin.dir" value="${build.release.dir}"/>
         <antcall target="distBin" inheritRefs="true"/>

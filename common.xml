@@ -13,7 +13,7 @@
     <!-- 
         Beginning of version number. Third part will be constructed during dist. 
     -->
-    <property name="version.num"       value="1.0"/>
+    <property name="version.num"       value="1.0.0"/>
     
     <!-- 
         The output folder for compiled class files when compiling with no 

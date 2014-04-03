@@ -13,7 +13,7 @@ import java.util.Iterator;
  * @author Simon
  * @param <T> Type of listeners that are contained in this collection.
  */
-class Listeners<T extends EventListener> extends AbstractCollection<T> {
+public class Listeners<T extends EventListener> extends AbstractCollection<T> {
 
     private final Collection<T> backend;
     private final Class<T> eventClass;

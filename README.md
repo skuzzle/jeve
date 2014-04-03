@@ -52,6 +52,15 @@ for detailed information.
 # Documentation
 JavaDoc is available at www.jeve.skuzzle.de/doc
 
+# Build from source
+You can build jeve from source by simply running `ant` from the root directory.
+This requires you to
+* having installed a Java 8 JDK and
+* having installed an Ant version capable of using Java 8 
+
+The distribution files will be created within a folder named `target`. jeve 
+doesn't require any third party libraries to be built.
+
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
 an `EventProvider` as first step:

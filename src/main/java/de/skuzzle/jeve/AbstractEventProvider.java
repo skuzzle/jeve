@@ -214,6 +214,13 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     @Override
+    public boolean isSequential() {
+        return true;
+    }
+    
+    
+    
+    @Override
     public String toString() {
         return this.listeners.toString();
     }

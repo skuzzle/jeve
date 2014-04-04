@@ -5,7 +5,7 @@ jeve is a lightweight Java 8 event dispatching framework which takes advantage
 of lambda expressions and internal iteration. If I were to explain jeve in just 
 one java statement, it would be the following.
 ```java
-    eventProvider.dispatch(UserListener.class, new UserEvent(this, user), UserListener::userAdded);
+eventProvider.dispatch(UserListener.class, new UserEvent(this, user), UserListener::userAdded);
 ```
 
 

@@ -2,9 +2,27 @@ jeve
 ====
 
 jeve is a lightweight Java 8 event dispatching framework which takes advantage
-of lambda expressions and internal iteration. This avoids client code which is 
-cluttered up with event delegation routines like in the following 
-**bad practice** example.
+of lambda expressions and internal iteration. If I were to explain jeve in just 
+one java statement, it would be the following.
+```java
+    eventProvider.dispatch(UserListener.class, new UserEvent(this, user), UserListener::userAdded);
+```
+
+
+## License
+jeve is distributed under the MIT License. See `LICENSE.md` in this directory
+for detailed information.
+
+
+
+## Documentation
+JavaDoc is available at www.jeve.skuzzle.de/doc
+
+
+
+# Why jeve?
+jeve avoids client code from ending up cluttered with event delegation routines 
+like in the following **bad practice** example.
 
 ```java
 public class UserManager {
@@ -42,15 +60,10 @@ This sample code has several weaknesses:
   of listeners, we would need to create a second list which holds the other 
   listener kinds.
 
-jeve addresses all those weaknesses by using new Java 8 features. See the 
-quick start guide below to learn how to improve event delegation.
+Most of these weaknesses can be solved by using *internal iteration*. That is,
+moving iteration **into** the framework, making it transparent for the caller. 
+See the quick start guid below to learn how jeve addresses these weaknesses.
 
-# License
-jeve is distributed under the MIT License. See `LICENSE.md` in this directory
-for detailed information.
-
-# Documentation
-JavaDoc is available at www.jeve.skuzzle.de/doc
 
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
@@ -209,10 +222,15 @@ which exceptions get passed.
         // expression which uses a logger to log any exception that occurred.
         final UserEvent e = new UserEvent(this, user);
         this.events.dispatch(UserListener.class, e, UserListener::userAdded,
-            e -> logger.error("Exception occurred during event dispatching", e));
+            (e, l, ev) -> logger.error("Exception occurred during event dispatching", e));
     }
 }
 ```
+
+You may also set an ExceptionCallback globally for a specific EventProvider 
+using `EventProvider.setExceptionCallback()`. When doing so, the provided 
+callback will be notified when dispatching an event without explicitly 
+specifying a callback.
 
 ## Asynchronous event delegation
 One key feature of jeve is that it hides the actual event delegation strategy 

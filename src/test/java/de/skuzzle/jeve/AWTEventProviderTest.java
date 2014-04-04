@@ -1,4 +1,4 @@
-package de.skuzzle.test.jeve;
+package de.skuzzle.jeve;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,10 +12,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.test.jeve.util.EventProviderFactory;
-import de.skuzzle.test.jeve.util.EventProviderTestBase;
-import de.skuzzle.test.jeve.util.StringEvent;
-import de.skuzzle.test.jeve.util.StringListener;
+import de.skuzzle.jeve.util.EventProviderFactory;
+import de.skuzzle.jeve.util.EventProviderTestBase;
+import de.skuzzle.jeve.util.StringEvent;
+import de.skuzzle.jeve.util.StringListener;
 
 
 /**
@@ -24,7 +24,7 @@ import de.skuzzle.test.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class AWTEventProviderTests extends EventProviderTestBase {
+public class AWTEventProviderTest extends EventProviderTestBase {
     
     /**
      * Parameterizes the test instances.
@@ -46,7 +46,7 @@ public class AWTEventProviderTests extends EventProviderTestBase {
      * 
      * @param factory Factory to create a single provider
      */
-    public AWTEventProviderTests(EventProviderFactory factory) {
+    public AWTEventProviderTest(EventProviderFactory factory) {
         super(factory);
     }
     

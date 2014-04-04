@@ -1,4 +1,4 @@
-package de.skuzzle.test.jeve.util;
+package de.skuzzle.jeve.util;
 
 import java.util.Collection;
 import java.util.Iterator;

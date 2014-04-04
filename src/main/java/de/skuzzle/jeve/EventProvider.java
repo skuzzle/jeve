@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
  * <p>Unless stated otherwise, all EventProvider instances obtained from static factory
  * methods are thread-safe. Additionally, all provided default implementations guarantee 
  * the order of notification to be the same as the order in which listener had been 
- * registered.</p>
+ * registered, meaning they are {@link #isSequential() sequential}.</p>
  * 
  * @author Simon
  */
@@ -283,6 +283,14 @@ public interface EventProvider extends AutoCloseable {
      *          <code>null</code> to use the default behavior.
      */
     public void setExceptionCallback(ExceptionCallback ec);
+    
+    /**
+     * Returns whether this EventProvider is sequential, which means it strictly 
+     * notifies listeners in the order in which they were registered for a certain event.
+     *  
+     * @return Whether this instance is sequential.
+     */
+    public boolean isSequential();
     
     /**
      * Closes this EventProvider. Depending on its implementation, it might not be 

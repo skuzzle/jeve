@@ -135,7 +135,9 @@ public class UserManager {
     }
     
     public void deleteUser(User user) {
+        // same here
         // ...
+        this.events.dispatch(UserListener.class, e, UserListener::userDeleted);
     }
 }
 ```
@@ -160,6 +162,7 @@ public class SampleUserListener implements UserListener {
         e.setHandled(true);
     }
     
+    @Override
     public void userDeleted(UserEvent e) {
         // ...
     }
@@ -184,7 +187,7 @@ public class SampleUserListener implements UserListener, OneTimeEventListener {
     @Override
     public boolean workDone(EventProvider parent) {
         // this listener will be removed from the EventProvider it was 
-        // registered at if this method returns true.
+        // called from if this method returns true.
         // The parent parameter exists to distinguish between different parents
         // if the listener has been registered with multiple EventProviders.
         return this.done;
@@ -198,6 +201,7 @@ public class SampleUserListener implements UserListener, OneTimeEventListener {
         this.done = true;
     }
     
+    @Override
     public void userDeleted(UserEvent e) {
         // ...
     }

@@ -17,7 +17,9 @@ import java.util.function.BiConsumer;
  * {@link AbstractEventProvider} to provide your own customized provider.</p>
  * 
  * <p>Unless stated otherwise, all EventProvider instances obtained from static factory
- * methods are thread-safe.</p>
+ * methods are thread-safe. Additionally, all provided default implementations guarantee 
+ * the order of notification to be the same as the order in which listener had been 
+ * registered.</p>
  * 
  * @author Simon
  */
@@ -114,6 +116,11 @@ public interface EventProvider extends AutoCloseable {
     
     
     
+    /** The default {@link ExceptionCallback} which simply prints the stack trace */
+    public final static ExceptionCallback DEFAULT_HANDLER = 
+            (e, l, ev) -> e.printStackTrace();
+            
+            
     
     /**
      * Adds a listener which will be notified for every event represented by the
@@ -194,8 +201,11 @@ public interface EventProvider extends AutoCloseable {
      * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded)
      * </pre>
      * 
-     * This method ignores exceptions thrown by notified listeners. If an exception 
-     * occurs, its stacktrace will be printed and the next listener will be notified.
+     * <p>This method uses the global {@link ExceptionCallback} provided to 
+     * {@link #setExceptionCallback(ExceptionCallback)} or an default instance if none
+     * has been explicitly set.</p>
+     * 
+     * <p>Please note that neither parameter to this method must be null.</p>
      * 
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -206,7 +216,7 @@ public interface EventProvider extends AutoCloseable {
      */
     public default <L extends EventListener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc) {
-        this.dispatch(listenerClass, event, bc, e -> e.printStackTrace());
+        this.dispatch(listenerClass, event, bc, DEFAULT_HANDLER);
     }
     
     /**
@@ -235,9 +245,12 @@ public interface EventProvider extends AutoCloseable {
      *      e -&gt; logger.error(e));
      * </pre>
      * 
-     * The {@link ExceptionCallback} gets notified when any of the listeners throws an
+     * <p>The {@link ExceptionCallback} gets notified when any of the listeners throws an
      * unexpected exception. If the exception handler itself throws an exception, it will
-     * be ignored.
+     * be ignored. The callback provided to this method takes precedence over the 
+     * global callback provided by {@link #setExceptionCallback(ExceptionCallback)}.</p>
+     * 
+     * <p>Please note that neither parameter to this method must be null.</p>
      * 
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -257,6 +270,19 @@ public interface EventProvider extends AutoCloseable {
      *          {@link #dispatch(Class, Event, BiConsumer, ExceptionCallback) dispatch}
      */
     public boolean canDispatch();
+    
+    /**
+     * Sets the default {@link ExceptionCallback} which will be notified about 
+     * exceptions when dispatching events without explicitly specifying an 
+     * ExceptionCallback. The ExceptionCallback which is installed by default simply 
+     * prints the stack traces to the error console.
+     * 
+     * <p>You can reset the ExceptionCallback to the default handler by providing 
+     * <code>null</code> as parameter.</p>
+     * @param ec The ExceptionCallback for handling event handler exceptions, or 
+     *          <code>null</code> to use the default behavior.
+     */
+    public void setExceptionCallback(ExceptionCallback ec);
     
     /**
      * Closes this EventProvider. Depending on its implementation, it might not be 

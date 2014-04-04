@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.Listeners;
+
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations are 
@@ -16,7 +19,7 @@ import java.util.function.BiConsumer;
  * @author Simon
  */
 public abstract class AbstractEventProvider implements EventProvider {
-    
+            
     /**
      * Copies a list of listeners into a new list, casting each element to the target
      * listener type.
@@ -37,6 +40,9 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<?>, List<Object>> listeners;
+    
+    /** Default callback to handle event handler exceptions */
+    protected ExceptionCallback exceptionHandler;
     
     
     
@@ -137,6 +143,16 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     
+    @Override
+    public void setExceptionCallback(ExceptionCallback callBack) {
+        if (callBack == null) {
+            callBack = DEFAULT_HANDLER;
+        }
+        this.exceptionHandler = callBack;
+    }
+    
+    
+    
     /**
      * Notifies all listeners registered for the provided class with the provided event.
      * This method is failure tolerant and will continue notifying listeners even if one
@@ -158,7 +174,15 @@ public abstract class AbstractEventProvider implements EventProvider {
      */
     protected <L extends EventListener, E extends Event<?>> boolean notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        
+        if (listenerClass == null) {
+            throw new NullPointerException("listenerClass");
+        } else if (event == null) {
+            throw new NullPointerException("event");
+        } else if (bc == null) {
+            throw new NullPointerException("bc");
+        } else if (ec == null) {
+            throw new NullPointerException("ec");
+        }
         boolean result = true;
         final Listeners<L> listeners = this.getListeners(listenerClass);
         for (L listener : listeners) {
@@ -177,7 +201,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             } catch (RuntimeException e) {
                 result = false;
                 try {
-                    ec.exception(e);
+                    ec.exception(e, listener, event);
                 } catch (Exception e1) {
                     // where is your god now?
                     e1.printStackTrace();

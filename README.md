@@ -119,7 +119,7 @@ public class UserManager {
     private final EventProvider events = EventProvider.newDefaultEventProvider();
     
     public void addUserListener(UserListener listener) {
-        this.events.add(UserListener.class, listener);
+        this.events.addListener(UserListener.class, listener);
     }
     
     public void removeUserListener(UserListener listener) {
@@ -237,7 +237,7 @@ callback will be notified when dispatching an event without explicitly
 specifying a callback.
 
 ## Asynchronous event delegation
-One key feature of jeve is that it hides the actual event delegation strategy 
+One key feature of jeve is that it hides the event delegation strategy 
 from the actual source of the event. So if you decide that all of your 
 `UserEvents` should be fired within a dedicated event thread, you simply need 
 to modify the creation of the `EventProvider`:

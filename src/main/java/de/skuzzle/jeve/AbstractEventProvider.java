@@ -51,6 +51,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      */
     public AbstractEventProvider() {
         this.listeners = new HashMap<>();
+        this.exceptionHandler = DEFAULT_HANDLER;
     }
 
     
@@ -129,6 +130,14 @@ public abstract class AbstractEventProvider implements EventProvider {
                 this.listeners.remove(listenerClass, listeners);
             }
         }
+    }
+    
+    
+    
+    @Override
+    public <L extends EventListener, E extends Event<?>> void dispatch(
+            Class<L> listenerClass, E event, BiConsumer<L, E> bc) {
+        this.dispatch(listenerClass, event, bc, this.exceptionHandler);
     }
     
     

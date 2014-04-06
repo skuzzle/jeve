@@ -9,6 +9,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.OneTimeEventListener;
 
 
@@ -19,6 +20,9 @@ import de.skuzzle.jeve.OneTimeEventListener;
  */
 @Ignore
 public abstract class EventProviderTestBase {
+    
+    /** Time to wait to give threaded handlers some time to finish one dispatch action */
+    private final static long THREAD_WAIT_TIME = 500; // ms
     
     /** The factory to create EventProvider instances for testing */
     protected final EventProviderFactory factory;
@@ -143,11 +147,82 @@ public abstract class EventProviderTestBase {
         this.subject.addListener(StringListener.class, first);
         this.subject.addListener(StringListener.class, second);
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
-        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent, 
+                (ex, l, ev) -> {}); // swallow exception
         // HACK: give async providers some time to execute
-        Thread.sleep(1000);
+        Thread.sleep(THREAD_WAIT_TIME);
         
         Assert.assertTrue(getFailString("Second listener not notified"), container[0]);
+    }
+    
+    
+    
+    /**
+     * Tests the global exception handler of the EventProvider
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testGlobalExceptionHandling() throws Exception {
+        final String SUBJECT = "someString";
+        final boolean[] container = new boolean[2];
+        final StringListener first = e -> { throw new RuntimeException(SUBJECT); };
+        final StringListener second = e -> {
+            Assert.assertEquals(getFailString("Listener not called"), SUBJECT, 
+                    e.getString());
+            container[0] = true;
+        };
+
+        final ExceptionCallback ec = (e, l, ev) -> {
+            Assert.assertEquals(getFailString("ExceptionCallback not called"), SUBJECT, 
+                    e.getMessage());
+            container[1] = true;
+        };
+        
+        this.subject.setExceptionCallback(ec);
+        this.subject.addListener(StringListener.class, first);
+        this.subject.addListener(StringListener.class, second);
+        final StringEvent e = new StringEvent(this.subject, SUBJECT);
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        // HACK: give async providers some time to execute
+        Thread.sleep(THREAD_WAIT_TIME);
+        
+        Assert.assertTrue(getFailString("Second listener not notified"), container[0]);
+        Assert.assertTrue(getFailString("Exception handler not notified"), container[1]);
+    }
+    
+    
+    
+    /**
+     * Tests whether explicit exception handler takes precedence over global handler.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testGlobalExceptionHandlingPrecedence() throws Exception {
+        final String SUBJECT = "someString";
+        final boolean[] container = new boolean[2];
+        final StringListener first = e -> { throw new RuntimeException(SUBJECT); };
+
+        final ExceptionCallback globalEc = (e, l, ev) -> {
+            container[0] = true;
+        };
+        
+        final ExceptionCallback localEc = (e, l, ev) -> {
+            container[1] = true;
+        };
+        
+        
+        this.subject.setExceptionCallback(globalEc);
+        this.subject.addListener(StringListener.class, first);
+        final StringEvent e = new StringEvent(this.subject, SUBJECT);
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent, 
+                localEc);
+        // HACK: give async providers some time to execute
+        Thread.sleep(THREAD_WAIT_TIME);
+        
+        Assert.assertFalse(getFailString("Global Exception Handler called"), container[0]);
+        Assert.assertTrue(getFailString("Local Exception Handler not called"), container[1]);
     }
     
     
@@ -290,7 +365,7 @@ public abstract class EventProviderTestBase {
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
         // HACK: give async providers some time to execute
-        Thread.sleep(1000);
+        Thread.sleep(THREAD_WAIT_TIME);
         
         Assert.assertTrue(getFailString("Listener method has not been called"), 
                 container[0]);

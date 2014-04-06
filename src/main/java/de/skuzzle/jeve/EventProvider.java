@@ -214,10 +214,8 @@ public interface EventProvider extends AutoCloseable {
      * @param bc Function to delegate the event to the specific callback method of the 
      *          listener.
      */
-    public default <L extends EventListener, E extends Event<?>> void dispatch(
-            Class<L> listenerClass, E event, BiConsumer<L, E> bc) {
-        this.dispatch(listenerClass, event, bc, DEFAULT_HANDLER);
-    }
+    public <L extends EventListener, E extends Event<?>> void dispatch(
+            Class<L> listenerClass, E event, BiConsumer<L, E> bc);
     
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this provider 

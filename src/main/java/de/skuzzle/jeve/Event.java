@@ -17,7 +17,10 @@ package de.skuzzle.jeve;
  */
 public class Event<T> {
 
+    /** The source of the event */
     private final T source;
+    
+    /** Whether this event has been marked as handled */
     private boolean isHandled;
     
     

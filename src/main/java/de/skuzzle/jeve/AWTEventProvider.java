@@ -1,7 +1,6 @@
 package de.skuzzle.jeve;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.EventListener;
 import java.util.function.BiConsumer;
 
 import javax.swing.SwingUtilities;
@@ -33,7 +32,7 @@ class AWTEventProvider extends AbstractEventProvider {
     
     
     @Override
-    public <L extends EventListener, E extends Event<?>> void dispatch(
+    public <L extends Listener, E extends Event<?>> void dispatch(
             final Class<L> listenerClass, final E event, final BiConsumer<L, E> bc, 
             ExceptionCallback ec) {
 

@@ -1,6 +1,5 @@
 package de.skuzzle.jeve;
 
-import java.util.EventListener;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +46,7 @@ class AsynchronousEventProvider extends AbstractEventProvider {
     
     
     @Override
-    public <L extends EventListener, E extends Event<?>> void dispatch(
+    public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         
         if (this.canDispatch()) {

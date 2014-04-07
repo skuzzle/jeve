@@ -1,8 +1,8 @@
 package de.skuzzle.jeve.util;
 
-import java.util.EventListener;
-
 import org.junit.Ignore;
+
+import de.skuzzle.jeve.Listener;
 
 
 /**
@@ -11,7 +11,7 @@ import org.junit.Ignore;
  * @author Simon Taddiken
  */
 @Ignore
-public interface StringListener extends EventListener {
+public interface StringListener extends Listener {
 
     /**
      * This method is notified about occurring {@link StringEvent StringEvents}.

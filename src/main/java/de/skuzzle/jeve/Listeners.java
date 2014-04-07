@@ -3,18 +3,17 @@ package de.skuzzle.jeve;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EventListener;
 import java.util.Iterator;
 
 /**
- * Collection class for {@link EventListener}s. Despite being a normal collection, this 
+ * Collection class for {@link Listener}s. Despite being a normal collection, this 
  * class knows what kind of listeners it contains and is thus able to remove a certain
  * listener from its parent {@link EventProvider}.
  * 
  * @author Simon
  * @param <T> Type of listeners that are contained in this collection.
  */
-public class Listeners<T extends EventListener> extends AbstractCollection<T> {
+public class Listeners<T extends Listener> extends AbstractCollection<T> {
     
     /**
      * Creates an empty listener list.
@@ -23,7 +22,7 @@ public class Listeners<T extends EventListener> extends AbstractCollection<T> {
      * @param eventClass The event class.
      * @return An empty Listeners instance.
      */
-    public static <T extends EventListener> Listeners<T> empty(EventProvider parent, 
+    public static <T extends Listener> Listeners<T> empty(EventProvider parent, 
             Class<T> eventClass) {
         return new Listeners<>(Collections.emptyList(), eventClass, parent);
     }

@@ -29,7 +29,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param listenerClass Target listener type.
      * @return A new typed list of listeners.
      */
-    private static <T extends EventListener> List<T> copyList(List<Object> listeners, 
+    private static <T extends Listener> List<T> copyList(List<Object> listeners, 
             Class<T> listenerClass) {
         final List<T> result = new ArrayList<>(listeners.size());
         listeners.forEach(l -> result.add(listenerClass.cast(l)));
@@ -57,7 +57,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     @Override
-    public <T extends EventListener> Listeners<T> getListeners(Class<T> listenerClass) {
+    public <T extends Listener> Listeners<T> getListeners(Class<T> listenerClass) {
         if (listenerClass == null) {
             throw new NullPointerException("listenerClass");
         }
@@ -92,7 +92,7 @@ public abstract class AbstractEventProvider implements EventProvider {
 
     
     @Override
-    public <T extends EventListener> void addListener(Class<T> listenerClass, 
+    public <T extends Listener> void addListener(Class<T> listenerClass, 
             T listener) {
         if (listenerClass == null) {
             throw new NullPointerException("listenerClass");
@@ -115,7 +115,7 @@ public abstract class AbstractEventProvider implements EventProvider {
 
     
     @Override
-    public <T extends EventListener> void removeListener(Class<T> listenerClass, 
+    public <T extends Listener> void removeListener(Class<T> listenerClass, 
             T listener) {
         if (listenerClass == null || listener == null) {
             return;
@@ -135,7 +135,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     @Override
-    public <L extends EventListener, E extends Event<?>> void dispatch(
+    public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc) {
         this.dispatch(listenerClass, event, bc, this.exceptionHandler);
     }
@@ -143,7 +143,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     @Override
-    public <L extends EventListener, E extends Event<?>> void dispatch(
+    public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         if (this.canDispatch()) {
             this.notifyListeners(listenerClass, event, bc, ec);
@@ -181,7 +181,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @return Returns <code>true</code> if all listeners have been notified successfully.
      *          Return <code>false</code> if one listener threw an exception.
      */
-    protected <L extends EventListener, E extends Event<?>> boolean notifyListeners(
+    protected <L extends Listener, E extends Event<?>> boolean notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         if (listenerClass == null) {
             throw new NullPointerException("listenerClass");
@@ -201,11 +201,8 @@ public abstract class AbstractEventProvider implements EventProvider {
                 }
                     
                 bc.accept(listener, event);
-                if (listener instanceof OneTimeEventListener) {
-                    final OneTimeEventListener otl = (OneTimeEventListener) listener;
-                    if (otl.workDone(this)) {
-                        this.removeListener(listenerClass, listener);
-                    }
+                if (listener.workDone(this)) {
+                    this.removeListener(listenerClass, listener);
                 }
             } catch (RuntimeException e) {
                 result = false;

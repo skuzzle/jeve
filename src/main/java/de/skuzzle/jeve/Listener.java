@@ -3,19 +3,13 @@ package de.skuzzle.jeve;
 import java.util.EventListener;
 
 /**
- * This is kind of a tagging interface for event listener which will only be
- * notified once. After being notified, the listener is removed from the 
- * {@link EventProvider} it was registered at.
+ * This is the base interface for event listeners. It specifies a single method which
+ * can be used to automatically remove instances of this listener from a certain parent.
  * 
- * <p>Using this interface within a multi-threaded environment requires extra 
- * cautiousness and custom synchronization as the {@link #workDone(EventProvider)} method
- * might get called from two threads concurrently (implying handling of two different
- * events).</p>
- * 
- * @author Simon
+ * @author Simon Taddiken
  */
-public interface OneTimeEventListener extends EventListener {
-    
+public interface Listener extends EventListener {
+
     /**
      * This method specifies whether this listner's work is done and it should be 
      * removed from its parent's {@link EventProvider} after the next time the listener
@@ -24,8 +18,13 @@ public interface OneTimeEventListener extends EventListener {
      * <p>Note: currently, every listener is at least notified once before checking the
      * result of this method the first time. This might change in future releases.</p>
      * 
+     * <p>Note: the default implementation always returns <code>false</code>, meaning 
+     * that the listener never gets removed automatically.</p>
+     * 
      * @param parent The event provider from which the listener would be removed.
      * @return Whether to remove this listener from its parent after next notification.
      */
-    public boolean workDone(EventProvider parent);
+    public default boolean workDone(EventProvider parent) {
+        return false;
+    }
 }

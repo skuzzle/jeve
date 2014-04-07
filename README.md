@@ -99,9 +99,9 @@ public class UserEvent extends Event<UserManager> {
 ```
 
 ```java
-import java.util.EventListener;
+import de.skuzzle.jeve.Listener;
 
-public interface UserListener extends EventListener {
+public interface UserListener extends Listener {
     public void userAdded(UserEvent e);
     
     public void userDeleted(UserEvent e);
@@ -174,13 +174,13 @@ Sometimes it is helpful to automatically remove listeners from its parent
 `EventProvider` to allow them to be garbage collected if they are not needed 
 anymore. Instead of calling `removeUserListener` yourself, you can delegate the
 decision of whether a listener should be removed to the listener itself by 
-implementing `OneTimeEventListener`:
+implementing the `Listener`'s default method `workDone`:
 
 ```java
 // ...
 import de.skuzzle.jeve.OneTimeEventListener;
 
-public class SampleUserListener implements UserListener, OneTimeEventListener {
+public class SampleUserListener implements UserListener {
 
     private boolean done = false;
 

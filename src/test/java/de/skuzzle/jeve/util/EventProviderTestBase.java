@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
-import de.skuzzle.jeve.OneTimeEventListener;
 
 
 /**
@@ -266,7 +265,7 @@ public abstract class EventProviderTestBase {
         final int MAX_NOTIFICATIONS = 5;
         final String SUBJECT = "someString";
         
-        class TestListener implements StringListener, OneTimeEventListener {
+        class TestListener implements StringListener {
 
             private int notificationCount = 0;
             

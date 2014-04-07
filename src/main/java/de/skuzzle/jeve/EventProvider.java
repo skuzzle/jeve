@@ -132,7 +132,7 @@ public interface EventProvider extends AutoCloseable {
      * @throws NullPointerException If either listenerClass or listener is 
      *          <code>null</code>.
      */
-    public <T extends EventListener> void addListener(Class<T> listenerClass, 
+    public <T extends Listener> void addListener(Class<T> listenerClass, 
             T listener);
     
     /**
@@ -146,12 +146,12 @@ public interface EventProvider extends AutoCloseable {
      *          should be removed.
      * @param listener The listener to remove.
      */
-    public <T extends EventListener> void removeListener(Class<T> listenerClass, 
+    public <T extends Listener> void removeListener(Class<T> listenerClass, 
             T listener);
     
     /**
      * Gets all listeners that have been registered using 
-     * {@link #addListener(Class, EventListener)} for the given listener class.
+     * {@link #addListener(Class, Listener)} for the given listener class.
      * 
      * @param <T> Type of the listeners to return.
      * @param listenerClass The class representing the event for which the listeners
@@ -160,7 +160,7 @@ public interface EventProvider extends AutoCloseable {
      *          represented by the given listener class.
      * @throws NullPointerException If listenerClass is <code>null</code>.          
      */
-    public <T extends EventListener> Collection<T> getListeners(Class<T> listenerClass);
+    public <T extends Listener> Collection<T> getListeners(Class<T> listenerClass);
     
     /**
      * Removes all listeners which have been registered for the provided listener class.
@@ -182,9 +182,13 @@ public interface EventProvider extends AutoCloseable {
      * listeners if the passed event has been marked 'handled' using 
      * {@link Event#setHandled(boolean)}.
      * 
-     * <p>If a notified listener implements {@link OneTimeEventListener} and its 
-     * {@link OneTimeEventListener#workDone(EventProvider) workDone} method returns true, 
-     * the listener will be removed from this EventProvider.</p>
+     * <p>If a notified listener's 
+     * {@link Listener#workDone(EventProvider) workDone} method returns true, 
+     * the listener will be removed from this EventProvider right after it has been 
+     * notified.</p>
+     * 
+     * <p>Note: The behavior of whether the result of <tt>workDone</tt> is checked before
+     * or after the listener has been notified might change in a future release.</p>
      * 
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
@@ -214,7 +218,7 @@ public interface EventProvider extends AutoCloseable {
      * @param bc Function to delegate the event to the specific callback method of the 
      *          listener.
      */
-    public <L extends EventListener, E extends Event<?>> void dispatch(
+    public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc);
     
     /**
@@ -224,9 +228,13 @@ public interface EventProvider extends AutoCloseable {
      * listeners if the passed event has been marked 'handled' using 
      * {@link Event#setHandled(boolean)}.
      * 
-     * <p>If a notified listener implements {@link OneTimeEventListener} and its 
-     * {@link OneTimeEventListener#workDone(EventProvider) workDone} method returns true, 
-     * the listener will be removed from this EventProvider.</p>
+     * <p>If a notified listener's 
+     * {@link Listener#workDone(EventProvider) workDone} method returns true, 
+     * the listener will be removed from this EventProvider right after it has been 
+     * notified.</p>
+     * 
+     * <p>Note: The behavior of whether the result of <tt>workDone</tt> is checked before
+     * or after the listener has been notified might change in a future release.</p>
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>
@@ -258,7 +266,7 @@ public interface EventProvider extends AutoCloseable {
      *          listener.
      * @param ec Callback to be notified when any of the listeners throws an exception.
      */
-    public <L extends EventListener, E extends Event<?>> void dispatch(
+    public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec);
     
     /**

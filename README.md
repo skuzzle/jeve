@@ -259,6 +259,9 @@ public class UserManager {
 }
 ```
 
+As the ExceptionCallback gets passed the currently processed event, you are able
+to stop the delegation by setting the event to be handled.
+
 jeve also supports the creation of GUI events by providing EventProvider 
 implementations which run all listeners within the AWT Event Thread.
 

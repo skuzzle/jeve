@@ -193,7 +193,7 @@ public interface EventProvider extends AutoCloseable {
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>
-     * public interface UserListener {
+     * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
      *     
      *     public void userDeleted(UserEvent e);
@@ -238,7 +238,7 @@ public interface EventProvider extends AutoCloseable {
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>
-     * public interface UserListener {
+     * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
      *     
      *     public void userDeleted(UserEvent e);

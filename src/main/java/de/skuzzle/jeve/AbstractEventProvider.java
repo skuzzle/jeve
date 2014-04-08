@@ -114,11 +114,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
             listener.onRegister(e);
         } catch (Exception e) {
-            try {
-                this.exceptionHandler.exception(e, listener, null);
-            } catch (Exception ignore) {
-                ignore.printStackTrace();
-            }
+            this.handleException(this.exceptionHandler, e, listener, null);
         }
     }
 
@@ -144,11 +140,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
             listener.onUnregister(e);
         } catch (Exception e) {
-            try {
-                this.exceptionHandler.exception(e, listener, null);
-            } catch (Exception ignore) {
-                ignore.printStackTrace();
-            }
+            this.handleException(this.exceptionHandler, e, listener, null);
         }
     }
     
@@ -226,15 +218,30 @@ public abstract class AbstractEventProvider implements EventProvider {
                 }
             } catch (RuntimeException e) {
                 result = false;
-                try {
-                    ec.exception(e, listener, event);
-                } catch (Exception e1) {
-                    // where is your god now?
-                    e1.printStackTrace();
-                }
+                this.handleException(ec, e, listener, event);
             }
         }
         return result;
+    }
+    
+    
+    
+    /**
+     * Internal method for notifying the {@link ExceptionCallback}. This method swallows
+     * every error raised by the passed exception callback.
+     * 
+     * @param ec The ExceptionCallback to handle the exception.
+     * @param e The occurred exception.
+     * @param listener The listener which caused the exception.
+     * @param ev The event which is currently being dispatched.
+     */
+    protected void handleException(ExceptionCallback ec, Exception e, Listener listener, 
+            Event<?> ev) {
+        try {
+            this.exceptionHandler.exception(e, listener, ev);
+        } catch (Exception ignore) {
+            // where is your god now?
+        }
     }
     
     

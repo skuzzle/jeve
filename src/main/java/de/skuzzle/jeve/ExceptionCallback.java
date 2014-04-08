@@ -1,7 +1,5 @@
 package de.skuzzle.jeve;
 
-import java.util.EventListener;
-
 /**
  * Interface for providing errors which occur during event dispatching to the caller.
  * 
@@ -22,5 +20,5 @@ public interface ExceptionCallback {
      *          {@link EventProvider#addListener(Class, Listener)} or 
      *          {@link EventProvider#removeListener(Class, Listener)}.
      */
-    public void exception(Exception e, EventListener source, Event<?> event);
+    public void exception(Exception e, Listener source, Event<?> event);
 }

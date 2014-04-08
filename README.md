@@ -19,6 +19,10 @@ for detailed information.
 ## Documentation
 JavaDoc is available at www.jeve.skuzzle.de/doc
 
+Scroll down in this readme for a quick start guide and some advanced topics.
+
+
+
 ## Building
 Building jeve requires Apache Maven to be installed. You may then run 
 `mvn install` to build jeve and install it into your local repository. If you 

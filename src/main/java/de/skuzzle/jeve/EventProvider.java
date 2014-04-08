@@ -171,6 +171,8 @@ public interface EventProvider extends AutoCloseable {
     
     /**
      * Removes all listeners which have been registered for the provided listener class.
+     * 
+     * @param <T> Type of the listeners to remove.
      * @param listenerClass The class representing the event for which the listeners 
      *          should be removed
      */

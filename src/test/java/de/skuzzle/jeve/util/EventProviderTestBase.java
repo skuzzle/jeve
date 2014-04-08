@@ -3,6 +3,7 @@ package de.skuzzle.jeve.util;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -49,7 +50,16 @@ public abstract class EventProviderTestBase {
     @Before
     public void setUp() {
         this.subject = this.factory.create();
-        
+    }
+    
+    
+    
+    /**
+     * Closes the current test subject
+     */
+    @After
+    public void tearDown() {
+        this.subject.close();
     }
     
     

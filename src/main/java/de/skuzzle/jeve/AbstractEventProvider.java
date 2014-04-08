@@ -1,7 +1,6 @@
 package de.skuzzle.jeve;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +38,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     /** Holds the listener classes mapped to listener instances */
-    protected final Map<Class<?>, List<Object>> listeners;
+    protected final Map<Class<? extends Listener>, List<Object>> listeners;
     
     /** Default callback to handle event handler exceptions */
     protected ExceptionCallback exceptionHandler;
@@ -74,9 +73,13 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     @Override
-    public <T extends EventListener> void clearAllListeners(Class<T> listenerClass) {
+    public <T extends Listener> void clearAllListeners(Class<T> listenerClass) {
         synchronized (this.listeners) {
-            this.listeners.remove(listenerClass);
+            final List<Object> listeners = this.listeners.get(listenerClass);
+            if (listeners != null) {
+                new ArrayList<>(listeners).forEach(
+                        l -> removeListener(listenerClass, listenerClass.cast(l)));
+            }
         }
     }
     
@@ -85,6 +88,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public void clearAllListeners() {
         synchronized (this.listeners) {
+            new ArrayList<>(this.listeners.keySet()).forEach(c -> clearAllListeners(c));
             this.listeners.clear();
         }
     }
@@ -92,8 +96,7 @@ public abstract class AbstractEventProvider implements EventProvider {
 
     
     @Override
-    public <T extends Listener> void addListener(Class<T> listenerClass, 
-            T listener) {
+    public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
         if (listenerClass == null) {
             throw new NullPointerException("listenerClass");
         } else if (listener == null) {
@@ -238,7 +241,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected void handleException(ExceptionCallback ec, Exception e, Listener listener, 
             Event<?> ev) {
         try {
-            this.exceptionHandler.exception(e, listener, ev);
+            ec.exception(e, listener, ev);
         } catch (Exception ignore) {
             // where is your god now?
         }

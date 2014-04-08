@@ -1,7 +1,6 @@
 package de.skuzzle.jeve;
 
 import java.util.Collection;
-import java.util.EventListener;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 
@@ -172,11 +171,10 @@ public interface EventProvider extends AutoCloseable {
     
     /**
      * Removes all listeners which have been registered for the provided listener class.
-     * @param <T> Type of the listeners that should be removed.
      * @param listenerClass The class representing the event for which the listeners 
      *          should be removed
      */
-    public <T extends EventListener> void clearAllListeners(Class<T> listenerClass);
+    public <T extends Listener> void clearAllListeners(Class<T> listenerClass);
     
     /**
      * Removes all registered listeners from this EventProvider.

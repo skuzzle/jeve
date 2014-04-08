@@ -206,6 +206,7 @@ public abstract class EventProviderTestBase {
 
         final ExceptionCallback globalEc = (e, l, ev) -> {
             container[0] = true;
+            e.printStackTrace();
         };
         
         final ExceptionCallback localEc = (e, l, ev) -> {
@@ -475,6 +476,44 @@ public abstract class EventProviderTestBase {
     
     
     /**
+     * Tests whether clearing of a certain listener class works and the cleared listeners
+     * are notified
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testClearAllByClassAndNotify() throws Exception {
+        final boolean[] unregistered = new boolean[2];
+        final StringListener string1 = new StringListener() {
+            @Override
+            public void onUnregister(RegistrationEvent e) {
+                unregistered[0] = true;
+            }
+            
+            @Override
+            public void onStringEvent(StringEvent e) {}
+        };
+        final DifferentStringListener diffString1 = new DifferentStringListener() {
+            @Override
+            public void onUnregister(RegistrationEvent e) {
+                unregistered[1] = true;
+            }
+            
+            @Override
+            public void onDifferentStringEvent(StringEvent e) {}
+        };
+        
+        this.subject.addListener(StringListener.class, string1);
+        this.subject.addListener(DifferentStringListener.class, diffString1);
+        
+        this.subject.clearAllListeners(DifferentStringListener.class);
+        Assert.assertFalse(getFailString("Unregister method called"), unregistered[0]);
+        Assert.assertTrue(getFailString("Unregister method not called"), unregistered[1]);
+    }
+    
+    
+    
+    /**
      * Tests whether clearing of all listeners works.
      * 
      * @throws Exception If an exception occurs during testing.
@@ -497,5 +536,43 @@ public abstract class EventProviderTestBase {
         this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
         this.subject.dispatch(DifferentStringListener.class, e, 
                 DifferentStringListener::onDifferentStringEvent);
+    }
+    
+    
+    
+    /**
+     * Tests whether clearing all listeners works and the cleared listeners
+     * are notified
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testClearAllAndNotify() throws Exception {
+        final boolean[] unregistered = new boolean[2];
+        final StringListener string1 = new StringListener() {
+            @Override
+            public void onUnregister(RegistrationEvent e) {
+                unregistered[0] = true;
+            }
+            
+            @Override
+            public void onStringEvent(StringEvent e) {}
+        };
+        final DifferentStringListener diffString1 = new DifferentStringListener() {
+            @Override
+            public void onUnregister(RegistrationEvent e) {
+                unregistered[1] = true;
+            }
+            
+            @Override
+            public void onDifferentStringEvent(StringEvent e) {}
+        };
+        
+        this.subject.addListener(StringListener.class, string1);
+        this.subject.addListener(DifferentStringListener.class, diffString1);
+        
+        this.subject.clearAllListeners();
+        Assert.assertTrue(getFailString("Unregister method not called"), unregistered[0]);
+        Assert.assertTrue(getFailString("Unregister method not called"), unregistered[1]);
     }
 }

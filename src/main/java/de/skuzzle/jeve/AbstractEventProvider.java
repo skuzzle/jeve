@@ -110,6 +110,16 @@ public abstract class AbstractEventProvider implements EventProvider {
             }
             listeners.add(listener);
         }
+        try {
+            final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
+            listener.onRegister(e);
+        } catch (Exception e) {
+            try {
+                this.exceptionHandler.exception(e, listener, null);
+            } catch (Exception ignore) {
+                ignore.printStackTrace();
+            }
+        }
     }
 
 
@@ -128,6 +138,16 @@ public abstract class AbstractEventProvider implements EventProvider {
             listeners.remove(listener);
             if (listeners.isEmpty()) {
                 this.listeners.remove(listenerClass, listeners);
+            }
+        }
+        try {
+            final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
+            listener.onUnregister(e);
+        } catch (Exception e) {
+            try {
+                this.exceptionHandler.exception(e, listener, null);
+            } catch (Exception ignore) {
+                ignore.printStackTrace();
             }
         }
     }

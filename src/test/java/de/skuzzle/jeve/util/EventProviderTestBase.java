@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.RegistrationEvent;
 
 
 /**
@@ -236,8 +237,10 @@ public abstract class EventProviderTestBase {
     public void testMultipleListenerTypes() throws Exception {
         final StringListener string1 = e -> {};
         final StringListener string2 = e -> {};
-        final DifferentStringListener diffString1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
-        final DifferentStringListener diffString2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final DifferentStringListener diffString1 = 
+                e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final DifferentStringListener diffString2 = 
+                e -> Assert.fail(getFailString("Listener should not have been notified"));
         
         this.subject.addListener(StringListener.class, string1);
         this.subject.addListener(DifferentStringListener.class, diffString1);
@@ -252,7 +255,7 @@ public abstract class EventProviderTestBase {
     
     
     /**
-     * Tests whether {@link OneTimeEventListener}s are not notified anymore after
+     * Tests whether {@link de.skuzzle.jeve.Listener}s are not notified anymore after
      * returning true in their workDone method.
      * 
      * <p>This test case might not work for asynchronous event providers which use more
@@ -331,6 +334,77 @@ public abstract class EventProviderTestBase {
         this.subject.removeListener(StringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+    }
+    
+    
+    
+    /**
+     * Tests whether notifying a listener about registration and removal works.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testNotifyListener() throws Exception {
+        final boolean[] container = new boolean[2];
+        final StringListener listener = new StringListener() {
+            
+            @Override
+            public void onUnregister(RegistrationEvent e) {
+                container[1] = true;
+            }
+            
+            @Override
+            public void onRegister(RegistrationEvent e) {
+                container[0] = true;
+            }
+            
+            @Override
+            public void onStringEvent(StringEvent e) {
+                Assert.fail(getFailString("Listener should not have been notified"));
+            }
+        };
+        this.subject.addListener(StringListener.class, listener);
+        this.subject.removeListener(StringListener.class, listener);
+        final StringEvent e = new StringEvent(this.subject, "");
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        Assert.assertTrue(getFailString("Register not called"), container[0]);
+        Assert.assertTrue(getFailString("Unregister not called"), container[0]);
+    }
+    
+    
+    /**
+     * Tests exceptions are caught by the default ExceptionCallback af an EventProvider.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testNotifyListenerWithException() throws Exception {
+        final int[] counter = new int[1];
+        final ExceptionCallback ec = (e,l, ev) -> counter[0]++;
+        this.subject.setExceptionCallback(ec);
+        
+        final StringListener listener = new StringListener() {
+            
+            @Override
+            public void onUnregister(RegistrationEvent e) {
+                throw new RuntimeException();
+            }
+            
+            @Override
+            public void onRegister(RegistrationEvent e) {
+                throw new RuntimeException();
+            }
+            
+            @Override
+            public void onStringEvent(StringEvent e) {
+                Assert.fail(getFailString("Listener should not have been notified"));
+            }
+        };
+        this.subject.addListener(StringListener.class, listener);
+        this.subject.removeListener(StringListener.class, listener);
+        final StringEvent e = new StringEvent(this.subject, "");
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        Assert.assertEquals(getFailString("Unexpected exception count"), 2, counter[0]);
     }
     
     

@@ -208,6 +208,10 @@ public class SampleUserListener implements UserListener {
 }
 ```
 
+The `Listener` interface has two further default methods: `onRegister` and
+`onUnregister`. They are called immediately after the listener has been added
+or removed respectively.
+
 ## Errors during event delegation
 All provided `EventProvider` implementations provide error tolerant event 
 delegation. That is, if any notified listener throws a `RuntimeException`, this

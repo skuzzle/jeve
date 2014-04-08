@@ -124,7 +124,11 @@ public interface EventProvider extends AutoCloseable {
     
     /**
      * Adds a listener which will be notified for every event represented by the
-     * given listener class.
+     * given listener class. After registration, the listener's 
+     * {@link Listener#onRegister(RegistrationEvent) onRegister} method gets called to
+     * notify the listener about being added to a new parent. This method is not subject
+     * to the dispatching strategy implemented by this {@link EventProvider} and is 
+     * called from the current thread.
      * 
      * @param <T> Type of the listener to add. 
      * @param listenerClass The class representing the event(s) to listen on.
@@ -139,7 +143,11 @@ public interface EventProvider extends AutoCloseable {
      * Removes a listener. It will only be removed for the specified listener class and
      * can thus still be registered with this event provider if it was added for
      * further listener classes. The listener will no longer receive events represented
-     * by the given listener class.
+     * by the given listener class. After removal, the listener's 
+     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method gets called to
+     * notify the listener about being removed from a parent. This method is not subject
+     * to the dispatching strategy implemented by this {@link EventProvider} and is 
+     * called from the current thread.
      * 
      * @param <T> Type of the listener to remove.
      * @param listenerClass The class representing the event(s) for which the listener

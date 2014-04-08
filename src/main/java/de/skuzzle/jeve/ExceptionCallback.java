@@ -17,7 +17,10 @@ public interface ExceptionCallback {
      * 
      * @param e The exception which occurred during event dispatching.
      * @param source The event listener which caused the exception.
-     * @param event The event which is currently being processed.
+     * @param event The event which is currently being processed. This event might be 
+     *          <code>null</code> iff this method was called by either 
+     *          {@link EventProvider#addListener(Class, Listener)} or 
+     *          {@link EventProvider#removeListener(Class, Listener)}.
      */
     public void exception(Exception e, EventListener source, Event<?> event);
 }

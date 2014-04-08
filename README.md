@@ -2,8 +2,9 @@ jeve
 ====
 
 jeve is a lightweight Java 8 event dispatching framework which takes advantage
-of lambda expressions and internal iteration. If I were to explain jeve in just 
-one java statement, it would be the following.
+of lambda expressions and internal iteration. It makes it really simple to
+implement the observer pattern without much overhead in code while granting some
+great additional features. jeve explained in one Java statement:
 ```java
 eventProvider.dispatch(UserListener.class, new UserEvent(this, user), UserListener::userAdded);
 ```
@@ -17,6 +18,21 @@ for detailed information.
 
 ## Documentation
 JavaDoc is available at www.jeve.skuzzle.de/doc
+
+## Building
+Building jeve requires Apache Maven to be installed. You may then run 
+`mvn install` to build jeve and install it into your local repository. If you 
+want to add jeve to your existing projects, declare the following dependency 
+within your `pom.xml`:
+
+```xml
+    <dependency>
+      <groupId>de.skuzzle</groupId>
+      <artifactId>jeve</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>build</scope>
+    </dependency>
+```
 
 
 

@@ -605,5 +605,7 @@ public abstract class EventProviderTestBase {
         Thread.sleep(THREAD_WAIT_TIME);
         
         Assert.assertFalse(getFailString("Listener has been notified"), container[0]);
+        Assert.assertTrue(getFailString("Listener not removed"), 
+                this.subject.getListeners(StringListener.class).isEmpty());
     }
 }

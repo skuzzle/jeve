@@ -171,6 +171,8 @@ public interface EventProvider extends AutoCloseable {
     
     /**
      * Removes all listeners which have been registered for the provided listener class.
+     * Every listner's {@link Listener#onUnregister(RegistrationEvent) onUnregister}
+     * method will be called.
      * 
      * @param <T> Type of the listeners to remove.
      * @param listenerClass The class representing the event for which the listeners 
@@ -179,7 +181,9 @@ public interface EventProvider extends AutoCloseable {
     public <T extends Listener> void clearAllListeners(Class<T> listenerClass);
     
     /**
-     * Removes all registered listeners from this EventProvider.
+     * Removes all registered listeners from this EventProvider. Every listner's 
+     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will be 
+     * called.
      */
     public void clearAllListeners();
     
@@ -307,9 +311,10 @@ public interface EventProvider extends AutoCloseable {
     public boolean isSequential();
     
     /**
-     * Closes this EventProvider. Depending on its implementation, it might not be 
-     * able to dispatch further events after disposing. On some implementations closing
-     * might have no effect.
+     * Closes this EventProvider and removes all registered listeners. Depending on the
+     * actual implementation, the EventProvider might not be able to dispatch further 
+     * events after disposing. On some implementations closing might have no additional
+     * effect.
      */
     @Override
     public void close();

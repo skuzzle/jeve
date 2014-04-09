@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,9 @@ import de.skuzzle.jeve.Listeners;
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations are 
  * thread-safe.
+ * 
+ * <p>Note about thread safe interface: All publicly accessible methods are thread safe,
+ * internal and protected helper methods are not thread safe.</p>
  * 
  * @author Simon
  */
@@ -77,8 +81,11 @@ public abstract class AbstractEventProvider implements EventProvider {
         synchronized (this.listeners) {
             final List<Object> listeners = this.listeners.get(listenerClass);
             if (listeners != null) {
-                new ArrayList<>(listeners).forEach(
-                        l -> removeListener(listenerClass, listenerClass.cast(l)));
+                final Iterator<Object> it = listeners.iterator();
+                while (it.hasNext()) {
+                    this.removeInternal(listenerClass, it);
+                }
+                this.listeners.remove(listenerClass);
             }
         }
     }
@@ -88,8 +95,35 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public void clearAllListeners() {
         synchronized (this.listeners) {
-            new ArrayList<>(this.listeners.keySet()).forEach(c -> clearAllListeners(c));
+            this.listeners.forEach((k, v) -> {
+                final Iterator<Object> it = v.iterator();
+                while (it.hasNext()) {
+                    removeInternal(k, it);
+                }
+            });
             this.listeners.clear();
+        }
+    }
+    
+    
+    
+    /**
+     * Internal method for removing a single listener and notifying it about the
+     * removal. Prior to calling this method, the passed iterators 
+     * {@link Iterator#hasNext() hasNext} method must hold <code>true</code>.
+     * 
+     * @param listenerClass The class of the listener to remove.
+     * @param it Iterator which provides the next listener to remove.
+     */
+    protected <T extends Listener> void removeInternal(Class<T> listenerClass, 
+            Iterator<Object> it) {
+        final T listener = listenerClass.cast(it.next());
+        it.remove();
+        try {
+            final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
+            listener.onUnregister(e);
+        } catch (Exception e) {
+            this.handleException(this.exceptionHandler, e, listener, null);
         }
     }
     
@@ -252,6 +286,13 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public boolean isSequential() {
         return true;
+    }
+    
+    
+    
+    @Override
+    public void close() {
+        this.clearAllListeners();
     }
     
     

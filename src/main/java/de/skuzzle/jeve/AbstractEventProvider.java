@@ -112,6 +112,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      * removal. Prior to calling this method, the passed iterators 
      * {@link Iterator#hasNext() hasNext} method must hold <code>true</code>.
      * 
+     * @param <T> Type of the listener to remove
      * @param listenerClass The class of the listener to remove.
      * @param it Iterator which provides the next listener to remove.
      */

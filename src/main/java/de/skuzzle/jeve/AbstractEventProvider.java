@@ -117,7 +117,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      */
     protected <T extends Listener> void removeInternal(Class<T> listenerClass, 
             Iterator<Object> it) {
-        final T listener = listenerClass.cast(it.next());
+        final Object next = it.next();
+        final T listener = listenerClass.cast(next);
         it.remove();
         try {
             final RegistrationEvent e = new RegistrationEvent(this, listenerClass);

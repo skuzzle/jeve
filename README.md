@@ -17,7 +17,7 @@ for detailed information.
 
 
 ## Documentation
-JavaDoc is available at www.jeve.skuzzle.de/doc
+JavaDoc is available at www.jeve.skuzzle.de/1.0.0/doc
 
 Scroll down in this readme for a quick start guide and some advanced topics.
 
@@ -33,7 +33,7 @@ within your `pom.xml`:
     <dependency>
       <groupId>de.skuzzle</groupId>
       <artifactId>jeve</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>build</scope>
     </dependency>
 ```

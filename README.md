@@ -33,7 +33,7 @@ within your `pom.xml`:
     <dependency>
       <groupId>de.skuzzle</groupId>
       <artifactId>jeve</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>build</scope>
     </dependency>
 ```

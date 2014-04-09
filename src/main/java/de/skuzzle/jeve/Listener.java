@@ -64,6 +64,4 @@ public interface Listener extends EventListener {
     public default void onUnregister(RegistrationEvent e) {
         // default: do nothing
     }
-    
-    
 }

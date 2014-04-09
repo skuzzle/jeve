@@ -585,4 +585,25 @@ public abstract class EventProviderTestBase {
         Assert.assertTrue(getFailString("Unregister method not called"), unregistered[0]);
         Assert.assertTrue(getFailString("Unregister method not called"), unregistered[1]);
     }
+    
+    
+    
+    /**
+     * Tests whether no listener is notified after EventProvider has been closed.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testClose() throws Exception {
+        final boolean[] container = new boolean[1];
+        final StringListener l = e -> container[0] = true;
+        this.subject.addListener(StringListener.class, l);
+        this.subject.close();
+        final StringEvent e = new StringEvent(this.subject, "");
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        // HACK: give async providers some time to execute
+        Thread.sleep(THREAD_WAIT_TIME);
+        
+        Assert.assertFalse(getFailString("Listener has been notified"), container[0]);
+    }
 }

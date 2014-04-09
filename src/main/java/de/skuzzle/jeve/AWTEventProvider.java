@@ -60,9 +60,4 @@ class AWTEventProvider extends AbstractEventProvider {
     public boolean canDispatch() {
         return true;
     }
-
-    
-    
-    @Override
-    public void close() {}
 }

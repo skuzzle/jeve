@@ -134,9 +134,9 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
         if (listenerClass == null) {
-            throw new NullPointerException("listenerClass");
+            throw new IllegalArgumentException("listenerClass");
         } else if (listener == null) {
-            throw new NullPointerException("listener");
+            throw new IllegalArgumentException("listener");
         } else if (!listenerClass.isInstance(listener)) {
             throw new IllegalArgumentException("Listener " + listener + 
                     " is not of type " + listenerClass);
@@ -281,13 +281,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         } catch (Exception ignore) {
             // where is your god now?
         }
-    }
-    
-    
-    
-    @Override
-    public boolean isSequential() {
-        return true;
     }
     
     

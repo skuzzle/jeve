@@ -65,6 +65,13 @@ class AsynchronousEventProvider extends AbstractEventProvider {
     
     
     @Override
+    public boolean isSequential() {
+        return true;
+    }
+    
+    
+    
+    @Override
     public void close() {
         super.close();
         this.dispatchPool.shutdownNow();

@@ -10,6 +10,13 @@ package de.skuzzle.jeve;
 class SynchronousEventProvider extends AbstractEventProvider {
 
     @Override
+    public boolean isSequential() {
+        return true;
+    }
+    
+    
+    
+    @Override
     public boolean canDispatch() {
         return true;
     }

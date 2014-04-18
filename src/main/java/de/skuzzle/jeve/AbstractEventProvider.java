@@ -172,7 +172,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             }
             listeners.remove(listener);
             if (listeners.isEmpty()) {
-                this.listeners.remove(listenerClass, listeners);
+                this.listeners.remove(listenerClass);
             }
         }
         try {

@@ -51,7 +51,7 @@ import java.util.function.BiConsumer;
  * eventProvider.dispatch(UserListener.class, e, UserListener::userAdded);
  * </pre>
  * 
- * On each listener which is registered for the class <tt>UserListener</tt>, the method
+ * <p>On each listener which is registered for the class <tt>UserListener</tt>, the method
  * <tt>userAdded</tt> is called and gets passed the event instance <tt>e</tt>. 
  * {@link #dispatch(Class, Event, BiConsumer) Dispatch} is the core of any EventProvider. 
  * It implements the logic of how the listeners are notified in way that is transparent 

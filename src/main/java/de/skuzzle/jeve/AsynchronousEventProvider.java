@@ -49,6 +49,7 @@ class AsynchronousEventProvider extends AbstractEventProvider {
     public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         
+        this.checkDispatchArgs(listenerClass, event, bc, ec);
         if (this.canDispatch()) {
             this.dispatchPool.execute(() -> notifyListeners(listenerClass, event, bc, ec));
         }

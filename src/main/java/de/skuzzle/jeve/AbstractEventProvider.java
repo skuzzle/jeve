@@ -62,7 +62,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public <T extends Listener> Listeners<T> getListeners(Class<T> listenerClass) {
         if (listenerClass == null) {
-            throw new NullPointerException("listenerClass");
+            throw new IllegalArgumentException("listenerClass");
         }
         synchronized (this.listeners) {
             final List<Object> listeners = this.listeners.get(listenerClass);
@@ -196,8 +196,34 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
+        this.checkDispatchArgs(listenerClass, event, bc, ec);
         if (this.canDispatch()) {
             this.notifyListeners(listenerClass, event, bc, ec);
+        }
+    }
+    
+    
+    
+    /**
+     * Helper method which serves for throwing {@link IllegalArgumentException} if any of
+     * the passed arguments is null.
+     * 
+     * @param listenerClass The listener class.
+     * @param event The event.
+     * @param bc The method to call on the listener
+     * @param ec The ExceptionCallback
+     * @throws IllegalArgumentException If any argument is <code>null</code>.
+     */
+    protected <L extends Listener, E extends Event<?>> void checkDispatchArgs(
+            Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
+        if (listenerClass == null) {
+            throw new IllegalArgumentException("listenerClass");
+        } else if (event == null) {
+            throw new IllegalArgumentException("event");
+        } else if (bc == null) {
+            throw new IllegalArgumentException("bc");
+        } else if (ec == null) {
+            throw new IllegalArgumentException("ec");
         }
     }
     
@@ -234,15 +260,6 @@ public abstract class AbstractEventProvider implements EventProvider {
      */
     protected <L extends Listener, E extends Event<?>> boolean notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass");
-        } else if (event == null) {
-            throw new IllegalArgumentException("event");
-        } else if (bc == null) {
-            throw new IllegalArgumentException("bc");
-        } else if (ec == null) {
-            throw new IllegalArgumentException("ec");
-        }
         boolean result = true;
         final Listeners<L> listeners = this.getListeners(listenerClass);
         for (L listener : listeners) {

@@ -36,6 +36,8 @@ class AWTEventProvider extends AbstractEventProvider {
             final Class<L> listenerClass, final E event, final BiConsumer<L, E> bc, 
             ExceptionCallback ec) {
 
+        this.checkDispatchArgs(listenerClass, event, bc, ec);
+        
         if (this.invokeNow) {
             if (SwingUtilities.isEventDispatchThread()) {
                 notifyListeners(listenerClass, event, bc, ec);
@@ -50,7 +52,8 @@ class AWTEventProvider extends AbstractEventProvider {
                 }
             }
         } else {
-            SwingUtilities.invokeLater(() -> notifyListeners(listenerClass, event, bc, ec));
+            SwingUtilities.invokeLater(
+                    () -> notifyListeners(listenerClass, event, bc, ec));
         }
     }
     

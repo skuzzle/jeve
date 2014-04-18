@@ -78,6 +78,81 @@ public abstract class EventProviderTestBase {
     
     
     /**
+     * Tests whether exception is thrown when trying to add <code>null</code> as listener.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddListenerException() throws Exception {
+        this.subject.addListener(StringListener.class, null);
+    }
+    
+    
+    
+    /**
+     * Tests whether exception is thrown when trying to add <code>null</code> as 
+     * listener class.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddListenerException2() throws Exception {
+        this.subject.addListener(null, null);
+    }
+    
+    
+    
+    /**
+     * Tests whether exception is thrown when specifying <code>null</code> as listener 
+     * class.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatcException() throws Exception {
+        this.subject.dispatch(null, new StringEvent(this.subject, ""), 
+                StringListener::onStringEvent);
+    }
+    
+    
+    
+    /**
+     * Tests whether exception is thrown when specifying <code>null</code> as event.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatcException2() throws Exception {
+        this.subject.dispatch(StringListener.class, null, 
+                StringListener::onStringEvent);
+    }
+    
+    
+    
+    /**
+     * Tests whether exception is thrown when specifying <code>null</code> as method to
+     * call.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatcException3() throws Exception {
+        this.subject.dispatch(StringListener.class, new StringEvent(this.subject, ""), 
+                null);
+    }
+    
+    
+    
+    /**
+     * Tests whether exception is thrown when specifying <code>null</code> as exception
+     * callback to dispatch.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatcException4() throws Exception {
+        this.subject.dispatch(StringListener.class, new StringEvent(this.subject, ""), 
+                StringListener::onStringEvent, null);
+    }
+    
+    
+    
+    
+    /**
      * Tests whether listeners are notified in order they are added.
      * 
      * <p>This test case might not work for asynchronous event providers which use more

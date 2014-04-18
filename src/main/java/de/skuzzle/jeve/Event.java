@@ -26,26 +26,13 @@ public class Event<T> {
     
     
     /**
-     * Creates a new Event.
-     * 
-     * @param source The source of this event.
-     * @param isHandled Whether this event was handled. If this is <code>true</code>, no
-     *          listener will be notified for this event.
-     */
-    public Event(T source, boolean isHandled) {
-        this.source = source;
-        this.isHandled = isHandled;
-    }
-    
-    
-    
-    /**
      * Creates a new unhandled event with a given source.
      * 
      * @param source The source of this event.
      */
     public Event(T source) {
-        this(source, false);
+        this.source = source;
+        this.isHandled = false;
     }
     
     
@@ -76,6 +63,10 @@ public class Event<T> {
     /**
      * Sets whether this event was already handled. If an event has been marked as 
      * "handled", no further listeners will be notified about it.
+     * 
+     * <p>Note that setting an event to be handled might have unintended side effects 
+     * when using an {@link EventProvider} which is not 
+     * {@link EventProvider#isSequential() sequential}.</p>
      * 
      * @param isHandled Whether this event was handled.
      */

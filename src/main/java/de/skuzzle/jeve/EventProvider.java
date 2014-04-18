@@ -29,7 +29,7 @@ public interface EventProvider extends AutoCloseable {
      * which calls {@link EventProvider#dispatch(Class, Event, BiConsumer)}.
      * 
      * <p>Closing the {@link EventProvider} returned by this method will have no 
-     * effect.</p>
+     * effect besides removing all registered listeners.</p>
      * 
      * @return A new EventProvider instance.
      */
@@ -115,9 +115,22 @@ public interface EventProvider extends AutoCloseable {
     
     
     
-    /** The default {@link ExceptionCallback} which simply prints the stack trace */
-    public final static ExceptionCallback DEFAULT_HANDLER = 
-            (e, l, ev) -> e.printStackTrace();
+    /** 
+     * The default {@link ExceptionCallback} which prints some information about the
+     * occurred error to the standard output. 
+     */
+    public final static ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
+        System.err.println(
+            "Listener threw an exception while being notified\n" + 
+            "Details\n" + 
+            "    Listener: " + l + "\n" + 
+            "    Event: " + ev + "\n" +
+            "    Message: " + e.getMessage() + "\n" +
+            "    Current Thread: " + Thread.currentThread().getName() + "\n" +
+            "    Stacktrace: "
+        );
+        e.printStackTrace();
+    };
             
             
     
@@ -229,6 +242,8 @@ public interface EventProvider extends AutoCloseable {
      * @param event The occurred event which shall be passed to each listener.
      * @param bc Function to delegate the event to the specific callback method of the 
      *          listener.
+     * @throws IllegalArgumentException If any of the passed arguments are 
+     *          <code>null</code>.
      */
     public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc);

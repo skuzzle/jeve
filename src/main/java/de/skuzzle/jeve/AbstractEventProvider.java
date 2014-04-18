@@ -235,13 +235,13 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?>> boolean notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         if (listenerClass == null) {
-            throw new NullPointerException("listenerClass");
+            throw new IllegalArgumentException("listenerClass");
         } else if (event == null) {
-            throw new NullPointerException("event");
+            throw new IllegalArgumentException("event");
         } else if (bc == null) {
-            throw new NullPointerException("bc");
+            throw new IllegalArgumentException("bc");
         } else if (ec == null) {
-            throw new NullPointerException("ec");
+            throw new IllegalArgumentException("ec");
         }
         boolean result = true;
         final Listeners<L> listeners = this.getListeners(listenerClass);

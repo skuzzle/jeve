@@ -206,6 +206,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      * Helper method which serves for throwing {@link IllegalArgumentException} if any of
      * the passed arguments is null.
      * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
      * @param listenerClass The listener class.
      * @param event The event.
      * @param bc The method to call on the listener
@@ -228,7 +230,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     @Override
-    public void setExceptionCallback(ExceptionCallback callBack) {
+    public synchronized void setExceptionCallback(ExceptionCallback callBack) {
         if (callBack == null) {
             callBack = DEFAULT_HANDLER;
         }
@@ -259,6 +261,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?>> boolean notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         boolean result = true;
+        // HINT: getListeners is thread safe
         final Listeners<L> listeners = this.getListeners(listenerClass);
         for (L listener : listeners) {
             try {
@@ -294,6 +297,7 @@ public abstract class AbstractEventProvider implements EventProvider {
         try {
             ec.exception(e, listener, ev);
         } catch (Exception ignore) {
+            ignore.printStackTrace();
             // where is your god now?
         }
     }

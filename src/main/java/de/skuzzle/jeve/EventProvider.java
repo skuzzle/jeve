@@ -324,6 +324,14 @@ public interface EventProvider extends AutoCloseable {
      * {@link #setExceptionCallback(ExceptionCallback)} or an default instance if none
      * has been explicitly set.</p>
      * 
+     * <p>Note on concurrency: This method is not synchronized in general, so that
+     * an event delegation action does not block any subsequent actions if the 
+     * implementation of this method uses some kind of multi threading like the 
+     * {@link EventProvider#newAsynchronousEventProvider() asynchronous} implementation
+     * does. Anyhow, this method retrieves a copied list of the targeted listeners before
+     * delegation starts. Thus, any listener registered during event dispatching is in 
+     * process, will not be notified.</p>
+     * 
      * <p>Please note that neither parameter to this method must be null.</p>
      * 
      * @param <L> Type of the listeners which will be notified.
@@ -372,6 +380,14 @@ public interface EventProvider extends AutoCloseable {
      * unexpected exception. If the exception handler itself throws an exception, it will
      * be ignored. The callback provided to this method takes precedence over the 
      * global callback provided by {@link #setExceptionCallback(ExceptionCallback)}.</p>
+     * 
+     * <p>Note on concurrency: This method is not synchronized in general, so that
+     * an event delegation action does not block any subsequent actions if the 
+     * implementation of this method uses some kind of multi threading like the 
+     * {@link EventProvider#newAsynchronousEventProvider() asynchronous} implementation
+     * does. Anyhow, this method retrieves a copied list of the targeted listeners before
+     * delegation starts. Thus, any listener registered during event dispatching is in 
+     * process, will not be notified.</p>
      * 
      * <p>Please note that neither parameter to this method must be null.</p>
      * 

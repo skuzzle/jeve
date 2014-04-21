@@ -11,6 +11,7 @@ import java.util.EventListener;
  * the listener to be used in conjunction with an {@link EventProvider}.
  * 
  * @author Simon Taddiken
+ * @since 1.0.0
  */
 public interface Listener extends EventListener {
 

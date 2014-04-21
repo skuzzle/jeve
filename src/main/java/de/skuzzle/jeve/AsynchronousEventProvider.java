@@ -12,7 +12,8 @@ import java.util.function.BiConsumer;
  * This EventProvider fires events asynchronously using an {@link ExecutorService} for
  * managing the creation of threads.
  * 
- * @author Simon
+ * @author Simon Taddiken
+ * @since 1.0.0
  */
 class AsynchronousEventProvider extends AbstractEventProvider {
     

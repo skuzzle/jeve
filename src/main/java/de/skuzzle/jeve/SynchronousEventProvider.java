@@ -6,6 +6,7 @@ package de.skuzzle.jeve;
  * runs all listeners within the current thread.
  * 
  * @author Simon Taddiken
+ * @since 1.0.0
  */
 class SynchronousEventProvider extends AbstractEventProvider {
 

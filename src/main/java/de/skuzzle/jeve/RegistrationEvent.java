@@ -5,6 +5,7 @@ package de.skuzzle.jeve;
  * {@link EventProvider}.
  * 
  * @author Simon Taddiken
+ * @since 1.0.0
  */
 public class RegistrationEvent extends Event<EventProvider> {
 

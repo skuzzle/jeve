@@ -93,7 +93,8 @@ import java.util.function.BiConsumer;
  * <p>This mechanism obviously only works correctly, if the used EventProvider is 
  * sequential. If it is not, the behavior is unspecified.</p>
  * 
- * @author Simon
+ * @author Simon Taddiken
+ * @since 1.0.0
  */
 public interface EventProvider extends AutoCloseable {
 

@@ -19,7 +19,8 @@ import de.skuzzle.jeve.Listeners;
  * <p>Note about thread safe interface: All publicly accessible methods are thread safe,
  * internal and protected helper methods are not thread safe.</p>
  * 
- * @author Simon
+ * @author Simon Taddiken
+ * @since 1.0.0
  */
 public abstract class AbstractEventProvider implements EventProvider {
             

@@ -12,7 +12,8 @@ package de.skuzzle.jeve;
  * certain event. The EventProvider will stop notifying further listeners as soon as one 
  * listener sets this class' {@link #isHandled()} to <code>true</code>.</p>
  * 
- * @author Simon
+ * @author Simon Taddiken
+ * @since 1.0.0
  * @param <T> Type of the source of this event.
  */
 public class Event<T> {

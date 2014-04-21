@@ -9,7 +9,8 @@ import javax.swing.SwingUtilities;
  * {@link EventProvider} implementation that dispatches all events in the AWT event 
  * thread.
  * 
- * @author Simon
+ * @author Simon Taddiken
+ * @since 1.0.0
  */
 class AWTEventProvider extends AbstractEventProvider {
 

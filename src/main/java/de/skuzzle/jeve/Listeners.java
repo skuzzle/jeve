@@ -10,7 +10,8 @@ import java.util.Iterator;
  * class knows what kind of listeners it contains and is thus able to remove a certain
  * listener from its parent {@link EventProvider}.
  * 
- * @author Simon
+ * @author Simon Taddiken
+ * @since 1.0.0
  * @param <T> Type of listeners that are contained in this collection.
  */
 public class Listeners<T extends Listener> extends AbstractCollection<T> {

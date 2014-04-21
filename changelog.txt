@@ -1,0 +1,6 @@
+This is the jeve version history.
+Author: Simon Taddiken
+
+
+Version 1.0.0 [Released: 21.04.2014]
+    * initial API and implementation

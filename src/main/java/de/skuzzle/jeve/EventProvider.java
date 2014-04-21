@@ -301,10 +301,9 @@ public interface EventProvider extends AutoCloseable {
      * <p>If a notified listener's 
      * {@link Listener#workDone(EventProvider) workDone} method returns true, 
      * the listener will be removed from this EventProvider right after it has been 
-     * notified.</p>
-     * 
-     * <p>Note: The behavior of whether the result of <tt>workDone</tt> is checked before
-     * or after the listener has been notified might change in a future release.</p>
+     * notified. <b>Note:</b> The behavior of whether the result of <tt>workDone</tt> is 
+     * checked before or after the listener has been notified might change in a future 
+     * release.</p>
      * 
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>
@@ -356,10 +355,9 @@ public interface EventProvider extends AutoCloseable {
      * <p>If a notified listener's 
      * {@link Listener#workDone(EventProvider) workDone} method returns true, 
      * the listener will be removed from this EventProvider right after it has been 
-     * notified.</p>
-     * 
-     * <p>Note: The behavior of whether the result of <tt>workDone</tt> is checked before
-     * or after the listener has been notified might change in a future release.</p>
+     * notified. <b>Note:</b> The behavior of whether the result of <tt>workDone</tt> is 
+     * checked before or after the listener has been notified might change in a future 
+     * release.</p>
      *  
      * <p>Consider an <tt>UserListener</tt> interface:</p>
      * <pre>

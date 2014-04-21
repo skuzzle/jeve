@@ -27,7 +27,7 @@ public class Event<T> {
     
     
     /**
-     * Creates a new unhandled event with a given source.
+     * Creates a new event with a given source.
      * 
      * @param source The source of this event.
      */

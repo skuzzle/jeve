@@ -138,9 +138,6 @@ public abstract class AbstractEventProvider implements EventProvider {
             throw new IllegalArgumentException("listenerClass");
         } else if (listener == null) {
             throw new IllegalArgumentException("listener");
-        } else if (!listenerClass.isInstance(listener)) {
-            throw new IllegalArgumentException("Listener " + listener + 
-                    " is not of type " + listenerClass);
         }
         synchronized (this.listeners) {
             List<Object> listeners = this.listeners.get(listenerClass);

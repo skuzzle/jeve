@@ -230,8 +230,7 @@ public interface EventProvider extends AutoCloseable {
      * @param listenerClass The class representing the event(s) to listen on.
      * @param listener The listener to add.
      * @throws IllegalArgumentException If either listenerClass or listener is 
-     *          <code>null</code>. Or if the listener is not an instance of the provided
-     *          class as determined by {@link Class#isInstance(Object)}.
+     *          <code>null</code>.
      */
     public <T extends Listener> void addListener(Class<T> listenerClass, 
             T listener);

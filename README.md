@@ -21,6 +21,9 @@ JavaDoc is available at www.jeve.skuzzle.de/1.0.0/doc
 
 Scroll down in this readme for a quick start guide and some advanced topics.
 
+Further support can be found in IRC (irc.euirc.net, #pollyisawesome) or via
+Twitter (@ProjectPolly).
+
 
 
 ## Building

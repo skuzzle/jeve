@@ -264,19 +264,42 @@ public abstract class AbstractEventProvider implements EventProvider {
         // HINT: getListeners is thread safe
         final Listeners<L> listeners = this.getListeners(listenerClass);
         for (L listener : listeners) {
-            try {
-                if (event.isHandled()) {
-                    return result;
-                }
-                    
-                bc.accept(listener, event);
-                if (listener.workDone(this)) {
-                    this.removeListener(listenerClass, listener);
-                }
-            } catch (RuntimeException e) {
-                result = false;
-                this.handleException(ec, e, listener, event);
+            result &= this.notifySingle(listenerClass, listener, event, bc, ec);
+        }
+        return result;
+    }
+    
+    
+    
+    /**
+     * Notifies a single listener and internally handles exceptions using the 
+     * {@link ExceptionCallback}.
+     * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param listenerClass The class of listeners that should be notified.
+     * @param event The event to pass to each listener.
+     * @param bc The method of the listener to call.
+     * @param ec The callback which gets notified about exceptions.
+     * @return Returns <code>true</code> if the listener has been notified successfully.
+     *          Return <code>false</code> if the listener threw an exception.
+     */
+    protected <L extends Listener, E extends Event<?>> boolean notifySingle(
+            Class<L> listenerClass, L listener, E event, BiConsumer<L, E> bc, 
+            ExceptionCallback ec) {
+        boolean result = true;
+        try {
+            if (event.isHandled()) {
+                return result;
             }
+                
+            bc.accept(listener, event);
+            if (listener.workDone(this)) {
+                this.removeListener(listenerClass, listener);
+            }
+        } catch (RuntimeException e) {
+            result = false;
+            this.handleException(ec, e, listener, event);
         }
         return result;
     }

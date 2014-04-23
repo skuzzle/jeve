@@ -28,9 +28,10 @@ public class BasicEventProviderTest extends EventProviderTestBase {
     @Parameters
     public final static Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new EventProviderFactory[] { EventProvider::newDefaultEventProvider },
-                new EventProviderFactory[] { EventProvider::newAsynchronousEventProvider }
-            );
+            new EventProviderFactory[] { EventProvider::newDefaultEventProvider },
+            new EventProviderFactory[] { EventProvider::newParallelEventProvider },
+            new EventProviderFactory[] { EventProvider::newAsynchronousEventProvider }
+        );
     }
     
     

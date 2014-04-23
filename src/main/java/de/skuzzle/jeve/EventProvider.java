@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 
@@ -151,17 +152,17 @@ public interface EventProvider extends AutoCloseable {
      * in the order the listeners have been added.</p>
      * 
      * <p>If you require an EventListener which notifies each listener in a different 
-     * thread, you need to create your own sub class of {@link AbstractEventProvider}.</p>
+     * thread, use {@link #newParallelEventProvider(ExecutorService)}.</p>
      * 
      * <p>When closing the returned {@link EventProvider}, the passed 
      * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
      * provider after closing it.</p>
      * 
-     * @param dispatcher The ExecutorService to use.
+     * @param executor The ExecutorService to use.
      * @return A new EventProvider instance.
      */
-    public static EventProvider newAsynchronousEventProvider(ExecutorService dispatcher) {
-        return new AsynchronousEventProvider(dispatcher);
+    public static EventProvider newAsynchronousEventProvider(ExecutorService executor) {
+        return new AsynchronousEventProvider(executor);
     }
     
     
@@ -195,6 +196,47 @@ public interface EventProvider extends AutoCloseable {
      */
     public static EventProvider newAsynchronousAWTEventProvider() {
         return new AWTEventProvider(false);
+    }
+    
+    
+    
+    /**
+     * Creates an EventProvider which notifies each listener within an own thread. This 
+     * means that for an single event, multiple threads might get created to notify all
+     * listeners concurrently. The internal thread creation is handled by an 
+     * {@link Executors#newCachedThreadPool() cached thread pool}. The returned 
+     * EventProvider instance is not sequential, as the correct order of delegation can 
+     * not be guaranteed.
+     * 
+     * <p>When closing the returned {@link EventProvider}, its internal 
+     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
+     * provider after closing it.</p>
+     * 
+     * @return A new EventProvider instance.
+     */
+    public static ParallelEventProvider newParallelEventProvider() {
+        return new ParallelEventProvider(Executors.newCachedThreadPool());
+    }
+    
+    
+    
+    /**
+     * Creates an EventProvider which notifies each listener within an own thread. This 
+     * means that for an single event, multiple threads might get created to notify all
+     * listeners concurrently. The internal thread creation is handled by the passed
+     * {@link ExecutorService}. The returned EventProvider instance is not sequential, 
+     * as the correct order of delegation can not be guaranteed.
+     * 
+     * <p>When closing the returned {@link EventProvider}, the passed 
+     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
+     * provider after closing it.</p>
+     * 
+     * @param executor The ExecutorService to use.
+     * @return A new EventProvider instance.
+     */
+    public static ParallelEventProvider newParallelEventProvider(
+            ExecutorService executor) {
+        return new ParallelEventProvider(executor);
     }
     
     

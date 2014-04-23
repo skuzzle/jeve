@@ -39,7 +39,7 @@ class AsynchronousEventProvider extends AbstractEventProvider {
      */
     public AsynchronousEventProvider(ExecutorService dispatcher) {
         if (dispatcher == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("dispatcher is null");
         }
         this.dispatchPool = dispatcher;
     }

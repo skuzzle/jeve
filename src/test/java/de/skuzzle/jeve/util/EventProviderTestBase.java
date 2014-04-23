@@ -3,9 +3,7 @@ package de.skuzzle.jeve.util;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -15,87 +13,23 @@ import de.skuzzle.jeve.RegistrationEvent;
 
 
 /**
- * Base class for testing event providers.
+ * This class contains basic tests for all event providers
  * 
  * @author Simon Taddiken
  */
 @Ignore
-public abstract class EventProviderTestBase {
-    
-    /** Time to wait to give threaded handlers some time to finish one dispatch action */
-    private final static long THREAD_WAIT_TIME = 500; // ms
-    
-    /** The factory to create EventProvider instances for testing */
-    protected final EventProviderFactory factory;
-    
-    /** The provider being used in a single test case */
-    protected EventProvider subject;
-    
-    
+public abstract class EventProviderTestBase extends AbstractEventProviderTest{
     
     /**
      * Creates a new Test class instance.
      * @param factory A factory for creating event providers
      */
     public EventProviderTestBase(EventProviderFactory factory) {
-        this.factory = factory;
+        super(factory);
     }
-    
-    
-    
-    /**
-     * Sets up a single test case by creating a new {@link EventProvider} using the 
-     * factory provided by the constructor.
-     */
-    @Before
-    public void setUp() {
-        this.subject = this.factory.create();
-    }
-    
-    
-    
-    /**
-     * Closes the current test subject
-     */
-    @After
-    public void tearDown() {
-        this.subject.close();
-    }
-    
-    
-    
-    /**
-     * Constructs an error string containing the name of the currently tested 
-     * {@link EventProviderTestBase}.
-     * 
-     * @param fail The reason why a test failed.
-     * @return The constructed string.
-     */
-    protected String getFailString(String fail) {
-        return this.subject.getClass().getSimpleName() + ": " + fail;
-    }
-    
-    
-    
-    /**
-     * Checks whether a test case should be skipped because it does not work for 
-     * non-sequential EventProviders.
-     * 
-     * <p>A warning is printed to the error console if the test case is skipped.</p>
-     * 
-     * @return Whether to skip the test case.
-     */
-    protected boolean checkSkipNonSequential() {
-        if (!this.subject.isSequential()) {
-            System.err.println("Skippint test case because '" + 
-                this.subject.getClass().getSimpleName() + "' is not sequential");
-            return true;
-        }
-        return false;
-    }
-    
-    
-    
+
+
+
     /**
      * Tests whether exception is thrown when trying to add <code>null</code> as listener.
      * @throws Exception If an exception occurs during testing.

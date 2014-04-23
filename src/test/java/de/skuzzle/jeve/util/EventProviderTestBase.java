@@ -78,6 +78,25 @@ public abstract class EventProviderTestBase {
     
     
     /**
+     * Checks whether a test case should be skipped because it does not work for 
+     * non-sequential EventProviders.
+     * 
+     * <p>A warning is printed to the error console if the test case is skipped.</p>
+     * 
+     * @return Whether to skip the test case.
+     */
+    protected boolean checkSkipNonSequential() {
+        if (!this.subject.isSequential()) {
+            System.err.println("Skippint test case because '" + 
+                this.subject.getClass().getSimpleName() + "' is not sequential");
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
+    /**
      * Tests whether exception is thrown when trying to add <code>null</code> as listener.
      * @throws Exception If an exception occurs during testing.
      */
@@ -155,13 +174,16 @@ public abstract class EventProviderTestBase {
     /**
      * Tests whether listeners are notified in order they are added.
      * 
-     * <p>This test case might not work for asynchronous event providers which use more
-     * than one thread.</p>
+     * <p>This test case will not be executed for non sequential providers.</p>
      * 
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testDelegationOrder() throws Exception {
+        if (this.checkSkipNonSequential()) {
+            return;
+        }
+        
         final int TESTS = 5;
         final int[] counter = new int[1];
         for (int i = 0; i < TESTS; ++i) {
@@ -291,7 +313,6 @@ public abstract class EventProviderTestBase {
 
         final ExceptionCallback globalEc = (e, l, ev) -> {
             container[0] = true;
-            e.printStackTrace();
         };
         
         final ExceptionCallback localEc = (e, l, ev) -> {
@@ -351,6 +372,9 @@ public abstract class EventProviderTestBase {
      */
     @Test
     public void testOneTimeListener() throws Exception {
+        if (this.checkSkipNonSequential()) {
+            return;
+        }
         final int MAX_NOTIFICATIONS = 5;
         final String SUBJECT = "someString";
         
@@ -360,8 +384,6 @@ public abstract class EventProviderTestBase {
             
             @Override
             public void onStringEvent(StringEvent e) {
-                final String tName = Thread.currentThread().getName();
-                System.out.println(tName + " count: " + this.notificationCount);
                 Assert.assertEquals(getFailString("Wrong string"), SUBJECT, e.getString());
                 Assert.assertTrue(getFailString("Wrong notification count"), 
                         this.notificationCount < MAX_NOTIFICATIONS);
@@ -371,8 +393,6 @@ public abstract class EventProviderTestBase {
             @Override
             public boolean workDone(EventProvider parent) {
                 boolean value = this.notificationCount == MAX_NOTIFICATIONS - 1;
-                final String tName = Thread.currentThread().getName();
-                System.out.println(tName + " 'workDone' going to return " + value);
                 return value;
             }
         }
@@ -456,6 +476,7 @@ public abstract class EventProviderTestBase {
         Assert.assertTrue(getFailString("Register not called"), container[0]);
         Assert.assertTrue(getFailString("Unregister not called"), container[0]);
     }
+    
     
     
     /**

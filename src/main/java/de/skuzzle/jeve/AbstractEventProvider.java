@@ -135,9 +135,9 @@ public abstract class AbstractEventProvider implements EventProvider {
     @Override
     public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
         if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass");
+            throw new IllegalArgumentException("listenerClass is null");
         } else if (listener == null) {
-            throw new IllegalArgumentException("listener");
+            throw new IllegalArgumentException("listener is null");
         }
         synchronized (this.listeners) {
             List<Object> listeners = this.listeners.get(listenerClass);
@@ -217,13 +217,13 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?>> void checkDispatchArgs(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass");
+            throw new IllegalArgumentException("listenerClass is null");
         } else if (event == null) {
-            throw new IllegalArgumentException("event");
+            throw new IllegalArgumentException("event is null");
         } else if (bc == null) {
-            throw new IllegalArgumentException("bc");
+            throw new IllegalArgumentException("bc is null");
         } else if (ec == null) {
-            throw new IllegalArgumentException("ec");
+            throw new IllegalArgumentException("ec is null");
         }
     }
     

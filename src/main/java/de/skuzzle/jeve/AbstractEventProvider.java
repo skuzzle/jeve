@@ -284,6 +284,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param ec The callback which gets notified about exceptions.
      * @return Returns <code>true</code> if the listener has been notified successfully.
      *          Return <code>false</code> if the listener threw an exception.
+     * @since 1.1.0
      */
     protected <L extends Listener, E extends Event<?>> boolean notifySingle(
             Class<L> listenerClass, L listener, E event, BiConsumer<L, E> bc, 

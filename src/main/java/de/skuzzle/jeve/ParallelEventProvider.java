@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
  * {@link EventProvider} interface.</p>
  * 
  * @author Simon Taddiken
+ * @since 1.1.0
  */
 public class ParallelEventProvider extends AbstractEventProvider {
 

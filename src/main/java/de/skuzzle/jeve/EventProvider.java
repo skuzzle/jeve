@@ -213,6 +213,7 @@ public interface EventProvider extends AutoCloseable {
      * provider after closing it.</p>
      * 
      * @return A new EventProvider instance.
+     * @since 1.1.0
      */
     public static ParallelEventProvider newParallelEventProvider() {
         return new ParallelEventProvider(Executors.newCachedThreadPool());
@@ -233,6 +234,7 @@ public interface EventProvider extends AutoCloseable {
      * 
      * @param executor The ExecutorService to use.
      * @return A new EventProvider instance.
+     * @since 1.1.0
      */
     public static ParallelEventProvider newParallelEventProvider(
             ExecutorService executor) {

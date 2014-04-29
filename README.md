@@ -53,7 +53,7 @@ public class UserManager {
     
     // ...
     
-    public void addUser(user user) {
+    public void addUser(User user) {
         // logic for adding a user goes here
         // ...
         // now notify our listeners
@@ -62,7 +62,7 @@ public class UserManager {
         }
     }
     
-    public void deleteUser(user user) {
+    public void deleteUser(User user) {
         // logic for deleting a user goes here
         // ...
         // now notify our listeners

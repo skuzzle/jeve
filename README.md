@@ -169,11 +169,11 @@ With jeve, all the above listed flaws can be treated in a safe and clear way:
 
 * only one statement needed for firing a single event
 * errors can be reported on a different channel, not interrupting the event 
-  delegation
+  delegation (see below)
 * by simply obtaining a different EventProvider implementation, event 
   dispatching can be parallelized without touching any existing code
 * the event delegation process can be stopped by modifying the passed Event 
-  instance
+  instance (see below)
 * the EventProvider internally manages different kinds of listeners.
 
 

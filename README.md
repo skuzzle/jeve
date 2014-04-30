@@ -206,35 +206,28 @@ public class SampleUserListener implements UserListener {
 ```
 
 ## Automatically remove listeners
-Sometimes it is helpful to automatically remove listeners from its parent 
-`EventProvider` to allow them to be garbage collected if they are not needed 
-anymore. Instead of calling `removeUserListener` yourself, you can delegate the
-decision of whether a listener should be removed to the listener itself by 
-implementing the `Listener`'s default method `workDone`:
+Automatically removing listeners from an EventProvider as of jeve version 1.0.0
+is now deprecated, because it was inconvenient to use and error prone. Instead,
+the `Event` class now has a method to remove the currently notified listener
+from the currently dispatching EventProvider. If the listener object is 
+registered for multiple listener classes those that are not notified remain 
+unchanged.
+
+So every Event instance knows which kind of listeners are currently being 
+notified from which EventProvider instance. This mechanism only works as 
+specified if Events are not reused. **You must always create a new Event 
+instance before calling `EventProvider.dispatch` again.**
 
 ```java
 // ...
-import de.skuzzle.jeve.OneTimeEventListener;
-
 public class SampleUserListener implements UserListener {
-
-    private boolean done = false;
-
-    @Override
-    public boolean workDone(EventProvider parent) {
-        // this listener will be removed from the EventProvider it was 
-        // called from if this method returns true.
-        // The parent parameter exists to distinguish between different parents
-        // if the listener has been registered with multiple EventProviders.
-        return this.done;
-    }
-    
+ 
     @Override
     public void userAdded(UserEvent e) {
         // do something
         // ...
         // this listener should not be notified about further events anymore
-        this.done = true;
+        e.removeListener(this);
     }
     
     @Override

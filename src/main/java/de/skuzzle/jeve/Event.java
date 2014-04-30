@@ -98,7 +98,18 @@ public class Event<T> {
     /**
      * Removes the currently notified listener from the parent EventProvider which is
      * currently dispatching this Event. The listener will only be removed for the 
-     * listener class which is currently being notified.
+     * listener class which is currently being notified. Typical usage is like this:
+     * <pre>
+     * public class SampleListener extends UserListener {
+     *     public void userAdded(UserEvent e) {
+     *         // do what ever your listener should do
+     *     
+     *         // this listener should not be notified anymore about UserEvents from the 
+     *         // current source
+     *         e.removeListener(this);
+     *     }
+     * }
+     * </pre>
      * 
      * @param <L> Type of the listener.
      * @param listener The listener to remove from its parent.

@@ -29,7 +29,7 @@ public interface Listener extends EventListener {
      * 
      * @param parent The event provider from which the listener would be removed.
      * @return Whether to remove this listener from its parent after next notification.
-     * @deprecated Since 1.1.0 - use Event
+     * @deprecated Since 1.1.0 - use {@link Event#removeListener(Listener)} instead.
      */
     @Deprecated
     public default boolean workDone(EventProvider parent) {

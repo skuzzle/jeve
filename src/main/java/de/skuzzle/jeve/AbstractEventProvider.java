@@ -280,7 +280,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param <E> Type of the event which will be passed to a listener.
      * @param listenerClass The class of listeners that should be notified.
      * @param listener The single listener to notify.
-     * @param event The event to pass to each listener.
+     * @param event The event to pass to the listener.
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
      * @return Returns <code>true</code> if the listener has been notified successfully.

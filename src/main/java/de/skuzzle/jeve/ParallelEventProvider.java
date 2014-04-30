@@ -41,6 +41,9 @@ public class ParallelEventProvider extends AbstractEventProvider {
         if (!this.canDispatch()) {
             return;
         }
+        
+        event.eventClass = listenerClass;
+        event.dispatcher = this;
         final Listeners<L> listeners = this.getListeners(listenerClass);
         listeners.forEach(listener -> {
             try {

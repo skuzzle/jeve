@@ -24,7 +24,7 @@ public class StringEvent extends Event<EventProvider> {
         super(source);
         this.string = string;
     }
-
+    
     
     
     /**

@@ -5,5 +5,7 @@ Author: Simon Taddiken
 Version 1.1.0 [Released: TODO]
     * Added ParallelEventProvider which notifies each listener within an own
       thread.
+    * Deprecated Listener#workDone(EventProvider) in favor of new method 
+      Event#removeListener(Listener)
 Version 1.0.0 [Released: 21.04.2014]
     * initial API and implementation

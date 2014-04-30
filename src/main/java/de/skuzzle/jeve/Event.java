@@ -4,7 +4,12 @@ package de.skuzzle.jeve;
 /**
  * <p>This class is the base of all events that can be fired. It holds the source of the 
  * event and provides methods to stop delegation to further listeners if this event has 
- * been handled by one listener.</p>
+ * been handled by one listener. Events are meant to be short living objects which
+ * are only used once - one Event instance for each call to 
+ * {@link EventProvider#dispatch(Class, Event, java.util.function.BiConsumer) dispatch}.
+ * Any different usage might result in undefined behavior, especially when using 
+ * the {@link #isHandled()} property or the {@link #removeListener(Listener)} method.
+ * </p>
  * 
  * <p>Events are used in conjunction with the {@link EventProvider} and its 
  * {@link EventProvider#dispatch(Class, Event, java.util.function.BiConsumer, ExceptionCallback) dispatch} 
@@ -23,6 +28,19 @@ public class Event<T> {
     
     /** Whether this event has been marked as handled */
     private boolean isHandled;
+    
+    /** 
+     * This field is set by an {@link EventProvider} right before this Event gets 
+     * passed to any listener.
+     * <b>Note:</b> Never write to this field at any circumstances.
+     */
+    protected volatile Class<? extends Listener> eventClass;
+    
+    /** 
+     * The {@link EventProvider} which is currently dispatching this event.
+     * <b>Note:</b> Never write to this field at any circumstances. 
+     */
+    protected volatile EventProvider dispatcher;
     
     
     
@@ -73,5 +91,28 @@ public class Event<T> {
      */
     public void setHandled(boolean isHandled) {
         this.isHandled = isHandled;
+    }
+    
+    
+    
+    /**
+     * Removes the currently notified listener from the parent EventProvider which is
+     * currently dispatching this Event. The listener will only be removed for the 
+     * listener class which is currently being notified.
+     * 
+     * @param <L> Type of the listener.
+     * @param listener The listener to remove from its parent.
+     * @throws NullPointerException If this method is not called during the event 
+     *          dispatching process.
+     * @throws IllegalArgumentException If the listener is not an instance of the 
+     *          listener class currently being notified.
+     * @since 1.1.0
+     */
+    @SuppressWarnings("unchecked")
+    public <L extends Listener> void removeListener(L listener) {
+        if (!this.eventClass.isInstance(listener)) {
+            throw new IllegalArgumentException("provided listener has invalid class");
+        }
+        this.dispatcher.removeListener((Class<L>) this.eventClass, listener);
     }
 }

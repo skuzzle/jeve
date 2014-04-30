@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import de.skuzzle.jeve.ExceptionCallback;
-import de.skuzzle.jeve.Listeners;
-
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations are 
@@ -263,9 +260,13 @@ public abstract class AbstractEventProvider implements EventProvider {
         boolean result = true;
         // HINT: getListeners is thread safe
         final Listeners<L> listeners = this.getListeners(listenerClass);
+        event.eventClass = listenerClass;
+        event.dispatcher = this;
         for (L listener : listeners) {
             result &= this.notifySingle(listenerClass, listener, event, bc, ec);
         }
+        event.eventClass = null;
+        event.dispatcher = null;
         return result;
     }
     
@@ -286,6 +287,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      *          Return <code>false</code> if the listener threw an exception.
      * @since 1.1.0
      */
+    @SuppressWarnings("deprecation")
     protected <L extends Listener, E extends Event<?>> boolean notifySingle(
             Class<L> listenerClass, L listener, E event, BiConsumer<L, E> bc, 
             ExceptionCallback ec) {
@@ -296,6 +298,8 @@ public abstract class AbstractEventProvider implements EventProvider {
             }
                 
             bc.accept(listener, event);
+            
+            // Compatibility to v1.0.0
             if (listener.workDone(this)) {
                 this.removeListener(listenerClass, listener);
             }

@@ -1,4 +1,4 @@
-package de.skuzzle.jeve.util;
+package de.skuzzle.jeve;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,6 +10,11 @@ import org.junit.Test;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.RegistrationEvent;
+import de.skuzzle.jeve.util.AbstractEventProviderTest;
+import de.skuzzle.jeve.util.DifferentStringListener;
+import de.skuzzle.jeve.util.EventProviderFactory;
+import de.skuzzle.jeve.util.StringEvent;
+import de.skuzzle.jeve.util.StringListener;
 
 
 /**
@@ -102,6 +107,34 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
                 StringListener::onStringEvent, null);
     }
     
+    
+    
+    /**
+     * Tests whether the EventProvider correctly sets the 'eventClass' field of an
+     * {@link Event} before dispatching.
+     * 
+     * @throws Exception If an exception occurs during testing.
+     * @since 1.1.0
+     */
+    @Test
+    public void testEventClassSet() throws Exception {
+        final boolean[] test = new boolean[2];
+        final StringEvent e = new StringEvent(this.subject, "");
+        this.subject.addListener(StringListener.class, event -> {
+            test[0] = event.eventClass != null;
+            test[1] = event.dispatcher != null;
+        });
+        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        
+        Thread.sleep(THREAD_WAIT_TIME);
+        Assert.assertTrue(getFailString("Event.eventClass has not been set during dispatching"), test[0]);
+        Assert.assertTrue(getFailString("Event.dispatcher has not been set during dispatching"), test[1]);
+        
+        if (!this.checkSkipNonSequential()) {
+            Assert.assertNull(getFailString("Event.eventClass has not been reset"), e.eventClass);
+            Assert.assertNull(getFailString("Event.dispatcher has not been reset"), e.dispatcher);
+        }
+    }
     
     
     
@@ -335,6 +368,48 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         // use <= to perform one additional notification
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         for (int i = 0; i <= MAX_NOTIFICATIONS; ++i) {
+            this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        }
+    }
+    
+    
+    
+    /**
+     * Tests whether {@link de.skuzzle.jeve.Listener}s are correctly removed by the method
+     * {@link Event#removeListener(Listener)}.
+     * 
+     * <p>This test case might not work for asynchronous event providers which use more
+     * than one thread.</p>
+     * 
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testRemoveListenerFromEvent() throws Exception {
+        if (this.checkSkipNonSequential()) {
+            return;
+        }
+        final int MAX_NOTIFICATIONS = 5;
+        final String SUBJECT = "someString";
+        
+        class TestListener implements StringListener {
+
+            private int notificationCount = 0;
+            
+            @Override
+            public void onStringEvent(StringEvent e) {
+                Assert.assertEquals(getFailString("Wrong string"), SUBJECT, e.getString());
+                Assert.assertTrue(getFailString("Wrong notification count"), 
+                        this.notificationCount < MAX_NOTIFICATIONS);
+                if (++this.notificationCount == MAX_NOTIFICATIONS) {
+                    e.removeListener(this);
+                }
+            }
+        }
+        
+        this.subject.addListener(StringListener.class, new TestListener());
+        // use <= to perform one additional notification
+        final StringEvent e = new StringEvent(this.subject, SUBJECT);
+        for (int i = 0; i <= MAX_NOTIFICATIONS + 2; ++i) {
             this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
         }
     }

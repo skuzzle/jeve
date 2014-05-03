@@ -123,10 +123,11 @@ public class UserEvent extends Event<UserManager> {
 
 ```java
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.annotation.ListenerInterface;
 
+@ListenerInterface
 public interface UserListener extends Listener {
     public void userAdded(UserEvent e);
-    
     public void userDeleted(UserEvent e);
 }
 ```
@@ -183,40 +184,50 @@ With jeve, all the above listed flaws can be treated in a safe and clear way:
 ## Stop event delegation
 Listeners are notified in order they have been registered with the 
 `EventProvider`. If you want to stop the delegation of an event to further 
-listeners, you may use the `Event.setHandled(boolean)` method.
+listeners, you may use a second kind of _listening methods_ which return 
+a boolean value. The return value indicates whether further listeners will be
+notified. The `UserListener` must then be defined as:
+
+```java
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.annotation.ListenerInterface;
+
+@ListenerInterface(ListenerKind.ABORTABLE)
+public interface UserListener extends Listener {
+    public boolean userAdded(UserEvent e);
+    public boolean userDeleted(UserEvent e);
+}
+```
 
 ```java
 // ...
 
 public class SampleUserListener implements UserListener {
     @Override
-    public void userAdded(UserEvent e) {
+    public boolean userAdded(UserEvent e) {
         // do something
         // ...
-        // now, stop delegation process by setting the event to be "handled".
+        // now, stop delegation process by returning ABORT (constant defined in
+        // Listener).
         // No further listeners will be notified about this event.
-        e.setHandled(true);
+        return ABORT;
     }
     
     @Override
-    public void userDeleted(UserEvent e) {
+    public boolean userDeleted(UserEvent e) {
         // ...
+        return CONTINUE;
     }
 }
 ```
 
+Those kinds of listeners must be notified using the `dispatch` overload which
+takes a `BiFunction` instead of a `BiConsumer` as argument.
+
 ## Automatically remove listeners
 Automatically removing listeners from an EventProvider as of jeve version 1.0.0
 is now deprecated, because it was inconvenient to use and error prone. Instead,
-the `Event` class now has a method to remove the currently notified listener
-from the currently dispatching EventProvider. If the listener object is 
-registered for multiple listener classes those that are not notified remain 
-unchanged.
-
-So every Event instance knows which kind of listeners are currently being 
-notified from which EventProvider instance. This mechanism only works as 
-specified if Events are not reused. **You must always create a new Event 
-instance before calling `EventProvider.dispatch` again.**
+you should remove the listener manually from its source.
 
 ```java
 // ...
@@ -227,7 +238,7 @@ public class SampleUserListener implements UserListener {
         // do something
         // ...
         // this listener should not be notified about further events anymore
-        e.removeListener(this);
+        e.getSource().removeUserListener(this);
     }
     
     @Override

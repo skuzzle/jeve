@@ -9,3 +9,10 @@ Version 1.1.0 [Released: TODO]
       Event#removeListener(Listener)
 Version 1.0.0 [Released: 21.04.2014]
     * initial API and implementation
+    
+    
+TEMP API CHANGES:
+
+    * changed parameter of AbstractEventProvider.checkDispatchArgs from BiConsumer to object
+    * changed return type of AbstractEventProvider.notifySingle and 
+      AbstractEventProvider.notifyListeners from boolean to void

@@ -29,20 +29,6 @@ public class Event<T> {
     /** Whether this event has been marked as handled */
     private boolean isHandled;
     
-    /** 
-     * This field is set by an {@link EventProvider} right before this Event gets 
-     * passed to any listener.
-     * <b>Note:</b> Never write to this field at any circumstances.
-     */
-    protected volatile Class<? extends Listener> eventClass;
-    
-    /** 
-     * The {@link EventProvider} which is currently dispatching this event.
-     * <b>Note:</b> Never write to this field at any circumstances. 
-     */
-    protected volatile EventProvider dispatcher;
-    
-    
     
     /**
      * Creates a new event with a given source.
@@ -72,6 +58,7 @@ public class Event<T> {
      * further listeners will be notified about this event.
      * 
      * @return Whether this event was handled.
+     * @deprecated Since 1.1.0 - use new kind of listening methods (see {@link Listener}).
      */
     public boolean isHandled() {
         return this.isHandled;
@@ -88,42 +75,10 @@ public class Event<T> {
      * {@link EventProvider#isSequential() sequential}.</p>
      * 
      * @param isHandled Whether this event was handled.
+     * @deprecated Since 1.1.0 - use new kind of listening methods (see {@link Listener}).
      */
+    @Deprecated
     public void setHandled(boolean isHandled) {
         this.isHandled = isHandled;
-    }
-    
-    
-    
-    /**
-     * Removes the currently notified listener from the parent EventProvider which is
-     * currently dispatching this Event. The listener will only be removed for the 
-     * listener class which is currently being notified. Typical usage is like this:
-     * <pre>
-     * public class SampleListener extends UserListener {
-     *     public void userAdded(UserEvent e) {
-     *         // do what ever your listener should do
-     *     
-     *         // this listener should not be notified anymore about UserEvents from the 
-     *         // current source
-     *         e.removeListener(this);
-     *     }
-     * }
-     * </pre>
-     * 
-     * @param <L> Type of the listener.
-     * @param listener The listener to remove from its parent.
-     * @throws NullPointerException If this method is not called during the event 
-     *          dispatching process.
-     * @throws IllegalArgumentException If the listener is not an instance of the 
-     *          listener class currently being notified.
-     * @since 1.1.0
-     */
-    @SuppressWarnings("unchecked")
-    public <L extends Listener> void removeListener(L listener) {
-        if (!this.eventClass.isInstance(listener)) {
-            throw new IllegalArgumentException("provided listener has invalid class");
-        }
-        this.dispatcher.removeListener((Class<L>) this.eventClass, listener);
     }
 }

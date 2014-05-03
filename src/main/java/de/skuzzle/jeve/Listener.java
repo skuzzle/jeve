@@ -6,9 +6,32 @@ import java.util.EventListener;
  * This is the base interface for event listeners. It specifies a default method 
  * which can be used to automatically remove instances of this listener from a certain 
  * parent and further methods that are notified when the listener is registered or removed
- * to or from an {@link EventProvider}. When implementing this interface, you should add 
- * methods which take a subclass of {@link Event} as a single parameter. Doing so enables 
- * the listener to be used in conjunction with an {@link EventProvider}.
+ * to or from an {@link EventProvider}. 
+ * 
+ * <h2>Default listeners</h2>
+ * Normally, you create an interface extending <tt>Listener</tt> and add some 
+ * <em>listening methods</em>. By default, those methods must adhere to the signature:
+ * 
+ * <pre>public void &lt;listeningName&gt;(&lt;subclass of Event&gt; e);</pre>
+ * 
+ * This allows you to provide a method reference conforming to the 
+ * {@link java.util.function.BiConsumer BiConsumer} functional interface to the 
+ * {@link EventProvider#dispatch(Class, Event, java.util.function.BiConsumer) dispatch}
+ * method of an EventProvider.
+ * 
+ * <pre>eventProvider.dispatch(MyListener.class, someEventInstance, MyListener::listeningMethod);</pre>
+ * 
+ * <h2>Abortable listeners</h2>
+ * Sometimes it is helpful to be able to stop event delegation at a certain time. For this
+ * purpose a second kind of <em>listening methods</em> exists. Those return a boolean
+ * value indicating whether to continue event delegation. They must adhere to the 
+ * signature:
+ * 
+ * <pre>public boolean &lt;listeningName&gt;(&lt;subclass of Event&gt; e);</pre>
+ * 
+ * This kind of listening methods can be notified about an Event using the overload of 
+ * {@link EventProvider#dispatch(Class, Event, java.util.function.BiFunction) dispatch}
+ * which takes a <tt>BiFunction</tt> returning a boolean as argument.
  * 
  * @author Simon Taddiken
  * @since 1.0.0

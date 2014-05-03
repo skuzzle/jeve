@@ -3,6 +3,7 @@ package de.skuzzle.jeve;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * EventProvider implementation which uses an {@link ExecutorService} to notify each
@@ -42,8 +43,6 @@ public class ParallelEventProvider extends AbstractEventProvider {
             return;
         }
         
-        event.eventClass = listenerClass;
-        event.dispatcher = this;
         final Listeners<L> listeners = this.getListeners(listenerClass);
         listeners.forEach(listener -> {
             try {
@@ -54,6 +53,14 @@ public class ParallelEventProvider extends AbstractEventProvider {
                 this.handleException(ec, e, listener, event);
             }
         });
+    }
+    
+    
+    
+    @Override
+    public <L extends Listener, E extends Event<?>> void dispatch(Class<L> listenerClass,
+            E event, BiFunction<L, E, Boolean> bf, ExceptionCallback ec) {
+        throw new UnsupportedOperationException();
     }
     
     

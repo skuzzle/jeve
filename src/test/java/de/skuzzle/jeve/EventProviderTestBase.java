@@ -2,6 +2,8 @@ package de.skuzzle.jeve;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -91,7 +93,31 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
     @Test(expected = IllegalArgumentException.class)
     public void testDispatcException3() throws Exception {
         this.subject.dispatch(StringListener.class, new StringEvent(this.subject, ""), 
-                null);
+                (BiConsumer<StringListener, StringEvent>) null);
+    }
+    
+    
+    
+    /**
+     * Tests whether exception is thrown when specifying <code>null</code> as method to
+     * call.
+     * @throws Exception If an exception occurs during testing.
+     */
+    @Test
+    public void testDispatcException5() throws Exception {
+        try {
+            this.subject.dispatch(StringListener.class, new StringEvent(this.subject, ""), 
+                (BiFunction<StringListener, StringEvent, Boolean>) null);
+            Assert.fail(getFailString("Exception expected"));
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(this.getFailString(
+                    "Non-Sequential EventProviders should not support this method"),
+                    this.subject.isSequential());
+        } catch (UnsupportedOperationException e) {
+            Assert.assertFalse(getFailString(
+                    "Only Non-Sequential providers hould throw UnsupportedOperationException"), 
+                    this.subject.isSequential());
+        }
     }
     
     
@@ -105,35 +131,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
     public void testDispatcException4() throws Exception {
         this.subject.dispatch(StringListener.class, new StringEvent(this.subject, ""), 
                 StringListener::onStringEvent, null);
-    }
-    
-    
-    
-    /**
-     * Tests whether the EventProvider correctly sets the 'eventClass' field of an
-     * {@link Event} before dispatching.
-     * 
-     * @throws Exception If an exception occurs during testing.
-     * @since 1.1.0
-     */
-    @Test
-    public void testEventClassSet() throws Exception {
-        final boolean[] test = new boolean[2];
-        final StringEvent e = new StringEvent(this.subject, "");
-        this.subject.addListener(StringListener.class, event -> {
-            test[0] = event.eventClass != null;
-            test[1] = event.dispatcher != null;
-        });
-        this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
-        
-        Thread.sleep(THREAD_WAIT_TIME);
-        Assert.assertTrue(getFailString("Event.eventClass has not been set during dispatching"), test[0]);
-        Assert.assertTrue(getFailString("Event.dispatcher has not been set during dispatching"), test[1]);
-        
-        if (!this.checkSkipNonSequential()) {
-            Assert.assertNull(getFailString("Event.eventClass has not been reset"), e.eventClass);
-            Assert.assertNull(getFailString("Event.dispatcher has not been reset"), e.dispatcher);
-        }
     }
     
     
@@ -375,64 +372,32 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
     
     
     /**
-     * Tests whether {@link de.skuzzle.jeve.Listener}s are correctly removed by the method
-     * {@link Event#removeListener(Listener)}.
-     * 
-     * <p>This test case might not work for asynchronous event providers which use more
-     * than one thread.</p>
-     * 
-     * @throws Exception If an exception occurs during testing.
-     */
-    @Test
-    public void testRemoveListenerFromEvent() throws Exception {
-        if (this.checkSkipNonSequential()) {
-            return;
-        }
-        final int MAX_NOTIFICATIONS = 5;
-        final String SUBJECT = "someString";
-        
-        class TestListener implements StringListener {
-
-            private int notificationCount = 0;
-            
-            @Override
-            public void onStringEvent(StringEvent e) {
-                Assert.assertEquals(getFailString("Wrong string"), SUBJECT, e.getString());
-                Assert.assertTrue(getFailString("Wrong notification count"), 
-                        this.notificationCount < MAX_NOTIFICATIONS);
-                if (++this.notificationCount == MAX_NOTIFICATIONS) {
-                    e.removeListener(this);
-                }
-            }
-        }
-        
-        this.subject.addListener(StringListener.class, new TestListener());
-        // use <= to perform one additional notification
-        final StringEvent e = new StringEvent(this.subject, SUBJECT);
-        for (int i = 0; i <= MAX_NOTIFICATIONS + 2; ++i) {
-            this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
-        }
-    }
-    
-    
-    
-    /**
      * Tests whether delegation stops after event has been handled.
      * 
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testHandleEvent() throws Exception {
+        if (this.checkSkipNonSequential()) {
+            return;
+        }
         final String SUBJECT = "someString";
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
+        final boolean[] notified = new boolean[1];
         // first listener sets event to be handled
         final StringListener firstListener = event -> event.setHandled(true);
-        final StringListener secondListener = event -> Assert.fail(
-                getFailString("Second listener has been notified"));
+        final StringListener secondListener = event -> {
+            notified[0] = true;
+            Assert.fail(getFailString("Second listener has been notified"));
+        };
         
         this.subject.addListener(StringListener.class, firstListener);
         this.subject.addListener(StringListener.class, secondListener);
         this.subject.dispatch(StringListener.class, e, StringListener::onStringEvent);
+        
+        Thread.sleep(THREAD_WAIT_TIME);
+        Assert.assertFalse(getFailString("Second listener has been notified"), 
+                notified[0]);
     }
     
     

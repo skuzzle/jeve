@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import javax.swing.SwingUtilities;
 
@@ -57,6 +58,36 @@ class AWTEventProvider extends AbstractEventProvider {
                     () -> notifyListeners(listenerClass, event, bc, ec));
         }
     }
+    
+    
+    
+    @Override
+    public <L extends Listener, E extends Event<?>> void dispatch(
+            Class<L> listenerClass, E event, BiFunction<L, E, Boolean> bf,
+            ExceptionCallback ec) {
+
+        this.checkDispatchArgs(listenerClass, event, bf, ec);
+        // canDispatch check missing as its always true
+        
+        if (this.invokeNow) {
+            if (SwingUtilities.isEventDispatchThread()) {
+                notifyListeners(listenerClass, event, bf, ec);
+            } else {
+                try {
+                    SwingUtilities.invokeAndWait(
+                            () -> notifyListeners(listenerClass, event, bf, ec));
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            SwingUtilities.invokeLater(
+                    () -> notifyListeners(listenerClass, event, bf, ec));
+        }
+    }
+    
     
     
     

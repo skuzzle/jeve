@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 
 /**
@@ -85,14 +86,14 @@ import java.util.function.BiConsumer;
  * 
  * <h2>Aborting Event Delegation</h2>
  * <p>As stated above, event delegation can not be interrupted by throwing exceptions. 
- * Instead, listeners can modify the passed Event instance and set its 
- * {@link Event#setHandled(boolean) handled} property to <code>true</code>. Before 
- * notifying the next listener, the EventProvider queries the 
- * {@link Event#isHandled() isHandled} property of the currently processed event. If it
- * is handled, event delegation stops and no further listeners are notified.</p>
+ * Instead, you may use the overload of 
+ * {@link #dispatch(Class, Event, BiFunction) dispatch} which accepts a {@link BiFunction}
+ * as argument. Thus, your listener methods may return a boolean value indicating whether
+ * to continue event delegation.</p>
  * 
- * <p>This mechanism obviously only works correctly, if the used EventProvider is 
- * sequential. If it is not, the behavior is unspecified.</p>
+ * <p><b>Note:</b> This method may not be supported by every kind of EventProvider. E.g.
+ * non-sequential providers can throw an {@link UnsupportedOperationException} if they do
+ * not support this kind of dispatching.</p>
  * 
  * @author Simon Taddiken
  * @since 1.0.0
@@ -102,7 +103,7 @@ public interface EventProvider extends AutoCloseable {
     /**
      * Creates a new {@link EventProvider} which fires events sequentially in the thread
      * which calls {@link EventProvider#dispatch(Class, Event, BiConsumer)}. The returned
-     * instance thus is sequential.
+     * instance thus is sequential and supports aborting of event delegation.
      * 
      * <p>Closing the {@link EventProvider} returned by this method will have no 
      * effect besides removing all registered listeners.</p>
@@ -120,9 +121,9 @@ public interface EventProvider extends AutoCloseable {
      * By default, the returned {@link EventProvider} uses a single thread executor 
      * service. 
      * 
-     * <p>The returned instance is sequential. Even when using multiple threads to 
-     * dispatch events, the returned EventProvider will only use one thread for one 
-     * dispatch action. That means that for each call to
+     * <p>The returned instance is sequential and supports aborting of event delegation. 
+     * Even when using multiple threads to dispatch events, the returned EventProvider 
+     * will only use one thread for one dispatch action. That means that for each call to
      *  {@link #dispatch(Class, Event, BiConsumer, ExceptionCallback) dispatch}, all 
      * targeted listeners are notified within the same thread. This ensures notification
      * in the order the listeners have been added.</p>
@@ -144,9 +145,9 @@ public interface EventProvider extends AutoCloseable {
      * The created provider will use the given {@link ExecutorService} to fire the events
      * asynchronously.
      * 
-     * <p>The returned instance is sequential. Even when using multiple threads to 
-     * dispatch events, the returned EventProvider will only use one thread for one 
-     * dispatch action. That means that for each call to
+     * <p>The returned instance is sequential and supports aborting of event delegation. 
+     * Even when using multiple threads to dispatch events, the returned EventProvider 
+     * will only use one thread for one dispatch action. That means that for each call to
      *  {@link #dispatch(Class, Event, BiConsumer, ExceptionCallback) dispatch}, all 
      * targeted listeners are notified within the same thread. This ensures notification
      * in the order the listeners have been added.</p>
@@ -170,7 +171,8 @@ public interface EventProvider extends AutoCloseable {
     /**
      * Create a new {@link EventProvider} which dispatches all events in the AWT event 
      * thread and waits (blocks current thread) after dispatching until all listeners
-     * have been notified. The returned instance is sequential.
+     * have been notified. The returned instance is sequential and supports aborting of 
+     * event delegation. 
      * 
      * <p>Closing the {@link EventProvider} returned by this method will have no 
      * effect besides removing all registered listeners.</p>
@@ -187,7 +189,7 @@ public interface EventProvider extends AutoCloseable {
      * Creates a new {@link EventProvider} which dispatches all events in the AWT event
      * thread. Dispatching with this EventProvider will return immediately and dispatching
      * of an event will be scheduled to be run later by the AWT event thread. The returned
-     * instance is sequential.
+     * instance is sequential and supports aborting of event delegation. 
      * 
      * <p>Closing the {@link EventProvider} returned by this method will have no 
      * effect besides removing all registered listeners.</p>
@@ -205,8 +207,8 @@ public interface EventProvider extends AutoCloseable {
      * means that for an single event, multiple threads might get created to notify all
      * listeners concurrently. The internal thread creation is handled by an 
      * {@link Executors#newCachedThreadPool() cached thread pool}. The returned 
-     * EventProvider instance is not sequential, as the correct order of delegation can 
-     * not be guaranteed.
+     * EventProvider instance is not sequential and does not support aborting of event
+     * delegation, as the correct order of delegation can not be guaranteed.
      * 
      * <p>When closing the returned {@link EventProvider}, its internal 
      * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
@@ -225,8 +227,9 @@ public interface EventProvider extends AutoCloseable {
      * Creates an EventProvider which notifies each listener within an own thread. This 
      * means that for an single event, multiple threads might get created to notify all
      * listeners concurrently. The internal thread creation is handled by the passed
-     * {@link ExecutorService}. The returned EventProvider instance is not sequential, 
-     * as the correct order of delegation can not be guaranteed.
+     * {@link ExecutorService}. The returned EventProvider instance is not sequential and 
+     * does not support aborting of event delegation, as the correct order of delegation 
+     * can not be guaranteed.
      * 
      * <p>When closing the returned {@link EventProvider}, the passed 
      * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
@@ -392,9 +395,7 @@ public interface EventProvider extends AutoCloseable {
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this provider 
      * is not ready for dispatching as determined by {@link #canDispatch()}, this method 
-     * returns immediately without doing anything. This method will stop notifying further
-     * listeners if the passed event has been marked 'handled' using 
-     * {@link Event#setHandled(boolean)}.
+     * returns immediately without doing anything. 
      * 
      * <p>If a notified listener's 
      * {@link Listener#workDone(EventProvider) workDone} method returns true, 
@@ -445,6 +446,138 @@ public interface EventProvider extends AutoCloseable {
      */
     public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec);
+    
+    /**
+     * Notifies all listeners of a certain kind about an occurred event and supports 
+     * aborting of event delegation. If this provider is not ready for dispatching as 
+     * determined by {@link #canDispatch()}, this method  returns immediately without 
+     * doing anything. This method will stop notifying further listeners after the first 
+     * listening method returns <code>false</code>.
+     * 
+     * <p>If a notified listener's 
+     * {@link Listener#workDone(EventProvider) workDone} method returns true, 
+     * the listener will be removed from this EventProvider right after it has been 
+     * notified. <b>Note:</b> The behavior of whether the result of <tt>workDone</tt> is 
+     * checked before or after the listener has been notified might change in a future 
+     * release.</p>
+     *  
+     * <p>Consider an <tt>UserListener</tt> interface:</p>
+     * <pre>
+     * public interface UserListener extends Listener {
+     *     public boolean userAdded(UserEvent e);
+     *     
+     *     public boolean userDeleted(UserEvent e);
+     * }
+     * </pre>
+     * 
+     * Notifying all registered UserListeners about an added user is as easy as calling
+     * <pre>
+     * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded, 
+     *      e -&gt; logger.error(e));
+     * </pre>
+     * 
+     * <p>This method uses the global {@link ExceptionCallback} provided to 
+     * {@link #setExceptionCallback(ExceptionCallback)} or an default instance if none
+     * has been explicitly set.</p>
+     * 
+     * <p>Note on concurrency: This method is not synchronized in general, so that
+     * an event delegation action does not block any subsequent actions if the 
+     * implementation of this method uses some kind of multi threading like the 
+     * {@link EventProvider#newAsynchronousEventProvider() asynchronous} implementation
+     * does. Anyhow, this method retrieves a copied list of the targeted listeners before
+     * delegation starts. Thus, any listener registered during event dispatching is in 
+     * process, will not be notified.</p>
+     * 
+     * <p>Please note that neither parameter to this method must be null.</p>
+     * 
+     * <p><b>Note:</b> The default implementation of this method always throws an
+     * {@link UnsupportedOperationException}.</p>
+     * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param listenerClass The kind of listeners to notify.
+     * @param event The occurred event which shall be passed to each listener.
+     * @param bf Function to delegate the event to the specific callback method of the 
+     *          listener.
+     * @param ec Callback to be notified when any of the listeners throws an exception.
+     * @throws IllegalArgumentException If any of the passed arguments is 
+     *          <code>null</code>.
+     * @throws UnsupportedOperationException If this EventProvider implementation does not
+     *          support aborting of event delegation.
+     * @since 1.1.0
+     */
+    public default <L extends Listener, E extends Event<?>> void dispatch(
+            Class<L> listenerClass, E event, BiFunction<L, E, Boolean> bf) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Notifies all listeners of a certain kind about an occurred event and supports 
+     * aborting of event delegation. If this provider is not ready for dispatching as 
+     * determined by {@link #canDispatch()}, this method  returns immediately without 
+     * doing anything. This method will stop notifying further listeners after the first 
+     * listening method returns <code>false</code>.
+     * 
+     * <p>If a notified listener's 
+     * {@link Listener#workDone(EventProvider) workDone} method returns true, 
+     * the listener will be removed from this EventProvider right after it has been 
+     * notified. <b>Note:</b> The behavior of whether the result of <tt>workDone</tt> is 
+     * checked before or after the listener has been notified might change in a future 
+     * release.</p>
+     *  
+     * <p>Consider an <tt>UserListener</tt> interface:</p>
+     * <pre>
+     * public interface UserListener extends Listener {
+     *     public boolean userAdded(UserEvent e);
+     *     
+     *     public boolean userDeleted(UserEvent e);
+     * }
+     * </pre>
+     * 
+     * Notifying all registered UserListeners about an added user is as easy as calling
+     * <pre>
+     * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded, 
+     *      e -&gt; logger.error(e));
+     * </pre>
+     * 
+     * <p>The {@link ExceptionCallback} gets notified when any of the listeners throws an
+     * unexpected exception. If the exception handler itself throws an exception, it will
+     * be ignored. The callback provided to this method takes precedence over the 
+     * global callback provided by {@link #setExceptionCallback(ExceptionCallback)}.</p>
+     * 
+     * <p>Note on concurrency: This method is not synchronized in general, so that
+     * an event delegation action does not block any subsequent actions if the 
+     * implementation of this method uses some kind of multi threading like the 
+     * {@link EventProvider#newAsynchronousEventProvider() asynchronous} implementation
+     * does. Anyhow, this method retrieves a copied list of the targeted listeners before
+     * delegation starts. Thus, any listener registered during event dispatching is in 
+     * process, will not be notified.</p>
+     * 
+     * <p>Please note that neither parameter to this method must be null.</p>
+     * 
+     * <p><b>Note:</b> The default implementation of this method always throws an
+     * {@link UnsupportedOperationException}.</p>
+     * 
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param listenerClass The kind of listeners to notify.
+     * @param event The occurred event which shall be passed to each listener.
+     * @param bf Function to delegate the event to the specific callback method of the 
+     *          listener.
+     * @param ec Callback to be notified when any of the listeners throws an exception.
+     * @throws IllegalArgumentException If any of the passed arguments is 
+     *          <code>null</code>.
+     * @throws UnsupportedOperationException If this EventProvider implementation does not
+     *          support aborting of event delegation.
+     * @since 1.1.0
+     */
+    public default <L extends Listener, E extends Event<?>> void dispatch(
+            Class<L> listenerClass, E event, BiFunction<L, E, Boolean> bf, 
+            ExceptionCallback ec) {
+        throw new UnsupportedOperationException();
+    }
+    
+    
     
     /**
      * Gets whether this EventProvider is ready for dispatching.

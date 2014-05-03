@@ -5,7 +5,18 @@ Author: Simon Taddiken
 Version 1.1.0 [Released: TODO]
     * Added ParallelEventProvider which notifies each listener within an own
       thread.
-    * Deprecated Listener#workDone(EventProvider) in favor of new method 
-      Event#removeListener(Listener)
+    * Deprecated Listener#workDone(EventProvider) in favor of manual removal
+      of listeners
+    * Deprecated Event.setHandled(Boolean) in favor of EventProvider's new 
+      dispatch method
+    * Added annotation @ListenerInterface and AnnotationProcessor which checks
+      whether your listeners adhere to the default style of listener interfaces
 Version 1.0.0 [Released: 21.04.2014]
     * initial API and implementation
+    
+    
+TEMP API CHANGES:
+
+    * changed parameter of AbstractEventProvider.checkDispatchArgs from BiConsumer to object
+    * changed return type of AbstractEventProvider.notifySingle and 
+      AbstractEventProvider.notifyListeners from boolean to void

@@ -80,7 +80,7 @@ public class AbstractEventProviderTest {
      */
     protected boolean checkSkipNonSequential() {
         if (!this.subject.isSequential()) {
-            System.err.println("Skippint test case because '" + 
+            System.err.println("Skipping test case because '" + 
                 this.subject.getClass().getSimpleName() + "' is not sequential");
             return true;
         }

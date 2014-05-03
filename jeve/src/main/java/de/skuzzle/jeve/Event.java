@@ -8,7 +8,7 @@ package de.skuzzle.jeve;
  * are only used once - one Event instance for each call to 
  * {@link EventProvider#dispatch(Class, Event, java.util.function.BiConsumer) dispatch}.
  * Any different usage might result in undefined behavior, especially when using 
- * the {@link #isHandled()} property or the {@link #removeListener(Listener)} method.
+ * the {@link #isHandled()} property.
  * </p>
  * 
  * <p>Events are used in conjunction with the {@link EventProvider} and its 

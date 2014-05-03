@@ -9,6 +9,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -16,13 +17,15 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.Listener;
 
 @SupportedAnnotationTypes("de.skuzzle.jeve.annotation.ListenerInterface")
-public class MyAnnotationProcessor extends AbstractProcessor {
+public class ListenerAnnotationProcessor extends AbstractProcessor {
 
     private final static String EXPECTED_TYPE = 
             "Listening method '%s' must return %s in order to conform to ListenerKind %s";
@@ -32,6 +35,15 @@ public class MyAnnotationProcessor extends AbstractProcessor {
     
     private final static String ILLEGAL_EXCEPTION = 
             "Listening method '%s' can not throw checked exception";
+    
+    private final static String EMPTY_LISTENER = 
+            "Listener '%s' does not declare any listening methods";
+    
+    private final static String INTERFACE_ONLY = 
+            "@ListenerInterface only supported on interface types";
+    
+    private final static String MISSING_INHERITANCE =
+            "@ListenerInterface '%s' must extend de.skuzzle.jeve.Listener";
     
     
     
@@ -46,19 +58,37 @@ public class MyAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
         
-        for (final TypeElement te : annotations) {
+        final Messager msg = this.processingEnv.getMessager();
+        
+        final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(
+                ListenerInterface.class);
+        
+        for (final Element parent : elements) {
+            if (parent.getKind() != ElementKind.INTERFACE) {
+                msg.printMessage(Kind.ERROR, INTERFACE_ONLY, parent);
+            }
             
-            final ListenerInterface annotation = (ListenerInterface) te;
-            final ListenerKind kind = annotation.kind();
+            this.checkInheritance(parent);
             
-            for (final Element element : te.getEnclosedElements()) {
-                
-                final List<? extends Element> members = element.getEnclosedElements();
-                for (final ExecutableElement member : ElementFilter.methodsIn(members)) {
-                    this.checkReturnValue(member, kind);
-                    this.checkParameter(member);
-                    this.checkThrown(member);
-                }
+            final ListenerInterface anno = parent.getAnnotation(ListenerInterface.class);
+            final ListenerKind kind = anno.value();
+            
+            
+        
+            final List<ExecutableElement> members = ElementFilter.methodsIn(
+                    parent.getEnclosedElements());
+
+            if (kind == ListenerKind.TAGGING) {
+                continue;
+            } else if (members.isEmpty()) {
+                msg.printMessage(Kind.WARNING, EMPTY_LISTENER, parent);
+                continue;
+            }
+            
+            for (final ExecutableElement member : members) {
+                this.checkReturnValue(member, kind);
+                this.checkParameter(member);
+                this.checkThrown(member);
             }
         }
         
@@ -73,7 +103,7 @@ public class MyAnnotationProcessor extends AbstractProcessor {
         
         final PrimitiveType boolPrim = types.getPrimitiveType(TypeKind.BOOLEAN);
         final TypeMirror boolBox = types.boxedClass(boolPrim).asType();
-        final TypeMirror voidPrim = types.getPrimitiveType(TypeKind.VOID);
+        final TypeMirror voidPrim = types.getNoType(TypeKind.VOID);
         final TypeMirror ret = member.getReturnType();
         
         switch (expectedKind) {
@@ -98,6 +128,24 @@ public class MyAnnotationProcessor extends AbstractProcessor {
                         expectedKind), member);
             }
             break;
+        case TAGGING:
+            assert false : "should not be reachable";
+            break;
+        }
+    }
+    
+    
+    
+    private void checkInheritance(Element parent) {
+        final Messager msg = this.processingEnv.getMessager();
+        final Types types = this.processingEnv.getTypeUtils();
+        final Elements elements = this.processingEnv.getElementUtils();
+        
+        final TypeMirror listenerType = elements.getTypeElement(
+                Listener.class.getName()).asType();
+        if (!types.isSubtype(parent.asType(), listenerType)) {
+            msg.printMessage(Kind.ERROR, 
+                    String.format(MISSING_INHERITANCE, parent.getSimpleName()), parent);
         }
     }
     
@@ -117,10 +165,12 @@ public class MyAnnotationProcessor extends AbstractProcessor {
         }
         
         final VariableElement param = params.iterator().next();
-        final TypeMirror eventType = processingEnv.getElementUtils().getTypeElement(
-                Event.class.getName()).asType();
-        
-        if (types.isSubtype(param.asType(), eventType)) {
+        final TypeElement eventType = processingEnv.getElementUtils().getTypeElement(
+                Event.class.getName());
+
+        final TypeMirror eType = types.getDeclaredType(eventType, 
+                types.getWildcardType(null, null));
+        if (!types.isSubtype(param.asType(), eType)) {
             msg.printMessage(Kind.ERROR, String.format(ILLEGAL_PARAMETER, 
                     member.getSimpleName()), param);
         }

@@ -12,7 +12,6 @@
 hs_err_pid*
 .classpath
 .project
-/doc
-/bin
-/target
+/jeve/target
+/annotationTest/target
 *.eclipse.jdt.core.prefs

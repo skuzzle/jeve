@@ -499,7 +499,6 @@ public interface EventProvider extends AutoCloseable {
      * @param event The occurred event which shall be passed to each listener.
      * @param bf Function to delegate the event to the specific callback method of the 
      *          listener.
-     * @param ec Callback to be notified when any of the listeners throws an exception.
      * @throws IllegalArgumentException If any of the passed arguments is 
      *          <code>null</code>.
      * @throws UnsupportedOperationException If this EventProvider implementation does not

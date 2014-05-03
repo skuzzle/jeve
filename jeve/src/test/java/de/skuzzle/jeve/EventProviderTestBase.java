@@ -389,6 +389,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         final boolean[] notified = new boolean[1];
         // first listener sets event to be handled
+        @SuppressWarnings("deprecation")
         final StringListener firstListener = event -> event.setHandled(true);
         final StringListener secondListener = event -> {
             notified[0] = true;

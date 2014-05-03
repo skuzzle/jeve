@@ -2,6 +2,8 @@ package de.skuzzle.jeve;
 
 import java.util.EventListener;
 
+import de.skuzzle.jeve.annotation.ListenerInterface;
+
 /**
  * This is the base interface for event listeners. It specifies a default method 
  * which can be used to automatically remove instances of this listener from a certain 
@@ -69,7 +71,8 @@ public interface Listener extends EventListener {
      * 
      * @param parent The event provider from which the listener would be removed.
      * @return Whether to remove this listener from its parent after next notification.
-     * @deprecated Since 1.1.0 - use {@link Event#removeListener(Listener)} instead.
+     * @deprecated Since 1.1.0 - Deprecated in favor of manual listener removal using
+     *          <tt>event.getSource().removeSomeListener(this)</tt>
      */
     @Deprecated
     public default boolean workDone(EventProvider parent) {

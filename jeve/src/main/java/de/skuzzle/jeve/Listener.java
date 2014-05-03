@@ -2,15 +2,13 @@ package de.skuzzle.jeve;
 
 import java.util.EventListener;
 
-import de.skuzzle.jeve.annotation.ListenerInterface;
-
 /**
  * This is the base interface for event listeners. It specifies a default method 
  * which can be used to automatically remove instances of this listener from a certain 
  * parent and further methods that are notified when the listener is registered or removed
  * to or from an {@link EventProvider}. 
  * 
- * <h2>Default listeners</h2>
+ * <h2>Normal listeners</h2>
  * Normally, you create an interface extending <tt>Listener</tt> and add some 
  * <em>listening methods</em>. By default, those methods must adhere to the signature:
  * 
@@ -36,6 +34,12 @@ import de.skuzzle.jeve.annotation.ListenerInterface;
  * which takes a <tt>BiFunction</tt> returning a boolean as argument. Implementations of
  * such listening methods should use the defined constants {@link #CONTINUE} and 
  * {@link #ABORT} as return values.
+ * 
+ * <h2>ListenerInterface Annotation</h2>
+ * To enable compile time checks for whether your listener definition adheres to the 
+ * different kind of listening methods, you may tag it with 
+ * {@link de.skuzzle.jeve.annotation.ListenerInterface ListenerInterface}. This is 
+ * completely optional but makes your intentions clear for other programmers
  * 
  * @author Simon Taddiken
  * @since 1.0.0

@@ -2,6 +2,7 @@ package de.skuzzle.jeve.annotation;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -45,6 +46,8 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
     private final static String MISSING_INHERITANCE =
             "@ListenerInterface '%s' must extend de.skuzzle.jeve.Listener";
     
+    private final static String TAGGING_NOT_EMPTY = "Tagging listeners must be empty";
+    
     
     
     @Override
@@ -72,13 +75,16 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
             
             final ListenerInterface anno = parent.getAnnotation(ListenerInterface.class);
             final ListenerKind kind = anno.value();
-            
-            
         
-            final List<ExecutableElement> members = ElementFilter.methodsIn(
-                    parent.getEnclosedElements());
+            final List<ExecutableElement> members = parent.getEnclosedElements().stream()
+                    .filter(m -> m instanceof ExecutableElement)
+                    .map(m -> (ExecutableElement) m)
+                    .collect(Collectors.toList());
 
             if (kind == ListenerKind.TAGGING) {
+                if (!members.isEmpty()) {
+                    msg.printMessage(Kind.ERROR, TAGGING_NOT_EMPTY, parent);
+                }
                 continue;
             } else if (members.isEmpty()) {
                 msg.printMessage(Kind.WARNING, EMPTY_LISTENER, parent);

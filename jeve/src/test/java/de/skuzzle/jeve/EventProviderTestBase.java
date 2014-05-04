@@ -565,7 +565,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
     
     
     
-    
     /**
      * Tests whether clearing of a certain listener class works.
      * 

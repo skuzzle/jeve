@@ -148,15 +148,32 @@ public class ListenerAnnotationProcessorTest {
     public void testMixedFailException() {
         testFailException("MixedListenerFailException");
     }
-    
+
     
     
     // END MIXED TESTS
     
+    // BEGIN TAGGING TESTS
+    
     
     
     @Test
-    public void testEmptySuccess() {
-        this.compileWithoutError("EmptyListener");
+    public void testTaggingSuccess() {
+        this.compileWithoutError("TaggingListener");
     }
+    
+    @Test
+    public void testTaggingNotEmpty() {
+        final String path = getResourcePath("TaggingListenerFailNotEmpty");
+        final JavaFileObject fileObject = JavaFileObjects.forResource(path);
+        ASSERT.about(javaSource())
+            .that(fileObject)
+            .processedWith(new ListenerAnnotationProcessor())
+            .failsToCompile().withErrorContaining("must be empty")
+            .in(fileObject).onLine(9);
+    }
+    
+    
+    
+    // END TAGGING TESTS
 }

@@ -6,6 +6,6 @@ import de.skuzzle.jeve.annotation.ListenerKind;
 
 
 @ListenerInterface(ListenerKind.TAGGING)
-public interface EmptyListener extends Listener {
+public interface TaggingListener extends Listener {
     // should not produce any warning
 }

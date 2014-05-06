@@ -271,9 +271,6 @@ which exceptions get passed.
 }
 ```
 
-As the ExceptionCallback gets passed the currently processed event, you are also
-able to stop the delegation by setting the event to be handled.
-
 You may also set an ExceptionCallback globally for a specific EventProvider 
 instance using `EventProvider.setExceptionCallback()`. When doing so, the 
 provided callback will be notified when dispatching an event without explicitly 

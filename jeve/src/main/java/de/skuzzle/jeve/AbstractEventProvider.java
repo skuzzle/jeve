@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 
 /**
@@ -200,27 +199,6 @@ public abstract class AbstractEventProvider implements EventProvider {
     
     
     
-    @Override
-    public <L extends Listener, E extends Event<?>> void dispatch(
-            Class<L> listenerClass, E event, BiFunction<L, E, Boolean> bf) {
-        this.dispatch(listenerClass, event, bf, this.exceptionHandler);
-    }
-    
-    
-    
-    @Override
-    public <L extends Listener, E extends Event<?>> void dispatch(
-            Class<L> listenerClass, E event, BiFunction<L, E, Boolean> bf,
-            ExceptionCallback ec) {
-        
-        this.checkDispatchArgs(listenerClass, event, bf, ec);
-        if (this.canDispatch()) {
-            this.notifyListeners(listenerClass, event, bf, ec);
-        }
-    }
-    
-    
-    
     /**
      * Helper method which serves for throwing {@link IllegalArgumentException} if any of
      * the passed arguments is null.
@@ -275,7 +253,6 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
      */
-    @SuppressWarnings("deprecation")
     protected <L extends Listener, E extends Event<?>> void notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // HINT: getListeners is thread safe
@@ -318,48 +295,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         } catch (RuntimeException e) {
             this.handleException(ec, e, listener, event);
         }
-    }
-    
-    
-    
-    
-    @SuppressWarnings("deprecation")
-    protected <L extends Listener, E extends Event<?>> boolean notifyListeners(
-            Class<L> listenerClass, E event, BiFunction<L, E, Boolean> bf, 
-            ExceptionCallback ec) {
-        // HINT: getListeners is thread safe
-        final Listeners<L> listeners = this.getListeners(listenerClass);
-        for (L listener : listeners) {
-            // TODO: remove as of deprecation
-            if (event.isHandled()) {
-                return false;
-            }
-            
-            if (!this.notifySingle(listenerClass, listener, event, bf, ec)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    
-    
-    @SuppressWarnings("deprecation")
-    protected <L extends Listener, E extends Event<?>> boolean notifySingle(
-            Class<L> listenerClass, L listener, E event, BiFunction<L, E, Boolean> bf, 
-            ExceptionCallback ec) {
-        boolean result = true;
-        try {
-            result = bf.apply(listener, event);
-            
-            // Compatibility to v1.0.0
-            if (listener.workDone(this)) {
-                this.removeListener(listenerClass, listener);
-            }
-        } catch (RuntimeException e) {
-            this.handleException(ec, e, listener, event);
-        }
-        return result;
     }
     
     

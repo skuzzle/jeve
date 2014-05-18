@@ -58,7 +58,6 @@ public class Event<T> {
      * further listeners will be notified about this event.
      * 
      * @return Whether this event was handled.
-     * @deprecated Since 1.1.0 - use new kind of listening methods (see {@link Listener}).
      */
     public boolean isHandled() {
         return this.isHandled;
@@ -75,9 +74,7 @@ public class Event<T> {
      * {@link EventProvider#isSequential() sequential}.</p>
      * 
      * @param isHandled Whether this event was handled.
-     * @deprecated Since 1.1.0 - use new kind of listening methods (see {@link Listener}).
      */
-    @Deprecated
     public void setHandled(boolean isHandled) {
         this.isHandled = isHandled;
     }

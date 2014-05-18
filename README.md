@@ -183,45 +183,28 @@ With jeve, all the above listed flaws can be treated in a safe and clear way:
 ## Stop event delegation
 Listeners are notified in order they have been registered with the 
 `EventProvider`. If you want to stop the delegation of an event to further 
-listeners, you may use a second kind of _listening methods_ which return 
-a boolean value. The return value indicates whether further listeners will be
-notified. The `UserListener` must then be defined as:
-
-```java
-import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.annotation.ListenerInterface;
-
-@ListenerInterface(ListenerKind.ABORTABLE)
-public interface UserListener extends Listener {
-    public boolean userAdded(UserEvent e);
-    public boolean userDeleted(UserEvent e);
-}
-```
+listeners, you may use the `Event.setHandled(boolean)` method.
 
 ```java
 // ...
-
+@ListenerInterface
 public class SampleUserListener implements UserListener {
     @Override
-    public boolean userAdded(UserEvent e) {
+    public void userAdded(UserEvent e) {
         // do something
         // ...
-        // now, stop delegation process by returning ABORT (constant defined in
-        // Listener).
+        // now, stop delegation process by setting the event to be "handled".
         // No further listeners will be notified about this event.
-        return ABORT;
+        e.setHandled(true);
     }
     
     @Override
-    public boolean userDeleted(UserEvent e) {
+    public void userDeleted(UserEvent e) {
         // ...
-        return CONTINUE;
     }
 }
 ```
 
-Those kinds of listeners must be notified using the `dispatch` overload which
-takes a `BiFunction` instead of a `BiConsumer` as argument.
 
 ## Automatically remove listeners
 Automatically removing listeners from an EventProvider as of jeve version 1.0.0
@@ -237,6 +220,7 @@ public class SampleUserListener implements UserListener {
         // do something
         // ...
         // this listener should not be notified about further events anymore
+        // Note: Event's source must support removing the listener
         e.getSource().removeUserListener(this);
     }
     

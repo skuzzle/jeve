@@ -3,6 +3,7 @@ package de.skuzzle.jeve.util;
 import org.junit.Ignore;
 
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.annotation.ListenerInterface;
 
 /**
  * DifferentStringListeners are notified about {@link StringEvent StringEvents}.
@@ -10,6 +11,7 @@ import de.skuzzle.jeve.Listener;
  * @author Simon Taddiken
  */
 @Ignore
+@ListenerInterface
 public interface DifferentStringListener extends Listener {
     /**
      * This method is notified about occurring {@link StringEvent StringEvents}.

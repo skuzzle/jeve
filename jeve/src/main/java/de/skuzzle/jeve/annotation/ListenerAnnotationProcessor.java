@@ -14,10 +14,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
@@ -107,8 +105,6 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
         final Types types = this.processingEnv.getTypeUtils();
         final Messager msg = this.processingEnv.getMessager();
         
-        final PrimitiveType boolPrim = types.getPrimitiveType(TypeKind.BOOLEAN);
-        final TypeMirror boolBox = types.boxedClass(boolPrim).asType();
         final TypeMirror voidPrim = types.getNoType(TypeKind.VOID);
         final TypeMirror ret = member.getReturnType();
         
@@ -117,21 +113,6 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
             if (!types.isSameType(ret, voidPrim)) {
                 msg.printMessage(Kind.ERROR, String.format(EXPECTED_TYPE, 
                         member.getSimpleName(), "'void'", expectedKind), member);
-            }
-            break;
-        case ABORTABLE:
-            if (!(types.isSameType(ret, boolBox) || types.isSameType(ret, boolPrim))) {
-                msg.printMessage(Kind.ERROR, String.format(EXPECTED_TYPE, 
-                        member.getSimpleName(), "'boolean' or 'Boolean'", expectedKind),
-                        member);
-            }
-            break;
-        case MIXED:
-            if (!(types.isSameType(ret, voidPrim) || types.isSameType(ret, boolBox) || 
-                    types.isSameType(ret, boolPrim))) {
-                msg.printMessage(Kind.ERROR, String.format(EXPECTED_TYPE, 
-                        member.getSimpleName(), "''void', boolean' or 'Boolean'", 
-                        expectedKind), member);
             }
             break;
         case TAGGING:

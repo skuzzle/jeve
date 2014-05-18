@@ -102,57 +102,6 @@ public class ListenerAnnotationProcessorTest {
     
     // END NORMAL TESTS
     
-    // BEGIN ABORTABLE TESTS
-    
-    
-    
-    @Test
-    public void testAbortableSuccess() {
-        this.compileWithoutError("AbortableListener");
-    }
-    
-    @Test
-    public void testAbortableFailReturn() {
-        testFailReturn("AbortableListenerFailReturnType");
-    }
-    
-    @Test
-    public void testAbortableFailParameter() {
-        testFailParameter("AbortableListenerFailParameterType");
-    }
-    
-    @Test
-    public void testAbortableFailException() {
-        testFailException("AbortableListenerFailException");
-    }
-    
-    
-    
-    // END ABORTABLE TESTS
-    
-    // BEGIN MIXED TESTS
-    
-    
-    
-    @Test
-    public void testMixedSuccess() {
-        this.compileWithoutError("MixedListener");
-    }
-    
-    @Test
-    public void testMixedFailParameter() {
-        testFailParameter("MixedListenerFailParameterType");
-    }
-    
-    @Test
-    public void testMixedFailException() {
-        testFailException("MixedListenerFailException");
-    }
-
-    
-    
-    // END MIXED TESTS
-    
     // BEGIN TAGGING TESTS
     
     

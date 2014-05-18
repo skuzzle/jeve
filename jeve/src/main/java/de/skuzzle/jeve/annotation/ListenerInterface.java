@@ -18,6 +18,9 @@ import java.lang.annotation.Target;
  *       {@link ListenerKind} specified as value to this annotation</li>
  * </ul>
  * 
+ * <p>When omitting the {@link #value()} attribute, the target class is expected to 
+ * contain only {@link ListenerKind#NORMAL normal} listening methods.</p>
+ * 
  * As this is only a tagging annotation, it is perfectly fine to use listeners without
  * specifying this annotation.
  * 

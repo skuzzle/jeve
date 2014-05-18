@@ -22,36 +22,9 @@ public enum ListenerKind {
     NORMAL,
     
     /**
-     * An abortable listener as an interface which extends 
-     * {@link de.skuzzle.jeve.Listener Listener} and which only contains methods adhering
-     * to the following conditions:
-     * <ul>
-     *   <li>The return value is <tt>boolean</tt> or <tt>Boolean</tt></li>
-     *   <li>The only parameter is a su btype of {@link de.skuzzle.jeve.Event Event}</li>
-     *   <li>No checked exceptions are thrown</li>
-     * </ul>
-     */
-    ABORTABLE,
-    
-    /**
      * A tagging listener is an interface which extends 
      * {@link de.skuzzle.jeve.Listener Listener} and does not contain any methods but 
      * exists as super interface for other listeners. 
      */
     TAGGING,
-    
-    /**
-     * A mixed listener as an interface which extends 
-     * {@link de.skuzzle.jeve.Listener Listener} and which only contains methods adhering
-     * to the following conditions:
-     * <ul>
-     *   <li>The return value is <tt>void</tt>, <tt>boolean</tt> or <tt>Boolean</tt></li>
-     *   <li>The only parameter is a su btype of {@link de.skuzzle.jeve.Event Event}</li>
-     *   <li>No checked exceptions are thrown</li>
-     * </ul>
-     * 
-     * This allows you to specify both normal listening as well as abortable listening 
-     * methods.
-     */
-    MIXED
 }

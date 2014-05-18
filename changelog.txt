@@ -7,8 +7,6 @@ Version 1.1.0 [Released: TODO]
       thread.
     * Deprecated Listener#workDone(EventProvider) in favor of manual removal
       of listeners
-    * Deprecated Event.setHandled(Boolean) in favor of EventProvider's new 
-      dispatch method
     * Added annotation @ListenerInterface and AnnotationProcessor which checks
       whether your listeners adhere to the default style of listener interfaces
 Version 1.0.0 [Released: 21.04.2014]

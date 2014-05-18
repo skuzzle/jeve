@@ -8,7 +8,6 @@ import java.util.EventListener;
  * parent and further methods that are notified when the listener is registered or removed
  * to or from an {@link EventProvider}. 
  * 
- * <h2>Normal listeners</h2>
  * Normally, you create an interface extending <tt>Listener</tt> and add some 
  * <em>listening methods</em>. By default, those methods must adhere to the signature:
  * 
@@ -21,25 +20,11 @@ import java.util.EventListener;
  * 
  * <pre>eventProvider.dispatch(MyListener.class, someEventInstance, MyListener::listeningMethod);</pre>
  * 
- * <h2>Abortable listeners</h2>
- * Sometimes it is helpful to be able to stop event delegation at a certain time. For this
- * purpose a second kind of <em>listening methods</em> exists. Those return a boolean
- * value indicating whether to continue event delegation. They must adhere to the 
- * signature:
- * 
- * <pre>public boolean &lt;listeningName&gt;(&lt;subclass of Event&gt; e);</pre>
- * 
- * This kind of listening methods can be notified about an Event using the overload of 
- * {@link EventProvider#dispatch(Class, Event, java.util.function.BiFunction) dispatch}
- * which takes a <tt>BiFunction</tt> returning a boolean as argument. Implementations of
- * such listening methods should use the defined constants {@link #CONTINUE} and 
- * {@link #ABORT} as return values.
- * 
  * <h2>ListenerInterface Annotation</h2>
  * To enable compile time checks for whether your listener definition adheres to the 
  * different kind of listening methods, you may tag it with 
  * {@link de.skuzzle.jeve.annotation.ListenerInterface ListenerInterface}. This is 
- * completely optional but makes your intentions clear for other programmers
+ * completely optional but makes your intentions clear to other programmers.
  * 
  * @author Simon Taddiken
  * @since 1.0.0

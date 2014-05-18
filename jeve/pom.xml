@@ -76,6 +76,12 @@
         <configuration>
           <descriptor>src/assembly/dep.xml</descriptor>
         </configuration>
+        <executions>
+          <execution>
+            <id>assembly</id>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

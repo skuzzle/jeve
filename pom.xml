@@ -65,7 +65,15 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-
+      
+      <!-- package release files -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

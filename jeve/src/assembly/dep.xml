@@ -9,17 +9,17 @@
   </formats>
   <files>
     <file>
-      <source>${project.basedir}/README.md</source>
+      <source>${parent.basedir}/README.md</source>
       <destName>README.txt</destName>
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
-      <source>${project.basedir}/LICENSE.md</source>
+      <source>${parent.basedir}/LICENSE.md</source>
       <destName>LICENSE.txt</destName>
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
-      <source>${project.basedir}/changelog.txt</source>
+      <source>${parent.basedir}/changelog.txt</source>
       <destName>CHANGELOG.txt</destName>
       <outputDirectory>/</outputDirectory>
     </file>

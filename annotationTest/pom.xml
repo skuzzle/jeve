@@ -1,29 +1,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>de.skuzzle</groupId>
-    <artifactId>jeve-parent</artifactId>
-    <version>1.1.0</version>
-  </parent>
-  
+    <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>jeve-annotation-test</artifactId>
-  <packaging>jar</packaging>
-  <name>jeve-annotation-test</name>
-  
-  <dependencies>
-    <dependency>
-      <groupId>de.skuzzle</groupId>
-      <artifactId>jeve</artifactId>
-       <version>1.1.0</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.google.testing.compile</groupId>
-      <artifactId>compile-testing</artifactId>
-      <version>0.5</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <parent>
+        <groupId>de.skuzzle</groupId>
+        <artifactId>jeve-parent</artifactId>
+        <version>1.1.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>jeve-annotation-test</artifactId>
+    <packaging>jar</packaging>
+    <name>jeve-annotation-test</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.skuzzle</groupId>
+            <artifactId>jeve</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.testing.compile</groupId>
+            <artifactId>compile-testing</artifactId>
+            <version>0.5</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

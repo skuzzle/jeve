@@ -17,7 +17,7 @@ for detailed information.
 
 
 ## Documentation
-JavaDoc is available at www.jeve.skuzzle.de/1.0.0/doc
+JavaDoc is available at www.jeve.skuzzle.de/1.1.0/doc
 
 Scroll down in this readme for a quick start guide and some advanced topics.
 

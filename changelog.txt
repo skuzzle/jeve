@@ -2,7 +2,7 @@ This is the jeve version history.
 Author: Simon Taddiken
 
 
-Version 1.1.0 [Released: TODO]
+Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own
       thread.
     * Deprecated Listener#workDone(EventProvider) in favor of manual removal

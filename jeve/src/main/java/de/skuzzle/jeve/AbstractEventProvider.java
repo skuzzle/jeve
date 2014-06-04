@@ -252,18 +252,21 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param event The event to pass to each listener.
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
+     * @return Whether all listeners has been successfully notified.
      */
-    protected <L extends Listener, E extends Event<?>> void notifyListeners(
+    protected <L extends Listener, E extends Event<?>> boolean notifyListeners(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // HINT: getListeners is thread safe
         final Listeners<L> listeners = this.getListeners(listenerClass);
+        boolean result = true;
         for (L listener : listeners) {
             // TODO: remove as of deprecation
             if (event.isHandled()) {
-                return;
+                return result;
             }
-            this.notifySingle(listenerClass, listener, event, bc, ec);
+            result &= this.notifySingle(listenerClass, listener, event, bc, ec);
         }
+        return result;
     }
    
     
@@ -279,12 +282,13 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param event The event to pass to the listener.
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
+     * @return Whether the listener has been successfully notified.
      * @throws AbortionException If the <tt>ExceptionCallback</tt> threw an 
      *          <tt>AbortionException</tt>
      * @since 1.1.0
      */
     @SuppressWarnings("deprecation")
-    protected <L extends Listener, E extends Event<?>> void notifySingle(
+    protected <L extends Listener, E extends Event<?>> boolean notifySingle(
             Class<L> listenerClass, L listener, E event, BiConsumer<L, E> bc, 
             ExceptionCallback ec) {
         try {
@@ -294,8 +298,10 @@ public abstract class AbstractEventProvider implements EventProvider {
             if (listener.workDone(this)) {
                 this.removeListener(listenerClass, listener);
             }
+            return true;
         } catch (RuntimeException e) {
             this.handleException(ec, e, listener, event);
+            return false;
         }
     }
     

@@ -64,7 +64,9 @@ import java.util.function.BiConsumer;
  * if one of the listeners throws an unchecked exception. Therefore, jeve uses 
  * {@link ExceptionCallback ExceptionCallbacks} to notify client code about any 
  * exception. After notifying the callback, event delegation continues with the next 
- * listener. If the callback method itself throws an exception, it will be swallowed.</p>
+ * listener. {@link AbortionException} can be thrown from within the callback method
+ * to explicitly stop event delegation with an exception. All other exceptions thrown
+ * by the callback will be swallowed.</p>
  * 
  * <p>A default {@link ExceptionCallback} can be set by using 
  * {@link #setExceptionCallback(ExceptionCallback)}. Additionally, you can set a callback
@@ -84,8 +86,8 @@ import java.util.function.BiConsumer;
  * factory methods are sequential.</p> 
  * 
  * <h2>Aborting Event Delegation</h2>
- * <p>As stated above, event delegation can not be interrupted by throwing exceptions. 
- * Instead, listeners can modify the passed Event instance and set its 
+ * <p>As stated above, event delegation can generally not be interrupted by throwing 
+ * exceptions. Instead, listeners can modify the passed Event instance and set its 
  * {@link Event#setHandled(boolean) handled} property to <code>true</code>. Before 
  * notifying the next listener, the EventProvider queries the 
  * {@link Event#isHandled() isHandled} property of the currently processed event. If it

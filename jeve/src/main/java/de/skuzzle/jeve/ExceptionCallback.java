@@ -14,8 +14,9 @@ public interface ExceptionCallback {
      * exception callback. This method is generally called within the same thread in
      * which the attempt to notify the listener has been made. 
      * 
-     * <p>Note: If this method throws any unchecked exceptions, they will be swallowed
-     * by the EventProvider during error handling.</p>
+     * <p>Note: If this method throws any unchecked exceptions other than 
+     * {@link AbortionException}, they will be swallowed by the EventProvider during 
+     * error handling.</p>
      * 
      * @param e The exception which occurred during event dispatching.
      * @param source The event listener which caused the exception.
@@ -23,6 +24,12 @@ public interface ExceptionCallback {
      *          <code>null</code> iff this method was called by either 
      *          {@link EventProvider#addListener(Class, Listener)} or 
      *          {@link EventProvider#removeListener(Class, Listener)}.
+     * @throws AbortionException can be thrown to make event dispatching explicitly fail
+     *          with an exception. No further listeners will be notified and the caller
+     *          of 
+     *          {@link EventProvider#dispatch(Class, Event, java.util.function.BiConsumer) dispatch}
+     *          will receive this exception. 
      */
-    public void exception(Exception e, Listener source, Event<?> event);
+    public void exception(Exception e, Listener source, Event<?> event) 
+            throws AbortionException;
 }

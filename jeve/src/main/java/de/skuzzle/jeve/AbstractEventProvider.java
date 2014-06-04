@@ -279,6 +279,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param event The event to pass to the listener.
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
+     * @throws AbortionException If the <tt>ExceptionCallback</tt> threw an 
+     *          <tt>AbortionException</tt>
      * @since 1.1.0
      */
     @SuppressWarnings("deprecation")
@@ -307,11 +309,15 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param e The occurred exception.
      * @param listener The listener which caused the exception.
      * @param ev The event which is currently being dispatched.
+     * @throws AbortionException If the <tt>ExceptionCallback</tt> threw an 
+     *          <tt>AbortionException</tt>
      */
     protected void handleException(ExceptionCallback ec, Exception e, Listener listener, 
             Event<?> ev) {
         try {
             ec.exception(e, listener, ev);
+        } catch (AbortionException abort) {
+            throw abort;
         } catch (Exception ignore) {
             ignore.printStackTrace();
             // where is your god now?

@@ -9,6 +9,7 @@ Version 1.1.0 [Released: TODO]
       of listeners
     * Added annotation @ListenerInterface and AnnotationProcessor which checks
       whether your listeners adhere to the default style of listener interfaces
+    * Added AbortionException as a way to brutally stop event delegation
 Version 1.0.0 [Released: 21.04.2014]
     * initial API and implementation
     

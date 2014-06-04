@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.util.EventProviderFactory;
 
 
@@ -17,7 +16,7 @@ import de.skuzzle.jeve.util.EventProviderFactory;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class BasicEventProviderTest extends EventProviderTestBase {
+public class ThreadedEventProviderTest extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
@@ -27,7 +26,6 @@ public class BasicEventProviderTest extends EventProviderTestBase {
     @Parameters
     public final static Collection<Object[]> getParameters() {
         return Arrays.asList(
-            new EventProviderFactory[] { EventProvider::newDefaultEventProvider },
             new EventProviderFactory[] { EventProvider::newParallelEventProvider },
             new EventProviderFactory[] { EventProvider::newAsynchronousEventProvider }
         );
@@ -40,7 +38,7 @@ public class BasicEventProviderTest extends EventProviderTestBase {
      * 
      * @param factory Factory to create a single provider
      */
-    public BasicEventProviderTest(EventProviderFactory factory) {
+    public ThreadedEventProviderTest(EventProviderFactory factory) {
         super(factory);
     }
 }

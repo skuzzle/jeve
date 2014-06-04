@@ -31,21 +31,6 @@ import java.util.EventListener;
  */
 public interface Listener extends EventListener {
     
-    /** 
-     * Return value for listening methods indicating to continue event delegation with 
-     * next listener.
-     * @since 1.1.0
-     */
-    public final static boolean CONTINUE = true;
-
-    /**
-     * Return value for listening methods indicating to abort event delegation.
-     * @since 1.1.0
-     */
-    public final static boolean ABORT = false;
-    
-    
-    
     /**
      * This method specifies whether this listner's work is done and it should be 
      * removed from its parent's {@link EventProvider} after the next time the listener

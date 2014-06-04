@@ -37,7 +37,6 @@ within your `pom.xml`:
       <groupId>de.skuzzle</groupId>
       <artifactId>jeve</artifactId>
       <version>1.0.0</version>
-      <scope>build</scope>
     </dependency>
 ```
 

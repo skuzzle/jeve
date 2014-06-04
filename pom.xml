@@ -1,79 +1,85 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+  
+    <groupId>de.skuzzle</groupId>
+    <artifactId>jeve-parent</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <groupId>de.skuzzle</groupId>
-  <artifactId>jeve-parent</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <name>jeve-parent</name>
+    <url>http://www.jeve.skuzzle.de/doc</url>
+    <description>jeve is a lightweight java 8 event delegation framework</description>
 
-  <name>jeve-parent</name>
-  <url>http://www.jeve.skuzzle.de/doc</url>
-  <description>jeve is a lightweight java 8 event delegation framework</description>
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>http://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <licenses>
-    <license>
-      <name>The MIT License (MIT)</name>
-      <url>http://opensource.org/licenses/MIT</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  
-  <developers>
-    <developer>
-      <id>simon</id>
-      <name>Simon Taddiken</name>
-      <email>jeve@skuzzle.de</email>
-    </developer>
-  </developers>
-  
-  <scm>
-    <connection>scm:git:https://github.com/skuzzle/jeve</connection>
-    <developerConnection>scm:git:git://github.com/skuzzle/jeve</developerConnection>
-    <url>https://github.com/skuzzle/jeve</url>
-    <tag>HEAD</tag>
-  </scm>
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <developers>
+        <developer>
+            <id>simon</id>
+            <name>Simon Taddiken</name>
+            <email>jeve@skuzzle.de</email>
+        </developer>
+    </developers>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  
-  
-  <modules>
-    <module>jeve</module>
-    <module>annotationTest</module>
-  </modules>
-  
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      
-      <!-- package release files -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <scm>
+        <connection>scm:git:https://github.com/skuzzle/jeve</connection>
+        <developerConnection>scm:git:git://github.com/skuzzle/jeve</developerConnection>
+        <url>https://github.com/skuzzle/jeve</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <modules>
+        <module>jeve</module>
+        <module>annotationTest</module>
+    </modules>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <!-- package release files -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

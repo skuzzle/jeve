@@ -7,7 +7,8 @@ import java.util.function.BiConsumer;
 
 
 /**
- * <p>EventProvider instances are the heart of jeve. They manage listener classes mapping
+ * <p>EventProvider instances are the heart of jeve and can be obtained using static 
+ * factory methods of this interface. They manage listener classes mapped
  * to a collection of {@link Listener Listeners} to represent one kind of event. 
  * All listeners registered for a certain listener class can be notified about an 
  * {@link Event}. The way in which they are notified is an internal property of the
@@ -81,9 +82,6 @@ import java.util.function.BiConsumer;
  * EventProvider actually is sequential depends on its implementation of the dispatch 
  * method. For example, a provider which notifies each listener within a separate thread
  * is not sequential.</p>
- * 
- * <p>Unless stated otherwise, all EventProviders which can be obtained from the static
- * factory methods are sequential.</p> 
  * 
  * <h2>Aborting Event Delegation</h2>
  * <p>As stated above, event delegation can generally not be interrupted by throwing 

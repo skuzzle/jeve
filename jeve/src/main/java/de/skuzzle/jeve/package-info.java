@@ -1,5 +1,4 @@
 /**
- * <h2>jeve 1.1.0</h2>
  * jeve is an open source framework for implementing the observer pattern in Java 8 . It 
  * makes use of lambda expressions and method references to clarify event delegation code.
  * 

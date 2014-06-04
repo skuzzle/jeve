@@ -23,6 +23,12 @@ import javax.tools.Diagnostic.Kind;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.Listener;
 
+/**
+ * Processes classes which are marked with {@link ListenerInterface} annotation and checks
+ * whether they adhere to the general contract of {@link Listener} implementations.
+ * 
+ * @author Simon Taddiken
+ */
 @SupportedAnnotationTypes("de.skuzzle.jeve.annotation.ListenerInterface")
 public class ListenerAnnotationProcessor extends AbstractProcessor {
 

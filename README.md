@@ -172,7 +172,8 @@ With jeve, all the above listed flaws can be treated in a safe and clear way:
   delegation (see below)
 * by simply obtaining a different EventProvider implementation, event 
   dispatching can be parallelized without touching any existing code
-* the event delegation process can be stopped by using a second kind of listeners (see below)
+* the event delegation process can be stopped by setting the event to be handled
+  (see below)
 * the EventProvider internally manages different kinds of listeners.
 
 
@@ -203,6 +204,9 @@ public class SampleUserListener implements UserListener {
     }
 }
 ```
+
+Additionally, when using a single threaded EventProvider, your listening method 
+could throw an `AbortionException` to brutally stop delegation.
 
 
 ## Automatically remove listeners
@@ -258,6 +262,9 @@ You may also set an ExceptionCallback globally for a specific EventProvider
 instance using `EventProvider.setExceptionCallback()`. When doing so, the 
 provided callback will be notified when dispatching an event without explicitly 
 specifying a callback.
+
+EventProviders will swallow any exception thrown by the ExceptionCallback 
+except AbortionExceptions. Those will be passed to the caller.
 
 ## Asynchronous event delegation
 One key feature of jeve is that it hides the event delegation strategy 

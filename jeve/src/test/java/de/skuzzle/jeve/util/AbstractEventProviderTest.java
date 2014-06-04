@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.EventProviderTestBase;
 
 /**
  * Base class for setting up an EventProvider testing area.

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/skuzzle/jeve.svg?branch=develop)](https://travis-ci.org/skuzzle/jeve)
+
 jeve
 ====
 

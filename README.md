@@ -27,10 +27,8 @@ Twitter (@ProjectPolly).
 
 
 ## Building
-Building jeve requires Apache Maven to be installed. You may then run 
-`mvn install` to build jeve and install it into your local repository. If you 
-want to add jeve to your existing projects, declare the following dependency 
-within your `pom.xml`:
+Building jeve requires Apache Maven to be installed. Additionally, jeve is
+available as dependency for your projects through Maven's Central Repository:
 
 ```xml
     <dependency>

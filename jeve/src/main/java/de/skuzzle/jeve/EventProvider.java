@@ -272,7 +272,7 @@ public interface EventProvider extends AutoCloseable {
      * {@link EventProvider} and is called from the current thread.
      * 
      * <p><b>Note on concurrency:</b> This method can safely be called from within a 
-     * listening method during event handling to remove a listener. This will have no 
+     * listening method during event handling to add a listener. This will have no 
      * impact on the current event delegation process.</p>
      * 
      * @param <T> Type of the listener to add. 

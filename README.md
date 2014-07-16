@@ -239,7 +239,7 @@ public class SampleUserListener implements UserListener {
 All provided `EventProvider` implementations provide error tolerant event 
 delegation. That is, if any notified listener throws a `RuntimeException`, this
 exception will be ignored and the next listener is notified. However, instead
-if ignoring the exception, you might want to customize the reaction. There 
+of ignoring the exception, you might want to customize the reaction. There 
 exists an overload of the `EventProvider.dispatch` method which takes an 
 `ExceptionCallback` as additional argument. This class has a single method to 
 which exceptions get passed.

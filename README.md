@@ -84,7 +84,7 @@ This sample code has several weaknesses:
 
 Most of these weaknesses can be solved by using *internal iteration*. That is,
 moving iteration **into** the framework, making it transparent for the caller. 
-See the quick start guid below to learn how jeve addresses these weaknesses.
+See the quick start guide below to learn how jeve addresses these weaknesses.
 
 
 # Quickstart

@@ -123,7 +123,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
             listener.onUnregister(e);
         } catch (Exception e) {
-            this.handleException(this.exceptionHandler, e, listener, null);
+            handleException(this.exceptionHandler, e, listener, null);
         }
     }
     
@@ -148,7 +148,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
             listener.onRegister(e);
         } catch (Exception e) {
-            this.handleException(this.exceptionHandler, e, listener, null);
+            handleException(this.exceptionHandler, e, listener, null);
         }
     }
 
@@ -174,7 +174,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
             listener.onUnregister(e);
         } catch (Exception e) {
-            this.handleException(this.exceptionHandler, e, listener, null);
+            handleException(this.exceptionHandler, e, listener, null);
         }
     }
     
@@ -192,7 +192,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     public <L extends Listener, E extends Event<?>> void dispatch(
             Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         this.checkDispatchArgs(listenerClass, event, bc, ec);
-        if (this.canDispatch()) {
+        if (canDispatch()) {
             this.notifyListeners(listenerClass, event, bc, ec);
         }
     }
@@ -260,7 +260,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         final Listeners<L> listeners = this.getListeners(listenerClass);
         boolean result = true;
         for (L listener : listeners) {
-            // TODO: remove as of deprecation
             if (event.isHandled()) {
                 return result;
             }
@@ -300,7 +299,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             }
             return true;
         } catch (RuntimeException e) {
-            this.handleException(ec, e, listener, event);
+            handleException(ec, e, listener, event);
             return false;
         }
     }

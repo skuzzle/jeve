@@ -8,7 +8,7 @@ import java.util.EventListener;
  * parent and further methods that are notified when the listener is registered or removed
  * to or from an {@link EventProvider}. 
  * 
- * Normally, you create an interface extending <tt>Listener</tt> and add some 
+ * Normally, you create an interface extending {@code Listener} and add some 
  * <em>listening methods</em>. By default, those methods must adhere to the signature:
  * 
  * <pre>public void &lt;listeningName&gt;(&lt;subclass of Event&gt; e);</pre>
@@ -46,7 +46,7 @@ public interface Listener extends EventListener {
      * @param parent The event provider from which the listener would be removed.
      * @return Whether to remove this listener from its parent after next notification.
      * @deprecated Since 1.1.0 - Deprecated in favor of manual listener removal using
-     *          <tt>event.getSource().removeSomeListener(this)</tt>
+     *          {@code event.getSource().removeSomeListener(this)}
      */
     @Deprecated
     public default boolean workDone(EventProvider parent) {

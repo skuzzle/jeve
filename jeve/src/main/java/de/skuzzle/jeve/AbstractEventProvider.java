@@ -282,8 +282,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
      * @return Whether the listener has been successfully notified.
-     * @throws AbortionException If the <tt>ExceptionCallback</tt> threw an 
-     *          <tt>AbortionException</tt>
+     * @throws AbortionException If the {@code ExceptionCallback} threw an 
+     *          {@code AbortionException}
      * @since 1.1.0
      */
     @SuppressWarnings("deprecation")
@@ -314,8 +314,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param e The occurred exception.
      * @param listener The listener which caused the exception.
      * @param ev The event which is currently being dispatched.
-     * @throws AbortionException If the <tt>ExceptionCallback</tt> threw an 
-     *          <tt>AbortionException</tt>
+     * @throws AbortionException If the {@code ExceptionCallback} threw an 
+     *          {@code AbortionException}
      */
     protected void handleException(ExceptionCallback ec, Exception e, Listener listener, 
             Event<?> ev) {

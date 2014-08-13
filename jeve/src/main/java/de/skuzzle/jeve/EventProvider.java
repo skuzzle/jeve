@@ -28,7 +28,7 @@ import java.util.function.BiConsumer;
  * unregistered using {@link #removeListener(Class, Listener)}. The same listener can be
  * registered for distinct listener classes. The {@link Listener} interface has two 
  * default methods which are called when a listener is registered or removed respectively.
- * Additionally there exists the default method <tt>workDone</tt>. If this method is 
+ * Additionally there exists the default method {@code workDone}. If this method is 
  * implemented to return <code>true</code>, the listener will be removed automatically 
  * from the event provider. Listeners registered for a certain class can be obtained by 
  * {@link #getListeners(Class)}. Client code should avoid using this method as it is not 
@@ -43,7 +43,7 @@ import java.util.function.BiConsumer;
  * <p>To notify the registered listeners, you need to specify the class for which they 
  * have been registered, the Event instance which is passed to each listener and the 
  * actual method to call on each listener. Here is an example of notifying listeners which
- * have been registered for the class <tt>UserListener</tt>.</p> 
+ * have been registered for the class {@code UserListener}.</p> 
  * 
  * <pre>
  * // create an event which holds its source and some additional data
@@ -53,8 +53,8 @@ import java.util.function.BiConsumer;
  * eventProvider.dispatch(UserListener.class, e, UserListener::userAdded);
  * </pre>
  * 
- * <p>On each listener which is registered for the class <tt>UserListener</tt>, the method
- * <tt>userAdded</tt> is called and gets passed the event instance <tt>e</tt>. 
+ * <p>On each listener which is registered for the class {@code UserListener}, the method
+ * {@code userAdded</tt> is called and gets passed the event instance <tt>e}. 
  * {@link #dispatch(Class, Event, BiConsumer) Dispatch} is the core of any EventProvider. 
  * It implements the logic of how the listeners are notified in a way that is transparent 
  * for the user of the EventProvider.</p>
@@ -267,7 +267,7 @@ public interface EventProvider extends AutoCloseable {
      * Adds a listener which will be notified for every event represented by the
      * given listener class. After registration, the listener's 
      * {@link Listener#onRegister(RegistrationEvent) onRegister} method gets called to
-     * notify the listener about being added to a new parent. The <tt>onRegister</tt> 
+     * notify the listener about being added to a new parent. The {@code onRegister} 
      * method is not subject to the dispatching strategy implemented by this 
      * {@link EventProvider} and is called from the current thread.
      * 
@@ -289,7 +289,7 @@ public interface EventProvider extends AutoCloseable {
      * further listener classes. The listener will no longer receive events represented
      * by the given listener class. After removal, the listener's 
      * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method gets called to
-     * notify the listener about being removed from a parent. The <tt>onUnregister</tt> 
+     * notify the listener about being removed from a parent. The {@code onUnregister} 
      * method is not subject to the dispatching strategy implemented by this 
      * {@link EventProvider} and is called from the current thread.
      * 
@@ -357,7 +357,7 @@ public interface EventProvider extends AutoCloseable {
      * listeners if the passed event has been marked 'handled' using 
      * {@link Event#setHandled(boolean)}.
      * 
-     * <p>Consider an <tt>UserListener</tt> interface:</p>
+     * <p>Consider an {@code UserListener} interface:</p>
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
@@ -400,7 +400,7 @@ public interface EventProvider extends AutoCloseable {
      * This method will stop notifying further listeners if the passed event has been 
      * marked 'handled' using {@link Event#setHandled(boolean)}.
      * 
-     * <p>Consider an <tt>UserListener</tt> interface:</p>
+     * <p>Consider an {@code UserListener} interface:</p>
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);

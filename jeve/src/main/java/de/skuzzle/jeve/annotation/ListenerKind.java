@@ -14,7 +14,7 @@ public enum ListenerKind {
      * {@link de.skuzzle.jeve.Listener Listener} and which only contains methods adhering
      * to the following conditions:
      * <ul>
-     *   <li>The return value is <tt>void</tt></li>
+     *   <li>The return value is {@code void}</li>
      *   <li>The only parameter is a sub type of {@link de.skuzzle.jeve.Event Event}</li>
      *   <li>No checked exceptions are thrown</li>
      * </ul>

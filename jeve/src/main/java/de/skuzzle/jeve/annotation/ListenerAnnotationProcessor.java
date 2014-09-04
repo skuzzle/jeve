@@ -32,25 +32,25 @@ import de.skuzzle.jeve.Listener;
 @SupportedAnnotationTypes("de.skuzzle.jeve.annotation.ListenerInterface")
 public class ListenerAnnotationProcessor extends AbstractProcessor {
 
-    private final static String EXPECTED_TYPE =
+    private static final String EXPECTED_TYPE =
             "Listening method '%s' must return %s in order to conform to ListenerKind %s";
 
-    private final static String ILLEGAL_PARAMETER =
+    private static final String ILLEGAL_PARAMETER =
             "Listening method '%s' must have a single parameter of type 'Event'";
 
-    private final static String ILLEGAL_EXCEPTION =
+    private static final String ILLEGAL_EXCEPTION =
             "Listening method '%s' can not throw checked exception";
 
-    private final static String EMPTY_LISTENER =
+    private static final String EMPTY_LISTENER =
             "Listener '%s' does not declare any listening methods";
 
-    private final static String INTERFACE_ONLY =
+    private static final String INTERFACE_ONLY =
             "@ListenerInterface only supported on interface types";
 
-    private final static String MISSING_INHERITANCE =
+    private static final String MISSING_INHERITANCE =
             "@ListenerInterface '%s' must extend de.skuzzle.jeve.Listener";
 
-    private final static String TAGGING_NOT_EMPTY = "Tagging listeners must be empty";
+    private static final String TAGGING_NOT_EMPTY = "Tagging listeners must be empty";
 
 
 

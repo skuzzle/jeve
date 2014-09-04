@@ -33,7 +33,7 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
      *
      * @author Simon Taddiken
      */
-    private final static class BrokenExecutorService extends ThreadPoolExecutor {
+    private static final class BrokenExecutorService extends ThreadPoolExecutor {
 
         public BrokenExecutorService() {
             super(1, 1, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1));
@@ -53,7 +53,7 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
      *          {@link EventProviderTestBase}.
      */
     @Parameters
-    public final static Collection<Object[]> getParameters() {
+    public static final Collection<Object[]> getParameters() {
         return Collections.singleton(
             new EventProviderFactory[] {
                 () -> EventProviders.newParallelEventProvider(

@@ -123,7 +123,7 @@ public interface EventProvider extends AutoCloseable {
      * The default {@link ExceptionCallback} which prints some information about the
      * occurred error to the standard output. The exact format is not specified.
      */
-    public final static ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
+    public static final ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
         System.err.println(
             "Listener threw an exception while being notified\n" +
             "Details\n" +

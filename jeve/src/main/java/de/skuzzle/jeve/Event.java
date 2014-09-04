@@ -9,7 +9,11 @@ package de.skuzzle.jeve;
  * living objects which are only used once - one Event instance for each call to
  * {@link EventProvider#dispatch(Event, java.util.function.BiConsumer) dispatch}
  * . Any different usage might result in undefined behavior, especially when
- * using the {@link #isHandled()} property.
+ * using the {@link #isHandled()} property. Events explicitly belong to one kind
+ * of {@link Listener} implementation which is able to handle it. The class of
+ * this listener is passed to the constructor and queried by the
+ * {@link EventProvider} when collecting a list of targeted listeners for a
+ * dispatch action.
  * </p>
  *
  * <p>

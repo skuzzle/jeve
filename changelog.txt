@@ -1,7 +1,11 @@
 This is the jeve version history.
 Author: Simon Taddiken
 
-
+Version 2.0.0 [Released: TODO]
+    * Remove 'listenerClass' parameter from EventProvider#dispatch. Each Event 
+      instance now specifies the class of the listener which can handle it.
+    * Reintroduced 'EventProviders' class and moved factory methods there.
+    * Removed deprecated method 'workDone' from the Listener interface
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own
       thread.

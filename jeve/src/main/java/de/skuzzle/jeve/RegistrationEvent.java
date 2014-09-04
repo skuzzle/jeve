@@ -7,7 +7,7 @@ package de.skuzzle.jeve;
  * @author Simon Taddiken
  * @since 1.0.0
  */
-public class RegistrationEvent {
+public final class RegistrationEvent {
 
     /** The {@link EventProvider} to which the listener has been added */
     private final EventProvider source;

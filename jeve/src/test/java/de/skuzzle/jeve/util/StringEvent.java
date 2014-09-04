@@ -7,26 +7,26 @@ import de.skuzzle.jeve.EventProvider;
 
 /**
  * Event class which holds a single string.
- * 
+ *
  * @author Simon Taddiken
  */
 @Ignore
-public class StringEvent extends Event<EventProvider> {
+public class StringEvent extends Event<EventProvider, StringListener> {
 
     private final String string;
-    
+
     /**
      * Creates a new StringEvent.
      * @param source The source of this event.
      * @param string The string attached to the event.
      */
     public StringEvent(EventProvider source, String string) {
-        super(source);
+        super(source, StringListener.class);
         this.string = string;
     }
-    
-    
-    
+
+
+
     /**
      * Gets the string attached to this event object.
      * @return The string.

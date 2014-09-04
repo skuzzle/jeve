@@ -6,22 +6,22 @@ import java.util.function.BiConsumer;
 
 /**
  * EventProvider implementation which uses an {@link ExecutorService} to notify each
- * listener within a dedicated thread. This implementation is thereby 
- * {@link #isSequential() not sequential}. 
- * 
- * <p>Instances of this class can be obtained using the static factory methods of the 
+ * listener within a dedicated thread. This implementation is thereby
+ * {@link #isSequential() not sequential}.
+ *
+ * <p>Instances of this class can be obtained using the static factory methods of the
  * {@link EventProvider} interface.</p>
- * 
+ *
  * @author Simon Taddiken
  * @since 1.1.0
  */
 public class ParallelEventProvider extends AbstractEventProvider {
 
     private final ExecutorService executor;
-    
+
     /**
      * Creates a new ParallelEventPRovider.
-     * 
+     *
      * @param executor The executor to use.
      */
     ParallelEventProvider(ExecutorService executor) {
@@ -30,46 +30,44 @@ public class ParallelEventProvider extends AbstractEventProvider {
         }
         this.executor = executor;
     }
-    
-    
-    
+
+
+
     @Override
-    public <L extends Listener, E extends Event<?>> void dispatch(Class<L> listenerClass,
+    public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        this.checkDispatchArgs(listenerClass, event, bc, ec);
-        
-        if (!this.canDispatch()) {
+
+        checkDispatchArgs(event, bc, ec);
+        if (!canDispatch()) {
             return;
         }
-        
-        final Listeners<L> listeners = this.getListeners(listenerClass);
+
+        final Listeners<L> listeners = this.getListeners(event.getListenerClass());
         listeners.forEach(listener -> {
             try {
-                this.executor.execute(() -> {
-                    this.notifySingle(listenerClass, listener, event, bc, ec);
-                });
+                this.executor.execute(() -> notifySingle(listener, event, bc, ec));
             } catch (RuntimeException e) {
-                this.handleException(ec, e, listener, event);
+                handleException(ec, e, listener, event);
             }
         });
     }
-    
-    
-    
+
+
+
     @Override
     public boolean canDispatch() {
         return !this.executor.isShutdown() && !this.executor.isTerminated();
     }
-    
-    
-    
+
+
+
     @Override
     public boolean isSequential() {
         return false;
     }
-    
-    
-    
+
+
+
     @Override
     public void close() {
         super.close();

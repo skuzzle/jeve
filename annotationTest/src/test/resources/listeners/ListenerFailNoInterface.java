@@ -7,5 +7,5 @@ import de.skuzzle.jeve.annotation.ListenerKind;
 
 @ListenerInterface(value = ListenerKind.NORMAL)
 public class ListenerFailNoInterface implements Listener {
-    public void foo1(Event<String> e) {}
+    public void foo1(Event<?, ? extends Listener> e) {}
 }

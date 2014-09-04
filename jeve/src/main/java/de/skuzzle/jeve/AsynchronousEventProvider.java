@@ -11,16 +11,16 @@ import java.util.function.BiConsumer;
 /**
  * This EventProvider fires events asynchronously using an {@link ExecutorService} for
  * managing the creation of threads.
- * 
+ *
  * @author Simon Taddiken
  * @since 1.0.0
  */
 class AsynchronousEventProvider extends AbstractEventProvider {
-    
+
     /** Service which serves for creating and reusing threads.  */
     protected final ExecutorService dispatchPool;
-    
-    
+
+
     /**
      * Creates a new {@link AsynchronousEventProvider} which uses a single threaded
      * {@link ExecutorService}.
@@ -28,13 +28,13 @@ class AsynchronousEventProvider extends AbstractEventProvider {
     public AsynchronousEventProvider() {
         this(Executors.newFixedThreadPool(1));
     }
-    
-    
-    
+
+
+
     /**
-     * Creates a new {@link AsynchronousEventProvider} which uses the provided 
+     * Creates a new {@link AsynchronousEventProvider} which uses the provided
      * {@link ExecutorService} for event dispatching.
-     * 
+     *
      * @param dispatcher ExecutorService to use.
      */
     public AsynchronousEventProvider(ExecutorService dispatcher) {
@@ -43,36 +43,36 @@ class AsynchronousEventProvider extends AbstractEventProvider {
         }
         this.dispatchPool = dispatcher;
     }
-    
-    
-    
+
+
+
     @Override
-    public <L extends Listener, E extends Event<?>> void dispatch(
-            Class<L> listenerClass, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        
-        this.checkDispatchArgs(listenerClass, event, bc, ec);
-        if (this.canDispatch()) {
-            this.dispatchPool.execute(() -> notifyListeners(listenerClass, event, bc, ec));
+    public <L extends Listener, E extends Event<?, L>> void dispatch(
+            E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
+
+        checkDispatchArgs(event, bc, ec);
+        if (canDispatch()) {
+            this.dispatchPool.execute(() -> notifyListeners(event, bc, ec));
         }
-        
+
     }
-    
-    
-    
+
+
+
     @Override
     public boolean canDispatch() {
         return !this.dispatchPool.isShutdown() && !this.dispatchPool.isTerminated();
     }
-    
-    
-    
+
+
+
     @Override
     public boolean isSequential() {
         return true;
     }
-    
-    
-    
+
+
+
     @Override
     public void close() {
         super.close();

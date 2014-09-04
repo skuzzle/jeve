@@ -6,6 +6,9 @@ Version 2.0.0 [Released: TODO]
       instance now specifies the class of the listener which can handle it.
     * Reintroduced 'EventProviders' class and moved factory methods there.
     * Removed deprecated method 'workDone' from the Listener interface
+    * Corrected semantics of AbortionException: those will be delegated up to 
+      the caller of EventProvider#dispatch and will no longer be passed to the
+      ExceptionCallback when thrown by a listener.
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own
       thread.

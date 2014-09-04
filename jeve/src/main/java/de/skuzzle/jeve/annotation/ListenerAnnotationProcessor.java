@@ -124,6 +124,8 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
         case TAGGING:
             assert false : "should not be reachable";
             break;
+        default:
+            break;
         }
     }
 

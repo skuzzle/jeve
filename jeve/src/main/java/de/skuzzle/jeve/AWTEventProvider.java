@@ -49,6 +49,12 @@ class AWTEventProvider extends AbstractEventProvider {
                     SwingUtilities.invokeAndWait(
                             () -> notifyListeners(event, bc, ec));
                 } catch (InvocationTargetException e) {
+                    if (e.getTargetException() instanceof AbortionException) {
+                        throw (AbortionException) e.getTargetException();
+                    }
+
+                    // this should not be reachable, as notifyListeners can not
+                    // throw any other exceptions
                     throw new RuntimeException(e);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

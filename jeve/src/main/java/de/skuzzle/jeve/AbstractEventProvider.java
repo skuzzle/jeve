@@ -235,14 +235,16 @@ public abstract class AbstractEventProvider implements EventProvider {
 
 
     /**
-     * Notifies all listeners registered for the provided class with the provided event.
-     * This method is failure tolerant and will continue notifying listeners even if one
-     * of them threw an exception. Exceptions are passed to the provided
-     * {@link ExceptionCallback}.
+     * Notifies all listeners registered for the provided class with the
+     * provided event. This method is failure tolerant and will continue
+     * notifying listeners even if one of them threw an exception. Exceptions
+     * are passed to the provided {@link ExceptionCallback}.
      *
-     * <p>This method does not check whether this provider is ready for dispatching and
-     * might thus throw an exception when trying to dispatch an event while the provider
-     * is not ready.</p>
+     * <p>
+     * This method does not check whether this provider is ready for dispatching
+     * and might thus throw an exception when trying to dispatch an event while
+     * the provider is not ready.
+     * </p>
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -250,6 +252,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
      * @return Whether all listeners has been successfully notified.
+     * @throws AbortionException If the ExceptionCallback threw an
+     *             AbortionException
      */
     protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
@@ -278,8 +282,8 @@ public abstract class AbstractEventProvider implements EventProvider {
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
      * @return Whether the listener has been successfully notified.
-     * @throws AbortionException If the {@code ExceptionCallback} threw an
-     *          {@code AbortionException}
+     * @throws AbortionException If the {@code ExceptionCallback} or the
+     *             {@code listener} threw an {@code AbortionException}.
      * @since 1.1.0
      */
     protected <L extends Listener, E extends Event<?, L>> boolean notifySingle(
@@ -287,6 +291,10 @@ public abstract class AbstractEventProvider implements EventProvider {
         try {
             bc.accept(listener, event);
             return true;
+        } catch (AbortionException e) {
+            // Abortion exceptions should not be handled by the
+            // ExceptionCallback
+            throw e;
         } catch (RuntimeException e) {
             handleException(ec, e, listener, event);
             return false;

@@ -54,7 +54,7 @@ import java.util.function.BiConsumer;
  * <pre>
  * // create an event which holds its source and some additional data
  * UserEvent e = new UserEvent(this, user);
- * 
+ *
  * // notify all UserListeners with this event.
  * eventProvider.dispatch(e, UserListener::userAdded);
  * </pre>
@@ -225,13 +225,16 @@ public interface EventProvider extends AutoCloseable {
     public void clearAllListeners();
 
     /**
-     * Notifies all listeners of a certain kind about an occurred event. If this provider
-     * is not ready for dispatching as determined by {@link #canDispatch()}, this method
-     * returns immediately without doing anything. This method will stop notifying further
-     * listeners if the passed event has been marked 'handled' using
-     * {@link Event#setHandled(boolean)}.
+     * Notifies all listeners of a certain kind about an occurred event. If this
+     * provider is not ready for dispatching as determined by
+     * {@link #canDispatch()}, this method returns immediately without doing
+     * anything. This method will stop notifying further listeners if the passed
+     * event has been marked 'handled' using {@link Event#setHandled(boolean)}.
      *
-     * <p>Consider an {@code UserListener} interface:</p>
+     * <p>
+     * Consider an {@code UserListener} interface:
+     * </p>
+     *
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
@@ -240,73 +243,97 @@ public interface EventProvider extends AutoCloseable {
      * }
      * </pre>
      *
-     * Notifying all registered UserListeners about an added user is as easy as calling
+     * Notifying all registered UserListeners about an added user is as easy as
+     * calling
+     *
      * <pre>
-     * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded)
+     * eventProvider.dispatchEvent(event, UserListener::userAdded)
      * </pre>
      *
-     * <p>This method uses the global {@link ExceptionCallback} provided to
-     * {@link #setExceptionCallback(ExceptionCallback)} or an default instance if none
-     * has been explicitly set.</p>
+     * <p>
+     * This method uses the global {@link ExceptionCallback} provided to
+     * {@link #setExceptionCallback(ExceptionCallback)} or an default instance
+     * if none has been explicitly set.
+     * </p>
      *
-     * <p>Note on concurrency: This method operates on a copy of the list of targeted
-     * listeners. This allows you to add/remove listeners from within a listening
-     * method.</p>
+     * <p>
+     * Note on concurrency: This method operates on a copy of the list of
+     * targeted listeners. This allows you to add/remove listeners from within a
+     * listening method.
+     * </p>
      *
-     * <p>Please note that neither parameter to this method must be null.</p>
+     * <p>
+     * Please note that neither parameter to this method must be null.
+     * </p>
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
      * @param event The occurred event which shall be passed to each listener.
-     * @param bc Function to delegate the event to the specific callback method of the
-     *          listener.
+     * @param bc Function to delegate the event to the specific callback method
+     *            of the listener.
      * @throws IllegalArgumentException If any of the passed arguments is
-     *          <code>null</code>.
+     *             <code>null</code>.
+     * @throws AbortionException If a listener threw an AbortionException
      */
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc);
 
     /**
-     * Notifies all listeners of a certain kind about an occurred event with explicit
-     * error handling. If this provider is not ready for dispatching as determined by
-     * {@link #canDispatch()}, this method returns immediately without doing anything.
-     * This method will stop notifying further listeners if the passed event has been
-     * marked 'handled' using {@link Event#setHandled(boolean)}.
+     * Notifies all listeners of a certain kind about an occurred event with
+     * explicit error handling. If this provider is not ready for dispatching as
+     * determined by {@link #canDispatch()}, this method returns immediately
+     * without doing anything. This method will stop notifying further listeners
+     * if the passed event has been marked 'handled' using
+     * {@link Event#setHandled(boolean)}.
      *
-     * <p>Consider an {@code UserListener} interface:</p>
+     * <p>
+     * Consider an {@code UserListener} interface:
+     * </p>
+     *
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
-     *
+     * 
      *     public void userDeleted(UserEvent e);
      * }
      * </pre>
      *
-     * Notifying all registered UserListeners about an added user is as easy as calling
+     * Notifying all registered UserListeners about an added user is as easy as
+     * calling
+     *
      * <pre>
-     * eventProvider.dispatchEvent(UserListener.class, event, UserListener::userAdded,
-     *      e -&gt; logger.error(e));
+     * final ExceptionCallback callBack = new EceptionCallback() { ... };
+     * eventProvider.dispatchEvent(event, UserListener::userAdded, callBack);
      * </pre>
      *
-     * <p>The {@link ExceptionCallback} gets notified when any of the listeners throws an
-     * unexpected exception. If the exception handler itself throws an exception, it will
-     * be ignored. The callback provided to this method takes precedence over the
-     * global callback provided by {@link #setExceptionCallback(ExceptionCallback)}.</p>
+     * <p>
+     * The {@link ExceptionCallback} gets notified when any of the listeners
+     * throws an unexpected exception. If the exception handler itself throws an
+     * exception, it will be ignored. The callback provided to this method takes
+     * precedence over the global callback provided by
+     * {@link #setExceptionCallback(ExceptionCallback)}.
+     * </p>
      *
-     * <p>Note on concurrency: This method operates on a copy of the list of targeted
-     * listeners. This allows you to add/remove listeners from within a listening
-     * method.</p>
+     * <p>
+     * Note on concurrency: This method operates on a copy of the list of
+     * targeted listeners. This allows you to add/remove listeners from within a
+     * listening method.
+     * </p>
      *
-     * <p>Please note that neither parameter to this method must be null.</p>
+     * <p>
+     * Please note that neither parameter to this method must be null.
+     * </p>
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
      * @param event The occurred event which shall be passed to each listener.
-     * @param bc Function to delegate the event to the specific callback method of the
-     *          listener.
-     * @param ec Callback to be notified when any of the listeners throws an exception.
+     * @param bc Function to delegate the event to the specific callback method
+     *            of the listener.
+     * @param ec Callback to be notified when any of the listeners throws an
+     *            exception.
      * @throws IllegalArgumentException If any of the passed arguments is
-     *          <code>null</code>.
+     *             <code>null</code>.
+     * @throws AbortionException If a listener threw an AbortionException
      */
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec);

@@ -7,14 +7,15 @@ import java.util.function.BiConsumer;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import de.skuzzle.jeve.util.AbstractEventProviderTest;
+import de.skuzzle.jeve.util.BothListener;
 import de.skuzzle.jeve.util.DifferentStringEvent;
 import de.skuzzle.jeve.util.DifferentStringListener;
 import de.skuzzle.jeve.util.EventProviderFactory;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
-
 
 /**
  * This class contains basic tests for all event providers
@@ -22,20 +23,21 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @Ignore
-public abstract class EventProviderTestBase extends AbstractEventProviderTest{
+public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
     /**
      * Creates a new Test class instance.
+     *
      * @param factory A factory for creating event providers
      */
     public EventProviderTestBase(EventProviderFactory factory) {
         super(factory);
     }
 
-
-
     /**
-     * Tests whether exception is thrown when trying to add <code>null</code> as listener.
+     * Tests whether exception is thrown when trying to add <code>null</code> as
+     * listener.
+     *
      * @throws Exception If an exception occurs during testing.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -43,11 +45,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         this.subject.addListener(StringListener.class, null);
     }
 
-
-
     /**
      * Tests whether exception is thrown when trying to add <code>null</code> as
      * listener class.
+     *
      * @throws Exception If an exception occurs during testing.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -55,10 +56,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         this.subject.addListener(null, null);
     }
 
-
-
     /**
-     * Tests whether exception is thrown when specifying <code>null</code> as event.
+     * Tests whether exception is thrown when specifying <code>null</code> as
+     * event.
+     *
      * @throws Exception If an exception occurs during testing.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -66,11 +67,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         this.subject.dispatch(null, StringListener::onStringEvent);
     }
 
-
-
     /**
-     * Tests whether exception is thrown when specifying <code>null</code> as method to
-     * call.
+     * Tests whether exception is thrown when specifying <code>null</code> as
+     * method to call.
+     *
      * @throws Exception If an exception occurs during testing.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -79,11 +79,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
                 (BiConsumer<StringListener, StringEvent>) null);
     }
 
-
-
     /**
-     * Tests whether exception is thrown when specifying <code>null</code> as exception
-     * callback to dispatch.
+     * Tests whether exception is thrown when specifying <code>null</code> as
+     * exception callback to dispatch.
+     *
      * @throws Exception If an exception occurs during testing.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -92,12 +91,12 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
                 StringListener::onStringEvent, null);
     }
 
-
-
     /**
      * Tests whether listeners are notified in order they are added.
      *
-     * <p>This test case will not be executed for non sequential providers.</p>
+     * <p>
+     * This test case will not be executed for non sequential providers.
+     * </p>
      *
      * @throws Exception If an exception occurs during testing.
      */
@@ -120,8 +119,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
     }
-
-
 
     /**
      * Tests whether listeners are returned in order they have been added by
@@ -156,36 +153,31 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         }
     }
 
-
-
     /**
-     * Tests whether further listener is notified if first listener throws an exception.
+     * Tests whether further listener is notified if first listener throws an
+     * exception.
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testExceptionHandling() throws Exception {
         final String SUBJECT = "someString";
-        final boolean[] container = new boolean[1];
-        final StringListener first = e -> { throw new RuntimeException(); };
-        final StringListener second = e -> {
-            Assert.assertEquals(getFailString("Listener not called"), SUBJECT, e.getString());
-            container[0] = true;
+        final StringListener first = e -> {
+            throw new RuntimeException();
         };
-
+        final StringListener second = Mockito.mock(StringListener.class);
 
         this.subject.addListener(StringListener.class, first);
         this.subject.addListener(StringListener.class, second);
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent,
-                (ex, l, ev) -> {}); // swallow exception
+                (ex, l, ev) -> {
+                }); // swallow exception
         // HACK: give async providers some time to execute
         Thread.sleep(THREAD_WAIT_TIME);
 
-        Assert.assertTrue(getFailString("Second listener not notified"), container[0]);
+        Mockito.verify(second).onStringEvent(Mockito.eq(e));
     }
-
-
 
     /**
      * Tests the global exception handler of the EventProvider
@@ -195,77 +187,67 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
     @Test
     public void testGlobalExceptionHandling() throws Exception {
         final String SUBJECT = "someString";
-        final boolean[] container = new boolean[2];
-        final StringListener first = e -> { throw new RuntimeException(SUBJECT); };
-        final StringListener second = e -> {
-            Assert.assertEquals(getFailString("Listener not called"), SUBJECT,
-                    e.getString());
-            container[0] = true;
+        final StringListener first = e -> {
+            throw new RuntimeException(SUBJECT);
         };
+        final StringListener second = Mockito.mock(StringListener.class);
 
-        final ExceptionCallback ec = (e, l, ev) -> {
-            Assert.assertEquals(getFailString("ExceptionCallback not called"), SUBJECT,
-                    e.getMessage());
-            container[1] = true;
-        };
+        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
 
         this.subject.setExceptionCallback(ec);
         this.subject.addListener(StringListener.class, first);
         this.subject.addListener(StringListener.class, second);
+
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent);
         // HACK: give async providers some time to execute
         Thread.sleep(THREAD_WAIT_TIME);
 
-        Assert.assertTrue(getFailString("Second listener not notified"), container[0]);
-        Assert.assertTrue(getFailString("Exception handler not notified"), container[1]);
+        Mockito.verify(second).onStringEvent(Mockito.eq(e));
+        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.eq(e));
     }
 
-
-
     /**
-     * Tests whether explicit exception handler takes precedence over global handler.
+     * Tests whether explicit exception handler takes precedence over global
+     * handler.
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testGlobalExceptionHandlingPrecedence() throws Exception {
         final String SUBJECT = "someString";
-        final boolean[] container = new boolean[2];
-        final StringListener first = e -> { throw new RuntimeException(SUBJECT); };
-
-        final ExceptionCallback globalEc = (e, l, ev) -> {
-            container[0] = true;
+        final StringListener first = e -> {
+            throw new RuntimeException(SUBJECT);
         };
 
-        final ExceptionCallback localEc = (e, l, ev) -> {
-            container[1] = true;
-        };
-
+        final ExceptionCallback globalEc = Mockito.mock(ExceptionCallback.class);
+        final ExceptionCallback localEc = Mockito.mock(ExceptionCallback.class);
 
         this.subject.setExceptionCallback(globalEc);
         this.subject.addListener(StringListener.class, first);
+
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent, localEc);
         // HACK: give async providers some time to execute
         Thread.sleep(THREAD_WAIT_TIME);
 
-        Assert.assertFalse(getFailString("Global Exception Handler called"), container[0]);
-        Assert.assertTrue(getFailString("Local Exception Handler not called"), container[1]);
+        Mockito.verify(globalEc, Mockito.never())
+                .exception(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(localEc).exception(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
-
-
     /**
-     * Tests whether only correct listeners are notified if multiple listener classes
-     * have been registered.
+     * Tests whether only correct listeners are notified if multiple listener
+     * classes have been registered.
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testMultipleListenerTypes() throws Exception {
-        final StringListener string1 = e -> {};
-        final StringListener string2 = e -> {};
+        final StringListener string1 = e -> {
+        };
+        final StringListener string2 = e -> {
+        };
         final DifferentStringListener diffString1 =
                 e -> Assert.fail(getFailString("Listener should not have been notified"));
         final DifferentStringListener diffString2 =
@@ -281,8 +263,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         this.subject.dispatch(e, StringListener::onStringEvent);
     }
 
-
-
     /**
      * Tests whether delegation stops after event has been handled.
      *
@@ -295,24 +275,40 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         }
         final String SUBJECT = "someString";
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
-        final boolean[] notified = new boolean[1];
         // first listener sets event to be handled
         final StringListener firstListener = event -> event.setHandled(true);
-        final StringListener secondListener = event -> {
-            notified[0] = true;
-            Assert.fail(getFailString("Second listener has been notified"));
-        };
+        final StringListener secondListener = Mockito.mock(StringListener.class);
 
         this.subject.addListener(StringListener.class, firstListener);
         this.subject.addListener(StringListener.class, secondListener);
         this.subject.dispatch(e, StringListener::onStringEvent);
 
         Thread.sleep(THREAD_WAIT_TIME);
-        Assert.assertFalse(getFailString("Second listener has been notified"),
-                notified[0]);
+        Mockito.verify(secondListener, Mockito.never()).onStringEvent(Mockito.eq(e));
     }
 
+    /**
+     * Tests whether AbortionException aborts the delegation process
+     */
+    @Test
+    public void testAbortWithException() {
+        if (checkSkipNonSequential()) {
+            return;
+        }
+        final StringListener listener = Mockito.mock(StringListener.class);
+        final StringListener listener2 = Mockito.mock(StringListener.class);
+        Mockito.doThrow(AbortionException.class).when(listener).onStringEvent(Mockito.any());
 
+        this.subject.addListener(StringListener.class, listener);
+        this.subject.addListener(StringListener.class, listener2);
+        final StringEvent e = new StringEvent(this.subject, "");
+
+        try {
+            this.subject.dispatch(e, StringListener::onStringEvent);
+        } catch (AbortionException abort) {
+        }
+        Mockito.verify(listener2, Mockito.never()).onStringEvent(Mockito.any());
+    }
 
     /**
      * Tests whether removal of a listener works.
@@ -321,14 +317,14 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
      */
     @Test
     public void testRemoveListener() throws Exception {
-        final StringListener listener = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final StringListener listener = Mockito.mock(StringListener.class);
         this.subject.addListener(StringListener.class, listener);
         this.subject.removeListener(StringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
+
+        Mockito.verify(listener, Mockito.never()).onStringEvent(Mockito.any());
     }
-
-
 
     /**
      * Tests whether notifying a listener about registration and removal works.
@@ -337,93 +333,52 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
      */
     @Test
     public void testNotifyListener() throws Exception {
-        final boolean[] container = new boolean[2];
-        final StringListener listener = new StringListener() {
-
-            @Override
-            public void onUnregister(RegistrationEvent e) {
-                container[1] = true;
-            }
-
-            @Override
-            public void onRegister(RegistrationEvent e) {
-                container[0] = true;
-            }
-
-            @Override
-            public void onStringEvent(StringEvent e) {
-                Assert.fail(getFailString("Listener should not have been notified"));
-            }
-        };
+        final StringListener listener = Mockito.mock(StringListener.class);
         this.subject.addListener(StringListener.class, listener);
         this.subject.removeListener(StringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
-        Assert.assertTrue(getFailString("Register not called"), container[0]);
-        Assert.assertTrue(getFailString("Unregister not called"), container[0]);
+
+        Mockito.verify(listener, Mockito.never()).onStringEvent(Mockito.any());
+        Mockito.verify(listener).onRegister(Mockito.any());
+        Mockito.verify(listener).onUnregister(Mockito.any());
     }
 
-
-
     /**
-     * Tests exceptions are caught by the default ExceptionCallback af an EventProvider.
+     * Tests exceptions are caught by the default ExceptionCallback of an
+     * EventProvider if a listener's onRegister or onUnregister method throws an
+     * exception
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testNotifyListenerWithException() throws Exception {
-        final int[] counter = new int[1];
-        final ExceptionCallback ec = (e,l, ev) -> counter[0]++;
+        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         this.subject.setExceptionCallback(ec);
 
-        final StringListener listener = new StringListener() {
+        final StringListener listener = Mockito.mock(StringListener.class);
+        Mockito.doThrow(RuntimeException.class).when(listener).onRegister(Mockito.any());
+        Mockito.doThrow(RuntimeException.class).when(listener).onUnregister(Mockito.any());
 
-            @Override
-            public void onUnregister(RegistrationEvent e) {
-                throw new RuntimeException();
-            }
-
-            @Override
-            public void onRegister(RegistrationEvent e) {
-                throw new RuntimeException();
-            }
-
-            @Override
-            public void onStringEvent(StringEvent e) {
-                Assert.fail(getFailString("Listener should not have been notified"));
-            }
-        };
         this.subject.addListener(StringListener.class, listener);
         this.subject.removeListener(StringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
-        Assert.assertEquals(getFailString("Unexpected exception count"), 2, counter[0]);
+
+        Mockito.verify(listener, Mockito.never()).onStringEvent(Mockito.any());
+        Mockito.verify(ec, Mockito.times(2)).exception(
+                Mockito.any(), Mockito.any(), Mockito.any());
     }
 
-
-
     /**
-     * Registers an object which implements two kinds of listeners for both events,
-     * then removes it for one again.
+     * Registers an object which implements two kinds of listeners for both
+     * events, then removes it for one again.
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void removeMutliListener() throws Exception {
-        final boolean[] container = new boolean[1];
-        class TestListener implements StringListener, DifferentStringListener {
-
-            @Override
-            public void onDifferentStringEvent(DifferentStringEvent e) {
-                Assert.fail(getFailString("Listener should not have been notified"));
-            }
-
-            @Override
-            public void onStringEvent(StringEvent e) {
-                container[0] = true;
-            }
-        }
-        final TestListener listener = new TestListener();
+        final BothListener listener = Mockito.mock(BothListener.class);
         this.subject.addListener(StringListener.class, listener);
         this.subject.addListener(DifferentStringListener.class, listener);
 
@@ -433,11 +388,9 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         // HACK: give async providers some time to execute
         Thread.sleep(THREAD_WAIT_TIME);
 
-        Assert.assertTrue(getFailString("Listener method has not been called"),
-                container[0]);
+        Mockito.verify(listener).onStringEvent(Mockito.any());
+        Mockito.verify(listener, Mockito.never()).onDifferentStringEvent(Mockito.any());
     }
-
-
 
     /**
      * Tests whether clearing of a certain listener class works.
@@ -446,8 +399,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
      */
     @Test
     public void testClearAllByClass() throws Exception {
-        final StringListener string1 = e -> {};
-        final StringListener string2 = e -> {};
+        final StringListener string1 = e -> {
+        };
+        final StringListener string2 = e -> {
+        };
         final DifferentStringListener diffString1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
         final DifferentStringListener diffString2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
 
@@ -464,45 +419,24 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         this.subject.dispatch(e1, DifferentStringListener::onDifferentStringEvent);
     }
 
-
-
     /**
-     * Tests whether clearing of a certain listener class works and the cleared listeners
-     * are notified
+     * Tests whether clearing of a certain listener class works and the cleared
+     * listeners are notified
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testClearAllByClassAndNotify() throws Exception {
-        final boolean[] unregistered = new boolean[2];
-        final StringListener string1 = new StringListener() {
-            @Override
-            public void onUnregister(RegistrationEvent e) {
-                unregistered[0] = true;
-            }
-
-            @Override
-            public void onStringEvent(StringEvent e) {}
-        };
-        final DifferentStringListener diffString1 = new DifferentStringListener() {
-            @Override
-            public void onUnregister(RegistrationEvent e) {
-                unregistered[1] = true;
-            }
-
-            @Override
-            public void onDifferentStringEvent(DifferentStringEvent e) {}
-        };
+        final StringListener string1 = Mockito.mock(StringListener.class);
+        final DifferentStringListener diffString1 = Mockito.mock(DifferentStringListener.class);
 
         this.subject.addListener(StringListener.class, string1);
         this.subject.addListener(DifferentStringListener.class, diffString1);
 
         this.subject.clearAllListeners(DifferentStringListener.class);
-        Assert.assertFalse(getFailString("Unregister method called"), unregistered[0]);
-        Assert.assertTrue(getFailString("Unregister method not called"), unregistered[1]);
+        Mockito.verify(string1, Mockito.never()).onUnregister(Mockito.any());
+        Mockito.verify(diffString1).onUnregister(Mockito.any());
     }
-
-
 
     /**
      * Tests whether clearing of all listeners works.
@@ -511,10 +445,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
      */
     @Test
     public void testClearAll() throws Exception {
-        final StringListener string1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
-        final StringListener string2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
-        final DifferentStringListener diffString1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
-        final DifferentStringListener diffString2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
+        final StringListener string1 = Mockito.mock(StringListener.class);
+        final StringListener string2 = Mockito.mock(StringListener.class);
+        final DifferentStringListener diffString1 = Mockito.mock(DifferentStringListener.class);
+        final DifferentStringListener diffString2 = Mockito.mock(DifferentStringListener.class);
 
         this.subject.addListener(StringListener.class, string1);
         this.subject.addListener(DifferentStringListener.class, diffString1);
@@ -527,57 +461,44 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         final DifferentStringEvent e1 = new DifferentStringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
         this.subject.dispatch(e1, DifferentStringListener::onDifferentStringEvent);
+
+        Mockito.verify(string1, Mockito.never()).onStringEvent(Mockito.any());
+        Mockito.verify(string2, Mockito.never()).onStringEvent(Mockito.any());
+        Mockito.verify(diffString1, Mockito.never()).onDifferentStringEvent(Mockito.any());
+        Mockito.verify(diffString2, Mockito.never()).onDifferentStringEvent(Mockito.any());
+
+
     }
 
-
-
     /**
-     * Tests whether clearing all listeners works and the cleared listeners
-     * are notified
+     * Tests whether clearing all listeners works and the cleared listeners are
+     * notified
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testClearAllAndNotify() throws Exception {
-        final boolean[] unregistered = new boolean[2];
-        final StringListener string1 = new StringListener() {
-            @Override
-            public void onUnregister(RegistrationEvent e) {
-                unregistered[0] = true;
-            }
-
-            @Override
-            public void onStringEvent(StringEvent e) {}
-        };
-        final DifferentStringListener diffString1 = new DifferentStringListener() {
-            @Override
-            public void onUnregister(RegistrationEvent e) {
-                unregistered[1] = true;
-            }
-
-            @Override
-            public void onDifferentStringEvent(DifferentStringEvent e) {}
-        };
+        final StringListener string1 = Mockito.mock(StringListener.class);
+        final DifferentStringListener diffString1 = Mockito.mock(DifferentStringListener.class);
 
         this.subject.addListener(StringListener.class, string1);
         this.subject.addListener(DifferentStringListener.class, diffString1);
 
         this.subject.clearAllListeners();
-        Assert.assertTrue(getFailString("Unregister method not called"), unregistered[0]);
-        Assert.assertTrue(getFailString("Unregister method not called"), unregistered[1]);
+
+        Mockito.verify(string1).onUnregister(Mockito.any());
+        Mockito.verify(diffString1).onUnregister(Mockito.any());
     }
 
-
-
     /**
-     * Tests whether no listener is notified after EventProvider has been closed.
+     * Tests whether no listener is notified after EventProvider has been
+     * closed.
      *
      * @throws Exception If an exception occurs during testing.
      */
     @Test
     public void testClose() throws Exception {
-        final boolean[] container = new boolean[1];
-        final StringListener l = e -> container[0] = true;
+        final StringListener l = Mockito.mock(StringListener.class);
         this.subject.addListener(StringListener.class, l);
         this.subject.close();
         final StringEvent e = new StringEvent(this.subject, "");
@@ -585,7 +506,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
         // HACK: give async providers some time to execute
         Thread.sleep(THREAD_WAIT_TIME);
 
-        Assert.assertFalse(getFailString("Listener has been notified"), container[0]);
+        Mockito.verify(l, Mockito.never()).onStringEvent(Mockito.any());
         Assert.assertTrue(getFailString("Listener not removed"),
                 this.subject.getListeners(StringListener.class).isEmpty());
     }

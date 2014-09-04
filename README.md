@@ -210,7 +210,14 @@ public class SampleUserListener implements UserListener {
 ```
 
 Additionally, when using a single threaded EventProvider, your listening method 
-could throw an `AbortionException` to brutally stop delegation.
+could throw an `AbortionException` to brutally stop delegation. This method is
+to be handled with care, as it is the only way to delegate an exception up to
+the caller of `dispatch` and may thus interrupt the client's control flow. This
+subverts jeve's goal of never interrupting the event delegation process and 
+should only be used in exceptional cases.
+
+The behavior of both methods for aborting the delegation process is generally 
+undefined for multi-threaded and non-sequential EventProvider implementations.
 
 
 ## Automatically remove listeners

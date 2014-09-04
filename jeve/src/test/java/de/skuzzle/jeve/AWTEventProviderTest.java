@@ -32,8 +32,8 @@ public class AWTEventProviderTest extends EventProviderTestBase {
     @Parameters
     public final static Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new EventProviderFactory[] { EventProvider::newWaitingAWTEventProvider},
-                new EventProviderFactory[] { EventProvider::newAsynchronousAWTEventProvider}
+                new EventProviderFactory[] { EventProviders::newWaitingAWTEventProvider },
+                new EventProviderFactory[] { EventProviders::newAsynchronousAWTEventProvider }
             );
     }
 

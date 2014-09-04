@@ -12,7 +12,7 @@ import de.skuzzle.jeve.util.EventProviderFactory;
 
 /**
  * Runs all basic tests for all default provided event providers.
- * 
+ *
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
@@ -20,22 +20,22 @@ public class ThreadedEventProviderTest extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
-     * @return Collection of parameters for the constructor of 
+     * @return Collection of parameters for the constructor of
      *          {@link EventProviderTestBase}.
      */
     @Parameters
     public final static Collection<Object[]> getParameters() {
         return Arrays.asList(
-            new EventProviderFactory[] { EventProvider::newParallelEventProvider },
-            new EventProviderFactory[] { EventProvider::newAsynchronousEventProvider }
+                new EventProviderFactory[] { EventProviders::newParallelEventProvider },
+                new EventProviderFactory[] { EventProviders::newAsynchronousEventProvider }
         );
     }
-    
-    
-    
+
+
+
     /**
      * Creates new BasicEventProviderTests
-     * 
+     *
      * @param factory Factory to create a single provider
      */
     public ThreadedEventProviderTest(EventProviderFactory factory) {

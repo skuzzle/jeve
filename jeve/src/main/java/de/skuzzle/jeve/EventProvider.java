@@ -1,42 +1,34 @@
 package de.skuzzle.jeve;
 
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 
 /**
  * <p>
  * EventProvider instances are the heart of jeve and can be obtained using
- * static factory methods of this interface. They manage listener classes mapped
- * to a collection of {@link Listener Listeners} to represent one kind of event.
- * All listeners registered for a certain listener class can be notified about
- * an {@link Event}. The way in which they are notified is an internal property
- * of the actual EventProvider instance. For example, one kind of EventProvider
- * might create a new thread for notifying the registered listeners or it may
- * simply notify them using the current thread.
- * </p>
- *
- * <p>
- * EventProvider instances can be obtained by using the static factory methods
- * of this interface or by creating an own implementation.
+ * static factory methods of the {@link EventProviders} class. They manage
+ * listener classes mapped to a collection of {@link Listener Listeners} to
+ * represent one kind of event. All listeners registered for a certain listener
+ * class can be notified about an {@link Event}. The way in which they are
+ * notified is an internal property of the actual EventProvider instance. For
+ * example, one kind of EventProvider might create a new thread for notifying
+ * the registered listeners or it may simply notify them using the current
+ * thread.
  * </p>
  *
  * <pre>
- * EventProvider eventProvider = EventProvider.newDefaultEventProvider();
+ * EventProvider eventProvider = EventProviders.newDefaultEventProvider();
  * </pre>
  *
  * <h2>Managing and Notifying Listeners</h2>
  * <p>
  * Listeners can be registered using {@link #addListener(Class, Listener)} and
  * unregistered using {@link #removeListener(Class, Listener)}. The same
- * listener can be registered for distinct listener classes. The
- * {@link Listener} interface has two default methods which are called when a
- * listener is registered or removed respectively. Additionally there exists the
- * default method {@code workDone}. If this method is implemented to return
- * <code>true</code>, the listener will be removed automatically from the event
- * provider. Listeners registered for a certain class can be obtained by
+ * listener object can be registered for distinct listener classes if it
+ * implements different listeners. The {@link Listener} interface has two
+ * default methods which are called when a listener is registered or removed
+ * respectively. Listeners registered for a certain class can be obtained by
  * {@link #getListeners(Class)}. Client code should avoid using this method as
  * it is not needed in most cases.
  * </p>
@@ -50,25 +42,27 @@ import java.util.function.BiConsumer;
  * </p>
  *
  * <p>
- * To notify the registered listeners, you need to specify the class for which
- * they have been registered, the Event instance which is passed to each
- * listener and the actual method to call on each listener. Here is an example
- * of notifying listeners which have been registered for the class
+ * To notify the registered listeners, you need to specify the {@link Event}
+ * instance which is passed to each listener and the actual method to call on
+ * each listener. Jeve obtains the class of the listeners to notify from the
+ * event's {@link Event#getListenerClass() getListenerClass} method. Thus, the
+ * class has not to be specified explicitly for each dispatch action. Here is an
+ * example of notifying listeners which have been registered for the class
  * {@code UserListener}.
  * </p>
  *
  * <pre>
  * // create an event which holds its source and some additional data
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // notify all UserListeners with this event.
- * eventProvider.dispatch(UserListener.class, e, UserListener::userAdded);
+ * eventProvider.dispatch(e, UserListener::userAdded);
  * </pre>
  *
  * <p>
  * On each listener which is registered for the class {@code UserListener}, the
- * method {@code userAdded</tt> is called and gets passed the event instance
- * <tt>e}. {@link #dispatch(Event, BiConsumer) Dispatch} is the core of any
+ * method {@code userAdded} is called and gets passed the event instance
+ * {@code e}. {@link #dispatch(Event, BiConsumer) Dispatch} is the core of any
  * EventProvider. It implements the logic of how the listeners are notified in a
  * way that is transparent for the user of the EventProvider.
  * </p>
@@ -124,167 +118,6 @@ import java.util.function.BiConsumer;
  * @since 1.0.0
  */
 public interface EventProvider extends AutoCloseable {
-
-    /**
-     * Creates a new {@link EventProvider} which fires events sequentially in
-     * the thread which calls {@link EventProvider#dispatch(Event, BiConsumer)}.
-     * The returned instance thus is sequential and supports aborting of event
-     * delegation.
-     *
-     * <p>
-     * Closing the {@link EventProvider} returned by this method will have no
-     * effect besides removing all registered listeners.
-     * </p>
-     *
-     * @return A new EventProvider instance.
-     */
-    public static EventProvider newDefaultEventProvider() {
-        return new SynchronousEventProvider();
-    }
-
-
-
-    /**
-     * Creates a new {@link EventProvider} which fires each event in a different
-     * thread. By default, the returned {@link EventProvider} uses a single
-     * thread executor service.
-     *
-     * <p>
-     * The returned instance is sequential and supports aborting of event
-     * delegation. Even when using multiple threads to dispatch events, the
-     * returned EventProvider will only use one thread for one dispatch action.
-     * That means that for each call to
-     * {@link #dispatch(Event, BiConsumer, ExceptionCallback) dispatch}, all
-     * targeted listeners are notified within the same thread. This ensures
-     * notification in the order the listeners have been added.
-     * </p>
-     *
-     * <p>
-     * When closing the returned {@link EventProvider}, its internal
-     * {@link ExecutorService} instance will be shut down. Its not possible to
-     * reuse the provider after closing it.
-     * </p>
-     *
-     * @return A new EventProvider instance.
-     */
-    public static EventProvider newAsynchronousEventProvider() {
-        return new AsynchronousEventProvider();
-    }
-
-
-
-    /**
-     * Creates a new {@link EventProvider} which fires each event in a different
-     * thread. The created provider will use the given {@link ExecutorService}
-     * to fire the events asynchronously.
-     *
-     * <p>
-     * The returned instance is sequential and supports aborting of event
-     * delegation. Even when using multiple threads to dispatch events, the
-     * returned EventProvider will only use one thread for one dispatch action.
-     * That means that for each call to
-     * {@link #dispatch(Event, BiConsumer, ExceptionCallback) dispatch}, all
-     * targeted listeners are notified within the same thread. This ensures
-     * notification in the order the listeners have been added.
-     * </p>
-     *
-     * <p>
-     * If you require an EventListener which notifies each listener in a
-     * different thread, use {@link #newParallelEventProvider(ExecutorService)}.
-     * </p>
-     *
-     * <p>
-     * When closing the returned {@link EventProvider}, the passed
-     * {@link ExecutorService} instance will be shut down. Its not possible to
-     * reuse the provider after closing it.
-     * </p>
-     *
-     * @param executor The ExecutorService to use.
-     * @return A new EventProvider instance.
-     */
-    public static EventProvider newAsynchronousEventProvider(ExecutorService executor) {
-        return new AsynchronousEventProvider(executor);
-    }
-
-
-
-    /**
-     * Create a new {@link EventProvider} which dispatches all events in the AWT event
-     * thread and waits (blocks current thread) after dispatching until all listeners
-     * have been notified. The returned instance is sequential and supports aborting of
-     * event delegation.
-     *
-     * <p>Closing the {@link EventProvider} returned by this method will have no
-     * effect besides removing all registered listeners.</p>
-     *
-     * @return A new EventProvider instance.
-     */
-    public static EventProvider newWaitingAWTEventProvider() {
-        return new AWTEventProvider(true);
-    }
-
-
-
-    /**
-     * Creates a new {@link EventProvider} which dispatches all events in the AWT event
-     * thread. Dispatching with this EventProvider will return immediately and dispatching
-     * of an event will be scheduled to be run later by the AWT event thread. The returned
-     * instance is sequential and supports aborting of event delegation.
-     *
-     * <p>Closing the {@link EventProvider} returned by this method will have no
-     * effect besides removing all registered listeners.</p>
-     *
-     * @return A new EventProvider instance.
-     */
-    public static EventProvider newAsynchronousAWTEventProvider() {
-        return new AWTEventProvider(false);
-    }
-
-
-
-    /**
-     * Creates an EventProvider which notifies each listener within an own thread. This
-     * means that for an single event, multiple threads might get created to notify all
-     * listeners concurrently. The internal thread creation is handled by an
-     * {@link Executors#newCachedThreadPool() cached thread pool}. The returned
-     * EventProvider instance is not sequential and does not support aborting of event
-     * delegation, as the correct order of delegation can not be guaranteed.
-     *
-     * <p>When closing the returned {@link EventProvider}, its internal
-     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
-     * provider after closing it.</p>
-     *
-     * @return A new EventProvider instance.
-     * @since 1.1.0
-     */
-    public static EventProvider newParallelEventProvider() {
-        return new ParallelEventProvider(Executors.newCachedThreadPool());
-    }
-
-
-
-    /**
-     * Creates an EventProvider which notifies each listener within an own thread. This
-     * means that for an single event, multiple threads might get created to notify all
-     * listeners concurrently. The internal thread creation is handled by the passed
-     * {@link ExecutorService}. The returned EventProvider instance is not sequential and
-     * does not support aborting of event delegation, as the correct order of delegation
-     * can not be guaranteed.
-     *
-     * <p>When closing the returned {@link EventProvider}, the passed
-     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
-     * provider after closing it.</p>
-     *
-     * @param executor The ExecutorService to use.
-     * @return A new EventProvider instance.
-     * @since 1.1.0
-     */
-    public static ParallelEventProvider newParallelEventProvider(
-            ExecutorService executor) {
-        return new ParallelEventProvider(executor);
-    }
-
-
 
     /**
      * The default {@link ExceptionCallback} which prints some information about the

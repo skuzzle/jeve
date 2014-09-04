@@ -23,7 +23,7 @@ public class SynchronousEventProviderTest extends EventProviderTestBase {
     @Parameters
     public final static Collection<Object[]> getParameters() {
         return Collections.singleton(
-            new EventProviderFactory[] { EventProvider::newDefaultEventProvider }
+                new EventProviderFactory[] { EventProviders::newDefaultEventProvider }
         );
     }
 

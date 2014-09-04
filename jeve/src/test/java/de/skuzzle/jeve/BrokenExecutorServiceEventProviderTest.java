@@ -56,7 +56,7 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
     public final static Collection<Object[]> getParameters() {
         return Collections.singleton(
             new EventProviderFactory[] {
-                () -> EventProvider.newParallelEventProvider(
+                () -> EventProviders.newParallelEventProvider(
                         new BrokenExecutorService()) }
         );
     }

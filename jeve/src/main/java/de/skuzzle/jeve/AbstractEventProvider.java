@@ -21,23 +21,6 @@ import java.util.function.BiConsumer;
  */
 public abstract class AbstractEventProvider implements EventProvider {
 
-    /**
-     * Copies a list of listeners into a new list, casting each element to the target
-     * listener type.
-     *
-     * @param <T> Type of listeners in the result.
-     * @param listeners List to copy.
-     * @param listenerClass Target listener type.
-     * @return A new typed list of listeners.
-     */
-    private static <T extends Listener> List<T> copyList(List<Object> listeners,
-            Class<T> listenerClass) {
-        final List<T> result = new ArrayList<>(listeners.size());
-        listeners.forEach(l -> result.add(listenerClass.cast(l)));
-        return result;
-    }
-
-
 
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<? extends Listener>, List<Object>> listeners;
@@ -55,6 +38,21 @@ public abstract class AbstractEventProvider implements EventProvider {
         this.exceptionHandler = DEFAULT_HANDLER;
     }
 
+    /**
+     * Copies a list of listeners into a new list, casting each element to the
+     * target listener type.
+     *
+     * @param <T> Type of listeners in the result.
+     * @param listeners List to copy.
+     * @param listenerClass Target listener type.
+     * @return A new typed list of listeners.
+     */
+    private static <T extends Listener> List<T> copyList(List<Object> listeners,
+            Class<T> listenerClass) {
+        final List<T> result = new ArrayList<>(listeners.size());
+        listeners.forEach(l -> result.add(listenerClass.cast(l)));
+        return result;
+    }
 
 
     @Override

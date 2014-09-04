@@ -43,6 +43,7 @@ public class ParallelEventProvider extends AbstractEventProvider {
         }
 
         final Listeners<L> listeners = this.getListeners(event.getListenerClass());
+        event.setEventProvider(this);
         listeners.forEach(listener -> {
             try {
                 this.executor.execute(() -> notifySingle(listener, event, bc, ec));

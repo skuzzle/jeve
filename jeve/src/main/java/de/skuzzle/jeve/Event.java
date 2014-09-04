@@ -40,6 +40,9 @@ public class Event<T, L extends Listener> {
     /** The class of the listener which can handle this event */
     private final Class<L> listenerClass;
 
+    /** The event provider which is currently delegating this event */
+    private EventProvider eventProvider;
+
     /**
      * Creates a new event with a given source.
      *
@@ -70,6 +73,29 @@ public class Event<T, L extends Listener> {
      */
     protected Class<L> getListenerClass() {
         return this.listenerClass;
+    }
+
+    /**
+     * The event provider which is currently dispatching this event. The
+     * provider is set to the event at the beginning of the dispatching process.
+     * You should never dispatch the same Event instance concurrently on two
+     * different EventProviders.
+     *
+     * @return The dispatching EventProvider.
+     * @since 2.0.0
+     */
+    protected EventProvider getEventProvider() {
+        return this.eventProvider;
+    }
+
+    /**
+     * Sets the EventProvider which is currently dispatching this event.
+     *
+     * @param eventProvider The event provider.
+     * @since 2.0.0
+     */
+    void setEventProvider(EventProvider eventProvider) {
+        this.eventProvider = eventProvider;
     }
 
     /**

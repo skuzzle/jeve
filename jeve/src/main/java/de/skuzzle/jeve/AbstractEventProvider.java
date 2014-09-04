@@ -237,6 +237,8 @@ public abstract class AbstractEventProvider implements EventProvider {
         // HINT: getListeners is thread safe
         final Listeners<L> listeners = this.getListeners(event.getListenerClass());
         boolean result = true;
+
+        event.setEventProvider(this);
         for (L listener : listeners) {
             if (event.isHandled()) {
                 return result;

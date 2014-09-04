@@ -9,6 +9,7 @@ Version 2.0.0 [Released: TODO]
     * Corrected semantics of AbortionException: those will be delegated up to 
       the caller of EventProvider#dispatch and will no longer be passed to the
       ExceptionCallback when thrown by a listener.
+    * Add reference to the executing EventProvider to Event instances.
 
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own

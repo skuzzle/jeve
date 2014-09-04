@@ -3,7 +3,6 @@ package de.skuzzle.jeve;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 
-
 /**
  * <p>
  * EventProvider instances are the heart of jeve and can be obtained using
@@ -120,107 +119,123 @@ import java.util.function.BiConsumer;
 public interface EventProvider extends AutoCloseable {
 
     /**
-     * The default {@link ExceptionCallback} which prints some information about the
-     * occurred error to the standard output. The exact format is not specified.
+     * The default {@link ExceptionCallback} which prints some information about
+     * the occurred error to the standard output. The exact format is not
+     * specified.
      */
     public static final ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
         System.err.println(
-            "Listener threw an exception while being notified\n" +
-            "Details\n" +
-            "    Listener: " + l + "\n" +
-            "    Event: " + ev + "\n" +
-            "    Message: " + e.getMessage() + "\n" +
-            "    Current Thread: " + Thread.currentThread().getName() + "\n" +
-            "    Stacktrace: "
-        );
+                "Listener threw an exception while being notified\n" +
+                        "Details\n" +
+                        "    Listener: " + l + "\n" +
+                        "    Event: " + ev + "\n" +
+                        "    Message: " + e.getMessage() + "\n" +
+                        "    Current Thread: " + Thread.currentThread().getName() + "\n" +
+                        "    Stacktrace: "
+                );
         e.printStackTrace();
     };
-
 
     /**
      * Adds a listener which will be notified for every event represented by the
      * given listener class. After registration, the listener's
-     * {@link Listener#onRegister(RegistrationEvent) onRegister} method gets called to
-     * notify the listener about being added to a new parent. The {@code onRegister}
-     * method is not subject to the dispatching strategy implemented by this
-     * {@link EventProvider} and is called from the current thread.
+     * {@link Listener#onRegister(RegistrationEvent) onRegister} method gets
+     * called to notify the listener about being added to a new parent. The
+     * {@code onRegister} method is not subject to the dispatching strategy
+     * implemented by this {@link EventProvider} and is called from the current
+     * thread.
      *
-     * <p><b>Note on concurrency:</b> This method can safely be called from within a
-     * listening method during event handling to add a listener. This will have no
-     * impact on the current event delegation process.</p>
+     * <p>
+     * <b>Note on concurrency:</b> This method can safely be called from within
+     * a listening method during event handling to add a listener. This will
+     * have no impact on the current event delegation process.
+     * </p>
      *
      * @param <T> Type of the listener to add.
      * @param listenerClass The class representing the event(s) to listen on.
      * @param listener The listener to add.
-     * @throws IllegalArgumentException If either listenerClass or listener argument is
-     *          <code>null</code>.
+     * @throws IllegalArgumentException If either listenerClass or listener
+     *             argument is <code>null</code>.
      */
     public <T extends Listener> void addListener(Class<T> listenerClass, T listener);
 
     /**
-     * Removes a listener. It will only be removed for the specified listener class and
-     * can thus still be registered with this event provider if it was added for
-     * further listener classes. The listener will no longer receive events represented
-     * by the given listener class. After removal, the listener's
-     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method gets called to
-     * notify the listener about being removed from a parent. The {@code onUnregister}
-     * method is not subject to the dispatching strategy implemented by this
-     * {@link EventProvider} and is called from the current thread.
+     * Removes a listener. It will only be removed for the specified listener
+     * class and can thus still be registered with this event provider if it was
+     * added for further listener classes. The listener will no longer receive
+     * events represented by the given listener class. After removal, the
+     * listener's {@link Listener#onUnregister(RegistrationEvent) onUnregister}
+     * method gets called to notify the listener about being removed from a
+     * parent. The {@code onUnregister} method is not subject to the dispatching
+     * strategy implemented by this {@link EventProvider} and is called from the
+     * current thread.
      *
-     * <p>If any of the arguments is <code>null</code>, this method returns with no
-     * effect.</p>
+     * <p>
+     * If any of the arguments is <code>null</code>, this method returns with no
+     * effect.
+     * </p>
      *
-     * <p><b>Note on concurrency:</b> This method can safely be called from within a
-     * listening method during event handling to remove a listener. This will have no
-     * impact on the current event delegation process.</p>
+     * <p>
+     * <b>Note on concurrency:</b> This method can safely be called from within
+     * a listening method during event handling to remove a listener. This will
+     * have no impact on the current event delegation process.
+     * </p>
      *
      * @param <T> Type of the listener to remove.
-     * @param listenerClass The class representing the event(s) for which the listener
-     *          should be removed.
+     * @param listenerClass The class representing the event(s) for which the
+     *            listener should be removed.
      * @param listener The listener to remove.
      */
     public <T extends Listener> void removeListener(Class<T> listenerClass, T listener);
 
     /**
      * Gets all listeners that have been registered using
-     * {@link #addListener(Class, Listener)} for the given listener class. The returned
-     * collection contains the listeners in the order in which they have been registered.
-     * Modifying the returned collection has no effects on this EventProvider.
+     * {@link #addListener(Class, Listener)} for the given listener class. The
+     * returned collection contains the listeners in the order in which they
+     * have been registered. Modifying the returned collection has no effects on
+     * this EventProvider.
      *
      * @param <T> Type of the listeners to return.
-     * @param listenerClass The class representing the event for which the listeners
-     *          should be retrieved.
+     * @param listenerClass The class representing the event for which the
+     *            listeners should be retrieved.
      * @return A collection of listeners that should be notified about the event
-     *          represented by the given listener class.
+     *         represented by the given listener class.
      * @throws IllegalArgumentException If listenerClass is <code>null</code>.
      */
     public <T extends Listener> Collection<T> getListeners(Class<T> listenerClass);
 
     /**
-     * Removes all listeners which have been registered for the provided listener class.
-     * Every listner's {@link Listener#onUnregister(RegistrationEvent) onUnregister}
-     * method will be called.
+     * Removes all listeners which have been registered for the provided
+     * listener class. Every listner's
+     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will
+     * be called.
      *
-     * <p>If listenerClass is <code>null</code> this method returns with no effect.</p>
+     * <p>
+     * If listenerClass is <code>null</code> this method returns with no effect.
+     * </p>
      *
-     * <p><b>Note on concurrency:</b> This method can safely be called from within a
-     * listening method during event handling to remove listeners. This will have no
-     * impact on the current event delegation process.</p>
+     * <p>
+     * <b>Note on concurrency:</b> This method can safely be called from within
+     * a listening method during event handling to remove listeners. This will
+     * have no impact on the current event delegation process.
+     * </p>
      *
      * @param <T> Type of the listeners to remove.
-     * @param listenerClass The class representing the event for which the listeners
-     *          should be removed
+     * @param listenerClass The class representing the event for which the
+     *            listeners should be removed
      */
     public <T extends Listener> void clearAllListeners(Class<T> listenerClass);
 
     /**
      * Removes all registered listeners from this EventProvider. Every listner's
-     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will be
-     * called.
+     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will
+     * be called.
      *
-     * <p><b>Note on concurrency:</b> This method can safely be called from within a
-     * listening method during event handling to remove all listeners. This will have no
-     * impact on the current event delegation process.</p>
+     * <p>
+     * <b>Note on concurrency:</b> This method can safely be called from within
+     * a listening method during event handling to remove all listeners. This
+     * will have no impact on the current event delegation process.
+     * </p>
      */
     public void clearAllListeners();
 
@@ -293,7 +308,7 @@ public interface EventProvider extends AutoCloseable {
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
-     * 
+     *
      *     public void userDeleted(UserEvent e);
      * }
      * </pre>
@@ -349,29 +364,33 @@ public interface EventProvider extends AutoCloseable {
     /**
      * Sets the default {@link ExceptionCallback} which will be notified about
      * exceptions when dispatching events without explicitly specifying an
-     * ExceptionCallback. The ExceptionCallback which is installed by default simply
-     * prints the stack traces to the error console.
+     * ExceptionCallback. The ExceptionCallback which is installed by default
+     * simply prints the stack traces to the error console.
      *
-     * <p>You can reset the ExceptionCallback to the default handler by providing
-     * <code>null</code> as parameter.</p>
+     * <p>
+     * You can reset the ExceptionCallback to the default handler by providing
+     * <code>null</code> as parameter.
+     * </p>
+     *
      * @param ec The ExceptionCallback for handling event handler exceptions, or
-     *          <code>null</code> to use the default behavior.
+     *            <code>null</code> to use the default behavior.
      */
     public void setExceptionCallback(ExceptionCallback ec);
 
     /**
      * Returns whether this EventProvider is sequential, which means it strictly
-     * notifies listeners in the order in which they were registered for a certain event.
+     * notifies listeners in the order in which they were registered for a
+     * certain event.
      *
      * @return Whether this instance is sequential.
      */
     public boolean isSequential();
 
     /**
-     * Closes this EventProvider and removes all registered listeners. Depending on the
-     * actual implementation, the EventProvider might not be able to dispatch further
-     * events after closing. On some implementations closing might have no additional
-     * effect.
+     * Closes this EventProvider and removes all registered listeners. Depending
+     * on the actual implementation, the EventProvider might not be able to
+     * dispatch further events after closing. On some implementations closing
+     * might have no additional effect.
      */
     @Override
     public void close();

@@ -9,7 +9,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.util.EventProviderFactory;
 
-
 /**
  * Runs all basic tests for all default provided event providers.
  *
@@ -20,18 +19,17 @@ public class ThreadedEventProviderTest extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
+     *
      * @return Collection of parameters for the constructor of
-     *          {@link EventProviderTestBase}.
+     *         {@link EventProviderTestBase}.
      */
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
                 new EventProviderFactory[] { EventProviders::newParallelEventProvider },
                 new EventProviderFactory[] { EventProviders::newAsynchronousEventProvider }
-        );
+                );
     }
-
-
 
     /**
      * Creates new BasicEventProviderTests

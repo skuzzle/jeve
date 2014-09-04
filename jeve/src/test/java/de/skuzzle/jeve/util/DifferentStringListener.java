@@ -15,6 +15,7 @@ import de.skuzzle.jeve.annotation.ListenerInterface;
 public interface DifferentStringListener extends Listener {
     /**
      * This method is notified about occurring {@link StringEvent StringEvents}.
+     *
      * @param e The occurred event.
      */
     public void onDifferentStringEvent(DifferentStringEvent e);

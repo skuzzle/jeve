@@ -5,12 +5,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 /**
- * EventProvider implementation which uses an {@link ExecutorService} to notify each
- * listener within a dedicated thread. This implementation is thereby
+ * EventProvider implementation which uses an {@link ExecutorService} to notify
+ * each listener within a dedicated thread. This implementation is thereby
  * {@link #isSequential() not sequential}.
  *
- * <p>Instances of this class can be obtained using the static factory methods of the
- * {@link EventProvider} interface.</p>
+ * <p>
+ * Instances of this class can be obtained using the static factory methods of
+ * the {@link EventProvider} interface.
+ * </p>
  *
  * @author Simon Taddiken
  * @since 1.1.0
@@ -31,8 +33,6 @@ public class ParallelEventProvider extends AbstractEventProvider {
         this.executor = executor;
     }
 
-
-
     @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
@@ -52,21 +52,15 @@ public class ParallelEventProvider extends AbstractEventProvider {
         });
     }
 
-
-
     @Override
     public boolean canDispatch() {
         return !this.executor.isShutdown() && !this.executor.isTerminated();
     }
 
-
-
     @Override
     public boolean isSequential() {
         return false;
     }
-
-
 
     @Override
     public void close() {

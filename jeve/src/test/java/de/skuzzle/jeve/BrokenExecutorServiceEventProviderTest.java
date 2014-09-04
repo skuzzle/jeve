@@ -19,8 +19,9 @@ import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 /**
- * Tests asynchronous EventProviders for whether they correctly handle exceptions thrown
- * by the {@link java.util.concurrent.ExecutorService#execute(Runnable)} method.
+ * Tests asynchronous EventProviders for whether they correctly handle
+ * exceptions thrown by the
+ * {@link java.util.concurrent.ExecutorService#execute(Runnable)} method.
  *
  * @author Simon Taddiken
  * @since 1.1.0
@@ -29,7 +30,8 @@ import de.skuzzle.jeve.util.StringListener;
 public class BrokenExecutorServiceEventProviderTest extends AbstractEventProviderTest {
 
     /**
-     * ExecutorService which always throws an Exception when trying to execute a Runnable
+     * ExecutorService which always throws an Exception when trying to execute a
+     * Runnable
      *
      * @author Simon Taddiken
      */
@@ -45,37 +47,33 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
         }
     }
 
-
-
     /**
      * Parameterizes the test instances.
+     *
      * @return Collection of parameters for the constructor of
-     *          {@link EventProviderTestBase}.
+     *         {@link EventProviderTestBase}.
      */
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Collections.singleton(
-            new EventProviderFactory[] {
-                () -> EventProviders.newParallelEventProvider(
-                        new BrokenExecutorService()) }
-        );
+                new EventProviderFactory[] {
+                        () -> EventProviders.newParallelEventProvider(
+                                new BrokenExecutorService()) }
+                );
     }
-
-
 
     /**
      * Creates a new Test class instance.
+     *
      * @param factory A factory for creating event providers
      */
     public BrokenExecutorServiceEventProviderTest(EventProviderFactory factory) {
         super(factory);
     }
 
-
-
     /**
-     * Tests whether the subject correctly handles exceptions thrown if the executor is
-     * not ready for dispatching.
+     * Tests whether the subject correctly handles exceptions thrown if the
+     * executor is not ready for dispatching.
      *
      * @throws Exception If the test case fails for any reason.
      */
@@ -89,7 +87,8 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
             }
         };
         this.subject.setExceptionCallback(ec);
-        this.subject.addListener(StringListener.class, se -> {});
+        this.subject.addListener(StringListener.class, se -> {
+        });
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
 

@@ -37,30 +37,32 @@ import java.util.EventListener;
 public interface Listener extends EventListener {
 
     /**
-     * This method is called right after this listener has been registered to a new
-     * {@link EventProvider}. If this method throws an unchecked exception, it will be
-     * covered by the new EventProvider's {@link ExceptionCallback}.
+     * This method is called right after this listener has been registered to a
+     * new {@link EventProvider}. If this method throws an unchecked exception,
+     * it will be covered by the new EventProvider's {@link ExceptionCallback}.
      *
-     * <p>Note: The default implementation does nothing.</p>
+     * <p>
+     * Note: The default implementation does nothing.
+     * </p>
      *
-     * @param e This event object holds the new parent EventProvider and the class for
-     *          which this listener has been registered.
+     * @param e This event object holds the new parent EventProvider and the
+     *            class for which this listener has been registered.
      */
     public default void onRegister(RegistrationEvent e) {
         // default: do nothing
     }
 
-
-
     /**
      * This method is called right after this listener has been removed from an
-     * {@link EventProvider}. If this method throws an unchecked exception, it will be
-     * covered by the former EventProvider's {@link ExceptionCallback}.
+     * {@link EventProvider}. If this method throws an unchecked exception, it
+     * will be covered by the former EventProvider's {@link ExceptionCallback}.
      *
-     * <p>Note: The default implementation does nothing.</p>
+     * <p>
+     * Note: The default implementation does nothing.
+     * </p>
      *
-     * @param e This event object holds the former parent EventProvider and the class for
-     *          which this listener has been unregistered.
+     * @param e This event object holds the former parent EventProvider and the
+     *            class for which this listener has been unregistered.
      */
     public default void onUnregister(RegistrationEvent e) {
         // default: do nothing

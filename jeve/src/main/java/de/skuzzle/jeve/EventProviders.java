@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 /**
  * Utility class for obtaining different kinds of {@link EventProvider}
  * implementations.
- * 
+ *
  * @author Simon Taddiken
  * @since 2.0.0
  */
@@ -96,13 +96,15 @@ public final class EventProviders {
     }
 
     /**
-     * Create a new {@link EventProvider} which dispatches all events in the AWT event
-     * thread and waits (blocks current thread) after dispatching until all listeners
-     * have been notified. The returned instance is sequential and supports aborting of
-     * event delegation.
+     * Create a new {@link EventProvider} which dispatches all events in the AWT
+     * event thread and waits (blocks current thread) after dispatching until
+     * all listeners have been notified. The returned instance is sequential and
+     * supports aborting of event delegation.
      *
-     * <p>Closing the {@link EventProvider} returned by this method will have no
-     * effect besides removing all registered listeners.</p>
+     * <p>
+     * Closing the {@link EventProvider} returned by this method will have no
+     * effect besides removing all registered listeners.
+     * </p>
      *
      * @return A new EventProvider instance.
      */
@@ -111,13 +113,16 @@ public final class EventProviders {
     }
 
     /**
-     * Creates a new {@link EventProvider} which dispatches all events in the AWT event
-     * thread. Dispatching with this EventProvider will return immediately and dispatching
-     * of an event will be scheduled to be run later by the AWT event thread. The returned
-     * instance is sequential and supports aborting of event delegation.
+     * Creates a new {@link EventProvider} which dispatches all events in the
+     * AWT event thread. Dispatching with this EventProvider will return
+     * immediately and dispatching of an event will be scheduled to be run later
+     * by the AWT event thread. The returned instance is sequential and supports
+     * aborting of event delegation.
      *
-     * <p>Closing the {@link EventProvider} returned by this method will have no
-     * effect besides removing all registered listeners.</p>
+     * <p>
+     * Closing the {@link EventProvider} returned by this method will have no
+     * effect besides removing all registered listeners.
+     * </p>
      *
      * @return A new EventProvider instance.
      */
@@ -126,16 +131,19 @@ public final class EventProviders {
     }
 
     /**
-     * Creates an EventProvider which notifies each listener within an own thread. This
-     * means that for an single event, multiple threads might get created to notify all
-     * listeners concurrently. The internal thread creation is handled by an
-     * {@link Executors#newCachedThreadPool() cached thread pool}. The returned
-     * EventProvider instance is not sequential and does not support aborting of event
-     * delegation, as the correct order of delegation can not be guaranteed.
+     * Creates an EventProvider which notifies each listener within an own
+     * thread. This means that for an single event, multiple threads might get
+     * created to notify all listeners concurrently. The internal thread
+     * creation is handled by an {@link Executors#newCachedThreadPool() cached
+     * thread pool}. The returned EventProvider instance is not sequential and
+     * does not support aborting of event delegation, as the correct order of
+     * delegation can not be guaranteed.
      *
-     * <p>When closing the returned {@link EventProvider}, its internal
-     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
-     * provider after closing it.</p>
+     * <p>
+     * When closing the returned {@link EventProvider}, its internal
+     * {@link ExecutorService} instance will be shut down. Its not possible to
+     * reuse the provider after closing it.
+     * </p>
      *
      * @return A new EventProvider instance.
      * @since 1.1.0
@@ -145,16 +153,19 @@ public final class EventProviders {
     }
 
     /**
-     * Creates an EventProvider which notifies each listener within an own thread. This
-     * means that for an single event, multiple threads might get created to notify all
-     * listeners concurrently. The internal thread creation is handled by the passed
-     * {@link ExecutorService}. The returned EventProvider instance is not sequential and
-     * does not support aborting of event delegation, as the correct order of delegation
-     * can not be guaranteed.
+     * Creates an EventProvider which notifies each listener within an own
+     * thread. This means that for an single event, multiple threads might get
+     * created to notify all listeners concurrently. The internal thread
+     * creation is handled by the passed {@link ExecutorService}. The returned
+     * EventProvider instance is not sequential and does not support aborting of
+     * event delegation, as the correct order of delegation can not be
+     * guaranteed.
      *
-     * <p>When closing the returned {@link EventProvider}, the passed
-     * {@link ExecutorService} instance will be shut down. Its not possible to reuse the
-     * provider after closing it.</p>
+     * <p>
+     * When closing the returned {@link EventProvider}, the passed
+     * {@link ExecutorService} instance will be shut down. Its not possible to
+     * reuse the provider after closing it.
+     * </p>
      *
      * @param executor The ExecutorService to use.
      * @return A new EventProvider instance.

@@ -17,6 +17,7 @@ public class StringEvent extends Event<EventProvider, StringListener> {
 
     /**
      * Creates a new StringEvent.
+     *
      * @param source The source of this event.
      * @param string The string attached to the event.
      */
@@ -25,10 +26,9 @@ public class StringEvent extends Event<EventProvider, StringListener> {
         this.string = string;
     }
 
-
-
     /**
      * Gets the string attached to this event object.
+     *
      * @return The string.
      */
     public String getString() {

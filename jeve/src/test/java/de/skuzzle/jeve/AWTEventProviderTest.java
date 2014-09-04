@@ -15,7 +15,6 @@ import de.skuzzle.jeve.util.EventProviderFactory;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
-
 /**
  * Tests AWT event providers
  *
@@ -26,18 +25,17 @@ public class AWTEventProviderTest extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
+     *
      * @return Collection of parameters for the constructor of
-     *          {@link EventProviderTestBase}.
+     *         {@link EventProviderTestBase}.
      */
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
                 new EventProviderFactory[] { EventProviders::newWaitingAWTEventProvider },
                 new EventProviderFactory[] { EventProviders::newAsynchronousAWTEventProvider }
-            );
+                );
     }
-
-
 
     /**
      * Creates new AWTEventProviderTests
@@ -47,8 +45,6 @@ public class AWTEventProviderTest extends EventProviderTestBase {
     public AWTEventProviderTest(EventProviderFactory factory) {
         super(factory);
     }
-
-
 
     /**
      * Tests whether all events are fired within the AWT event thread.

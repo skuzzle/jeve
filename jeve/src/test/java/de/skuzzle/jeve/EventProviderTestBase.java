@@ -467,7 +467,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         Mockito.verify(diffString1, Mockito.never()).onDifferentStringEvent(Mockito.any());
         Mockito.verify(diffString2, Mockito.never()).onDifferentStringEvent(Mockito.any());
 
-
     }
 
     /**

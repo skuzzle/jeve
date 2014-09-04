@@ -17,32 +17,33 @@ public class SynchronousEventProviderTest extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
+     *
      * @return Collection of parameters for the constructor of
-     *          {@link EventProviderTestBase}.
+     *         {@link EventProviderTestBase}.
      */
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Collections.singleton(
                 new EventProviderFactory[] { EventProviders::newDefaultEventProvider }
-        );
+                );
     }
-
-
 
     public SynchronousEventProviderTest(EventProviderFactory factory) {
         super(factory);
     }
 
-
-
     /**
-     * Tests whether {@link AbortionException} is delegated to the caller of dispatch.
-     * This behavior is only defined for synchronous providers
+     * Tests whether {@link AbortionException} is delegated to the caller of
+     * dispatch. This behavior is only defined for synchronous providers
      */
     @Test(expected = AbortionException.class)
     public void testAbortionExceptionInCallback() {
-        final ExceptionCallback ec = (e, l, event) -> { throw new AbortionException(e); };
-        final StringListener l = event -> { throw new RuntimeException(); };
+        final ExceptionCallback ec = (e, l, event) -> {
+            throw new AbortionException(e);
+        };
+        final StringListener l = event -> {
+            throw new RuntimeException();
+        };
         this.subject.setExceptionCallback(ec);
         this.subject.addListener(StringListener.class, l);
 

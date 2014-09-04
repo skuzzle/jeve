@@ -1,8 +1,8 @@
 package de.skuzzle.jeve;
 
 /**
- * RegistrationEvents are created when adding or removing a {@link Listener} from an
- * {@link EventProvider}.
+ * RegistrationEvents are created when adding or removing a {@link Listener}
+ * from an {@link EventProvider}.
  *
  * @author Simon Taddiken
  * @since 1.0.0
@@ -17,6 +17,7 @@ public final class RegistrationEvent {
 
     /**
      * Creates a new RegistrationEvent.
+     *
      * @param source The EventProvider for which a Listener as added or removed.
      * @param cls The class for which the Listener was added ore removed.
      */

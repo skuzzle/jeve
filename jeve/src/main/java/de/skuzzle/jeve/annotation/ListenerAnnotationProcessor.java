@@ -24,8 +24,9 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.Listener;
 
 /**
- * Processes classes which are marked with {@link ListenerInterface} annotation and checks
- * whether they adhere to the general contract of {@link Listener} implementations.
+ * Processes classes which are marked with {@link ListenerInterface} annotation
+ * and checks whether they adhere to the general contract of {@link Listener}
+ * implementations.
  *
  * @author Simon Taddiken
  */
@@ -52,14 +53,10 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
 
     private static final String TAGGING_NOT_EMPTY = "Tagging listeners must be empty";
 
-
-
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
     }
-
-
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
@@ -105,8 +102,6 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
-
-
     private void checkReturnValue(ExecutableElement member, ListenerKind expectedKind) {
         final Types types = this.processingEnv.getTypeUtils();
         final Messager msg = this.processingEnv.getMessager();
@@ -129,8 +124,6 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-
-
     private void checkInheritance(Element parent) {
         final Messager msg = this.processingEnv.getMessager();
         final Types types = this.processingEnv.getTypeUtils();
@@ -144,12 +137,9 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-
-
     private void checkParameter(ExecutableElement member) {
         final Types types = this.processingEnv.getTypeUtils();
         final Messager msg = this.processingEnv.getMessager();
-
 
         final List<? extends VariableElement> params = member.getParameters();
 
@@ -174,8 +164,6 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
                     member.getSimpleName()), param);
         }
     }
-
-
 
     private void checkThrown(ExecutableElement member) {
         final Types types = this.processingEnv.getTypeUtils();

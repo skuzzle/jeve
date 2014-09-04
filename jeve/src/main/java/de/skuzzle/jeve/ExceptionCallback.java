@@ -1,7 +1,8 @@
 package de.skuzzle.jeve;
 
 /**
- * Interface for providing errors which occur during event dispatching to the caller.
+ * Interface for providing errors which occur during event dispatching to the
+ * caller.
  *
  * @author Simon Taddiken
  * @since 1.0.0

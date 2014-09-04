@@ -8,27 +8,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-
 /**
- * Implementation of basic {@link EventProvider} methods. All implementations are
- * thread-safe.
+ * Implementation of basic {@link EventProvider} methods. All implementations
+ * are thread-safe.
  *
- * <p>Note about thread safe interface: All publicly accessible methods are thread safe,
- * internal and protected helper methods are not thread safe.</p>
+ * <p>
+ * Note about thread safe interface: All publicly accessible methods are thread
+ * safe, internal and protected helper methods are not thread safe.
+ * </p>
  *
  * @author Simon Taddiken
  * @since 1.0.0
  */
 public abstract class AbstractEventProvider implements EventProvider {
 
-
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<? extends Listener>, List<Object>> listeners;
 
     /** Default callback to handle event handler exceptions */
     protected ExceptionCallback exceptionHandler;
-
-
 
     /**
      * Creates a new {@link AbstractEventProvider}.
@@ -54,7 +52,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         return result;
     }
 
-
     @Override
     public <T extends Listener> Listeners<T> getListeners(Class<T> listenerClass) {
         if (listenerClass == null) {
@@ -66,11 +63,9 @@ public abstract class AbstractEventProvider implements EventProvider {
                 return Listeners.empty(this, listenerClass);
             }
             return new Listeners<T>(
-                copyList(listeners, listenerClass), listenerClass, this);
+                    copyList(listeners, listenerClass), listenerClass, this);
         }
     }
-
-
 
     @Override
     public <T extends Listener> void clearAllListeners(Class<T> listenerClass) {
@@ -86,8 +81,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     @Override
     public void clearAllListeners() {
         synchronized (this.listeners) {
@@ -100,8 +93,6 @@ public abstract class AbstractEventProvider implements EventProvider {
             this.listeners.clear();
         }
     }
-
-
 
     /**
      * Internal method for removing a single listener and notifying it about the
@@ -125,8 +116,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     @Override
     public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
         if (listenerClass == null) {
@@ -149,8 +138,6 @@ public abstract class AbstractEventProvider implements EventProvider {
             handleException(this.exceptionHandler, e, listener, null);
         }
     }
-
-
 
     @Override
     public <T extends Listener> void removeListener(Class<T> listenerClass,
@@ -176,15 +163,11 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc) {
         this.dispatch(event, bc, this.exceptionHandler);
     }
-
-
 
     @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(
@@ -195,11 +178,9 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     /**
-     * Helper method which serves for throwing {@link IllegalArgumentException} if any of
-     * the passed arguments is null.
+     * Helper method which serves for throwing {@link IllegalArgumentException}
+     * if any of the passed arguments is null.
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -219,8 +200,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     @Override
     public synchronized void setExceptionCallback(ExceptionCallback callBack) {
         final ExceptionCallback ec;
@@ -231,8 +210,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
         this.exceptionHandler = ec;
     }
-
-
 
     /**
      * Notifies all listeners registered for the provided class with the
@@ -269,8 +246,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         return result;
     }
 
-
-
     /**
      * Notifies a single listener and internally handles exceptions using the
      * {@link ExceptionCallback}.
@@ -301,18 +276,16 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     /**
-     * Internal method for notifying the {@link ExceptionCallback}. This method swallows
-     * every error raised by the passed exception callback.
+     * Internal method for notifying the {@link ExceptionCallback}. This method
+     * swallows every error raised by the passed exception callback.
      *
      * @param ec The ExceptionCallback to handle the exception.
      * @param e The occurred exception.
      * @param listener The listener which caused the exception.
      * @param ev The event which is currently being dispatched.
      * @throws AbortionException If the {@code ExceptionCallback} threw an
-     *          {@code AbortionException}
+     *             {@code AbortionException}
      */
     protected void handleException(ExceptionCallback ec, Exception e, Listener listener,
             Event<?, ?> ev) {
@@ -326,14 +299,10 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
     }
 
-
-
     @Override
     public void close() {
         this.clearAllListeners();
     }
-
-
 
     @Override
     public String toString() {

@@ -1,6 +1,5 @@
 package de.skuzzle.jeve;
 
-
 /**
  * <p>
  * This class is the base of all events that can be fired. It holds the source
@@ -54,8 +53,6 @@ public class Event<T, L extends Listener> {
         this.isHandled = false;
     }
 
-
-
     /**
      * Gets the source of this event.
      *
@@ -64,8 +61,6 @@ public class Event<T, L extends Listener> {
     public T getSource() {
         return this.source;
     }
-
-
 
     /**
      * Gets the type of the listener which can handle this event.
@@ -77,10 +72,9 @@ public class Event<T, L extends Listener> {
         return this.listenerClass;
     }
 
-
     /**
-     * Gets whether this was already handled. If this returns <code>true</code>, no
-     * further listeners will be notified about this event.
+     * Gets whether this was already handled. If this returns <code>true</code>,
+     * no further listeners will be notified about this event.
      *
      * @return Whether this event was handled.
      */
@@ -88,15 +82,15 @@ public class Event<T, L extends Listener> {
         return this.isHandled;
     }
 
-
-
     /**
-     * Sets whether this event was already handled. If an event has been marked as
-     * "handled", no further listeners will be notified about it.
+     * Sets whether this event was already handled. If an event has been marked
+     * as "handled", no further listeners will be notified about it.
      *
-     * <p>Note that setting an event to be handled might have unintended side effects
-     * when using an {@link EventProvider} which is not
-     * {@link EventProvider#isSequential() sequential}.</p>
+     * <p>
+     * Note that setting an event to be handled might have unintended side
+     * effects when using an {@link EventProvider} which is not
+     * {@link EventProvider#isSequential() sequential}.
+     * </p>
      *
      * @param isHandled Whether this event was handled.
      */

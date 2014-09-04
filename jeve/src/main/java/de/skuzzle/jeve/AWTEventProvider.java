@@ -6,8 +6,8 @@ import java.util.function.BiConsumer;
 import javax.swing.SwingUtilities;
 
 /**
- * {@link EventProvider} implementation that dispatches all events in the AWT event
- * thread.
+ * {@link EventProvider} implementation that dispatches all events in the AWT
+ * event thread.
  *
  * @author Simon Taddiken
  * @since 1.0.0
@@ -32,8 +32,6 @@ class AWTEventProvider extends AbstractEventProvider {
     public AWTEventProvider(boolean invokeNow) {
         this.invokeNow = invokeNow;
     }
-
-
 
     @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(
@@ -65,14 +63,10 @@ class AWTEventProvider extends AbstractEventProvider {
         }
     }
 
-
-
     @Override
     public boolean isSequential() {
         return true;
     }
-
-
 
     @Override
     public boolean canDispatch() {

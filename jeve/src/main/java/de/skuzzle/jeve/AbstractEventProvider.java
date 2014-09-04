@@ -223,10 +223,13 @@ public abstract class AbstractEventProvider implements EventProvider {
 
     @Override
     public synchronized void setExceptionCallback(ExceptionCallback callBack) {
+        final ExceptionCallback ec;
         if (callBack == null) {
-            callBack = DEFAULT_HANDLER;
+            ec = DEFAULT_HANDLER;
+        } else {
+            ec = callBack;
         }
-        this.exceptionHandler = callBack;
+        this.exceptionHandler = ec;
     }
 
 

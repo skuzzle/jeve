@@ -281,16 +281,10 @@ public abstract class AbstractEventProvider implements EventProvider {
      *          {@code AbortionException}
      * @since 1.1.0
      */
-    @SuppressWarnings("deprecation")
     protected <L extends Listener, E extends Event<?, L>> boolean notifySingle(
             L listener, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         try {
             bc.accept(listener, event);
-
-            // Compatibility to v1.0.0
-            if (listener.workDone(this)) {
-                this.removeListener(event.getListenerClass(), listener);
-            }
             return true;
         } catch (RuntimeException e) {
             handleException(ec, e, listener, event);

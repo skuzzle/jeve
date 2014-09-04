@@ -284,53 +284,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest{
 
 
     /**
-     * Tests whether {@link de.skuzzle.jeve.Listener}s are not notified anymore after
-     * returning true in their workDone method.
-     *
-     * <p>This test case might not work for asynchronous event providers which use more
-     * than one thread.</p>
-     *
-     * @throws Exception If an exception occurs during testing.
-     */
-    @Test
-    @Deprecated
-    public void testOneTimeListener() throws Exception {
-        if (checkSkipNonSequential()) {
-            return;
-        }
-        final int MAX_NOTIFICATIONS = 5;
-        final String SUBJECT = "someString";
-
-        class TestListener implements StringListener {
-
-            private int notificationCount = 0;
-
-            @Override
-            public void onStringEvent(StringEvent e) {
-                Assert.assertEquals(getFailString("Wrong string"), SUBJECT, e.getString());
-                Assert.assertTrue(getFailString("Wrong notification count"),
-                        this.notificationCount < MAX_NOTIFICATIONS);
-                ++this.notificationCount;
-            }
-
-            @Override
-            public boolean workDone(EventProvider parent) {
-                boolean value = this.notificationCount == MAX_NOTIFICATIONS - 1;
-                return value;
-            }
-        }
-
-        this.subject.addListener(StringListener.class, new TestListener());
-        // use <= to perform one additional notification
-        final StringEvent e = new StringEvent(this.subject, SUBJECT);
-        for (int i = 0; i <= MAX_NOTIFICATIONS; ++i) {
-            this.subject.dispatch(e, StringListener::onStringEvent);
-        }
-    }
-
-
-
-    /**
      * Tests whether delegation stops after event has been handled.
      *
      * @throws Exception If an exception occurs during testing.

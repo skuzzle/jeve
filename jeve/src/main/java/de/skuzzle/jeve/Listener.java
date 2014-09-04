@@ -37,30 +37,6 @@ import java.util.EventListener;
 public interface Listener extends EventListener {
 
     /**
-     * This method specifies whether this listner's work is done and it should be
-     * removed from its parent's {@link EventProvider} after the next time the listener
-     * was notified. If this method throws an unchecked exception, it will be covered
-     * by the parent EventProvider's {@link ExceptionCallback} mechanism.
-     *
-     * <p>Note: currently, every listener is at least notified once before checking the
-     * result of this method the first time. This might change in future releases.</p>
-     *
-     * <p>Note: the default implementation always returns <code>false</code>, meaning
-     * that the listener never gets removed automatically.</p>
-     *
-     * @param parent The event provider from which the listener would be removed.
-     * @return Whether to remove this listener from its parent after next notification.
-     * @deprecated Since 1.1.0 - Deprecated in favor of manual listener removal using
-     *          {@code event.getSource().removeSomeListener(this)}
-     */
-    @Deprecated
-    public default boolean workDone(EventProvider parent) {
-        return false;
-    }
-
-
-
-    /**
      * This method is called right after this listener has been registered to a new
      * {@link EventProvider}. If this method throws an unchecked exception, it will be
      * covered by the new EventProvider's {@link ExceptionCallback}.

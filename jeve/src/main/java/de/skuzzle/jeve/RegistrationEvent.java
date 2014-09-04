@@ -25,6 +25,11 @@ public final class RegistrationEvent {
         this.cls = cls;
     }
 
+    /**
+     * Gets the EventProvider to which the listener has been added.
+     *
+     * @return The EventProvider.
+     */
     public EventProvider getSource() {
         return this.source;
     }

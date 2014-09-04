@@ -8,7 +8,7 @@ of lambda expressions and internal iteration. It makes it really simple to
 implement the observer pattern without much overhead in code while granting some
 great additional features. jeve explained in one Java statement:
 ```java
-eventProvider.dispatch(UserListener.class, new UserEvent(this, user), UserListener::userAdded);
+eventProvider.dispatch(new UserEvent(this, user), UserListener::userAdded);
 ```
 
 
@@ -19,7 +19,7 @@ for detailed information.
 
 
 ## Documentation
-JavaDoc is available at www.jeve.skuzzle.de/1.1.0/doc
+JavaDoc is available at www.jeve.skuzzle.de/2.0.0/doc
 
 Scroll down in this readme for a quick start guide and some advanced topics.
 
@@ -36,7 +36,7 @@ available as dependency for your projects through Maven's Central Repository:
     <dependency>
       <groupId>de.skuzzle</groupId>
       <artifactId>jeve</artifactId>
-      <version>1.1.0</version>
+      <version>2.0.0</version>
     </dependency>
 ```
 
@@ -84,7 +84,7 @@ This sample code has several weaknesses:
 
 Most of these weaknesses can be solved by using *internal iteration*. That is,
 moving iteration **into** the framework, making it transparent for the caller. 
-See the quick start guid below to learn how jeve addresses these weaknesses.
+See the quick start guid below to learn how jeve addresses these issues.
 
 
 # Quickstart
@@ -97,7 +97,7 @@ import de.skuzzle.jeve.EventProvider;
 public class UserManager {
     // The default event provider dispatches events sequentially within
     // the current thread.
-    private final EventProvider events = EventProvider.newDefaultEventProvider();
+    private final EventProvider events = EventProviders.newDefaultEventProvider();
 }
 ```
 
@@ -106,11 +106,11 @@ Next, you should create an event class and a listener interface:
 ```java
 import de.skuzzle.jeve.Event;
 
-public class UserEvent extends Event<UserManager> {
+public class UserEvent extends Event<UserManager, UserListener> {
     private final User user;
     
     public UserEvent(UserManager source, User user) {
-        super(source);
+        super(source, UserListener.class);
         this.user = user;
     }
     
@@ -119,6 +119,10 @@ public class UserEvent extends Event<UserManager> {
     }
 }
 ```
+
+Notice that each Event implementation is aware of the type and the class of the 
+Listener which is able to handle it. This also implies that you can not 
+implement two different listeners which handle the same kind of event.
 
 ```java
 import de.skuzzle.jeve.Listener;
@@ -154,13 +158,13 @@ public class UserManager {
         // ...
         // now notify the listeners
         final UserEvent e = new UserEvent(this, user);
-        this.events.dispatch(UserListener.class, e, UserListener::userAdded);
+        this.events.dispatch(e, UserListener::userAdded);
     }
     
     public void deleteUser(User user) {
         // same here
         // ...
-        this.events.dispatch(UserListener.class, e, UserListener::userDeleted);
+        this.events.dispatch(e, UserListener::userDeleted);
     }
 }
 ```
@@ -252,7 +256,7 @@ which exceptions get passed.
         // now notify the listeners. We pass an ExceptionCallback as lambda 
         // expression which uses a logger to log any exception that occurred.
         final UserEvent e = new UserEvent(this, user);
-        this.events.dispatch(UserListener.class, e, UserListener::userAdded,
+        this.events.dispatch(e, UserListener::userAdded,
             (e, l, ev) -> logger.error("Exception occurred during event dispatching", e));
     }
 }

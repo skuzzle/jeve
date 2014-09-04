@@ -42,16 +42,16 @@ Jeve is available as dependency for your projects through Maven's Central Reposi
 
 
 # Why jeve?
-jeve avoids client code from ending up cluttered with event delegation routines 
+jeve avoids client code from ending up cluttered with event delegation routines
 like in the following **bad practice** example.
 
 ```java
 public class UserManager {
-    
+
     private List<UserListener> listeners = new ArrayList<>();
-    
+
     // ...
-    
+
     public void addUser(User user) {
         // logic for adding a user goes here
         // ...
@@ -60,7 +60,7 @@ public class UserManager {
             listener.userAdded(user);
         }
     }
-    
+
     public void deleteUser(User user) {
         // logic for deleting a user goes here
         // ...
@@ -78,11 +78,11 @@ This sample code has several weaknesses:
 * not parallelizable
 * process of event delegation can not be aborted
 * If the UserManager class should fire another type of events to another type
-  of listeners, we would need to create a second list which holds the other 
+  of listeners, we would need to create a second list which holds the other
   listener kinds.
 
 Most of these weaknesses can be solved by using *internal iteration*. That is,
-moving iteration **into** the framework, making it transparent for the caller. 
+moving iteration **into** the framework, making it transparent for the caller.
 See the quick start guid below to learn how jeve addresses these issues.
 
 
@@ -107,20 +107,20 @@ import de.skuzzle.jeve.Event;
 
 public class UserEvent extends Event<UserManager, UserListener> {
     private final User user;
-    
+
     public UserEvent(UserManager source, User user) {
         super(source, UserListener.class);
         this.user = user;
     }
-    
+
     public User getUser() {
         return this.user;
     }
 }
 ```
 
-Notice that each Event implementation is aware of the type and the class of the 
-Listener which is able to handle it. This also implies that you can not 
+Notice that each Event implementation is aware of the type and the class of the
+Listener which is able to handle it. This also implies that you can not
 implement two different listeners which handle the same kind of event.
 
 ```java
@@ -143,15 +143,15 @@ notify registered listeners.
 
 public class UserManager {
     private final EventProvider events = EventProvider.newDefaultEventProvider();
-    
+
     public void addUserListener(UserListener listener) {
         this.events.addListener(UserListener.class, listener);
     }
-    
+
     public void removeUserListener(UserListener listener) {
         this.events.removeListener(UserListener.class, listener);
     }
-    
+
     public void addUser(User user) {
         // logic for adding the user goes here
         // ...
@@ -159,7 +159,7 @@ public class UserManager {
         final UserEvent e = new UserEvent(this, user);
         this.events.dispatch(e, UserListener::userAdded);
     }
-    
+
     public void deleteUser(User user) {
         // same here
         // ...
@@ -171,9 +171,9 @@ public class UserManager {
 With jeve, all the above listed flaws can be treated in a safe and clear way:
 
 * only one statement needed for firing a single event
-* errors can be reported on a different channel, not interrupting the event 
+* errors can be reported on a different channel, not interrupting the event
   delegation (see below)
-* by simply obtaining a different EventProvider implementation, event 
+* by simply obtaining a different EventProvider implementation, event
   dispatching can be parallelized without touching any existing code
 * the event delegation process can be stopped by setting the event to be handled
   (see below)
@@ -184,8 +184,8 @@ With jeve, all the above listed flaws can be treated in a safe and clear way:
 # Advanced Topics
 
 ## Stop event delegation
-Listeners are notified in order they have been registered with the 
-`EventProvider`. If you want to stop the delegation of an event to further 
+Listeners are notified in order they have been registered with the
+`EventProvider`. If you want to stop the delegation of an event to further
 listeners, you may use the `Event.setHandled(boolean)` method.
 
 ```java
@@ -200,7 +200,7 @@ public class SampleUserListener implements UserListener {
         // No further listeners will be notified about this event.
         e.setHandled(true);
     }
-    
+
     @Override
     public void userDeleted(UserEvent e) {
         // ...
@@ -208,14 +208,14 @@ public class SampleUserListener implements UserListener {
 }
 ```
 
-Additionally, when using a single threaded EventProvider, your listening method 
+Additionally, when using a single threaded EventProvider, your listening method
 could throw an `AbortionException` to brutally stop delegation. This method is
 to be handled with care, as it is the only way to delegate an exception up to
 the caller of `dispatch` and may thus interrupt the client's control flow. This
-subverts jeve's goal of never interrupting the event delegation process and 
+subverts jeve's goal of never interrupting the event delegation process and
 should only be used in exceptional cases.
 
-The behavior of both methods for aborting the delegation process is generally 
+The behavior of both methods for aborting the delegation process is generally
 undefined for multi-threaded and non-sequential EventProvider implementations.
 
 
@@ -227,7 +227,7 @@ you should remove the listener manually from its source.
 ```java
 // ...
 public class SampleUserListener implements UserListener {
- 
+
     @Override
     public void userAdded(UserEvent e) {
         // do something
@@ -236,7 +236,7 @@ public class SampleUserListener implements UserListener {
         // Note: Event's source must support removing the listener
         e.getSource().removeUserListener(this);
     }
-    
+
     @Override
     public void userDeleted(UserEvent e) {
         // ...
@@ -246,12 +246,12 @@ public class SampleUserListener implements UserListener {
 
 
 ## Errors during event delegation
-All provided `EventProvider` implementations provide error tolerant event 
+All provided `EventProvider` implementations provide error tolerant event
 delegation. That is, if any notified listener throws a `RuntimeException`, this
 exception will be ignored and the next listener is notified. However, instead
-if ignoring the exception, you might want to customize the reaction. There 
-exists an overload of the `EventProvider.dispatch` method which takes an 
-`ExceptionCallback` as additional argument. This class has a single method to 
+if ignoring the exception, you might want to customize the reaction. There
+exists an overload of the `EventProvider.dispatch` method which takes an
+`ExceptionCallback` as additional argument. This class has a single method to
 which exceptions get passed.
 
 ```java
@@ -259,7 +259,7 @@ which exceptions get passed.
     public void addUser(User user) {
         // logic for adding the user goes here
         // ...
-        // now notify the listeners. We pass an ExceptionCallback as lambda 
+        // now notify the listeners. We pass an ExceptionCallback as lambda
         // expression which uses a logger to log any exception that occurred.
         final UserEvent e = new UserEvent(this, user);
         this.events.dispatch(e, UserListener::userAdded,
@@ -268,18 +268,18 @@ which exceptions get passed.
 }
 ```
 
-You may also set an ExceptionCallback globally for a specific EventProvider 
-instance using `EventProvider.setExceptionCallback()`. When doing so, the 
-provided callback will be notified when dispatching an event without explicitly 
+You may also set an ExceptionCallback globally for a specific EventProvider
+instance using `EventProvider.setExceptionCallback()`. When doing so, the
+provided callback will be notified when dispatching an event without explicitly
 specifying a callback.
 
-EventProviders will swallow any exception thrown by the ExceptionCallback 
+EventProviders will swallow any exception thrown by the ExceptionCallback
 except AbortionExceptions. Those will be passed to the caller.
 
 ## Asynchronous event delegation
-One key feature of jeve is that it hides the event delegation strategy 
-from the actual source of the event. So if you decide that all of your 
-`UserEvents` should be fired within a dedicated event thread, you simply need 
+One key feature of jeve is that it hides the event delegation strategy
+from the actual source of the event. So if you decide that all of your
+`UserEvents` should be fired within a dedicated event thread, you simply need
 to modify the creation of the `EventProvider`:
 
 ```java
@@ -289,29 +289,29 @@ import java.util.concurrent.ExecutorService;
 public class UserManager {
     // Executor which will be used to fire events
     private final ExecutorService eventService = Executors.newSingleThreadExecutor();
-    
+
     // EventProvider which will use the executor to fire events asynchronously
-    private final EventProvider events = 
+    private final EventProvider events =
         EventProvider.newAsynchronousEventProvider(eventService);
-        
+
     // remaining code stays the same
     // ...
 }
 ```
 
-jeve also supports the creation of GUI events by providing EventProvider 
+jeve also supports the creation of GUI events by providing EventProvider
 implementations which run all listeners within the AWT Event Thread.
 
 ## Implementing own dispatching strategies
 If you want to customize the process of event dispatching, you can create your
 own `EventProvider` by extending `AbstractEventProvider` and overriding the
-`dispatch(Class, Event, BiConsumer, ExceptionCallback)` method. Within that 
-method you can use `EventProvider.getListeners` to get a collection of all 
+`dispatch(Class, Event, BiConsumer, ExceptionCallback)` method. Within that
+method you can use `EventProvider.getListeners` to get a collection of all
 registered listeners for a specified class.
 
 # Tests
-jeve comes with a set of blackboard test for the EventProvider interface. If 
-you create your own EventProvider class and want it to be tested against the 
-default interface specification, you can extend the existing class 
-`EventProviderTestBase`. Please see the existing test cases in 
+jeve comes with a set of blackboard test for the EventProvider interface. If
+you create your own EventProvider class and want it to be tested against the
+default interface specification, you can extend the existing class
+`EventProviderTestBase`. Please see the existing test cases in
 `src/test/java/de/skuzzle/jeve`

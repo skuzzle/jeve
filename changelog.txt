@@ -9,6 +9,7 @@ Version 2.0.0 [Released: TODO]
     * Corrected semantics of AbortionException: those will be delegated up to 
       the caller of EventProvider#dispatch and will no longer be passed to the
       ExceptionCallback when thrown by a listener.
+
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own
       thread.
@@ -17,5 +18,6 @@ Version 1.1.0 [Released: 04.06.2014]
     * Added annotation @ListenerInterface and AnnotationProcessor which checks
       whether your listeners adhere to the default style of listener interfaces
     * Added AbortionException as a way to brutally stop event delegation
+
 Version 1.0.0 [Released: 21.04.2014]
     * initial API and implementation

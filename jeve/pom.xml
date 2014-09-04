@@ -24,7 +24,7 @@
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
-        
+
             <!-- Package tests into jar file -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

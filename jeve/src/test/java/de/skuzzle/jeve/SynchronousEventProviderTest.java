@@ -1,7 +1,7 @@
 package de.skuzzle.jeve;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +23,9 @@ public class SynchronousEventProviderTest extends EventProviderTestBase {
      */
     @Parameters
     public static final Collection<Object[]> getParameters() {
-        return Collections.singleton(
-                new EventProviderFactory[] { EventProviders::newDefaultEventProvider }
+        return Arrays.asList(
+                new EventProviderFactory[] { EventProviders::newDefaultEventProvider },
+                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newDefaultEventProvider()) }
                 );
     }
 

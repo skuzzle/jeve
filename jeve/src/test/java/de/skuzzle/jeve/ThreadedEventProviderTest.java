@@ -27,7 +27,9 @@ public class ThreadedEventProviderTest extends EventProviderTestBase {
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
                 new EventProviderFactory[] { EventProviders::newParallelEventProvider },
-                new EventProviderFactory[] { EventProviders::newAsynchronousEventProvider }
+                new EventProviderFactory[] { EventProviders::newAsynchronousEventProvider },
+                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newParallelEventProvider()) },
+                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newAsynchronousEventProvider()) }
                 );
     }
 

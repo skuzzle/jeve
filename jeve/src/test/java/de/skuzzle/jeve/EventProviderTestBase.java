@@ -34,6 +34,99 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         super(factory);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetListenerClassNull() {
+        this.subject.getListeners(null);
+    }
+
+    /**
+     * Tests whether exceptions raised by the onUnregister method of a listener
+     * are passed to the exception callback.
+     */
+    @Test
+    public void testListenerOnUnregisterException() {
+        final StringListener listener = Mockito.mock(StringListener.class);
+        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
+        Mockito.doThrow(RuntimeException.class).when(listener).onUnregister(Mockito.any());
+
+        this.subject.setExceptionCallback(ec);
+        this.subject.addListener(StringListener.class, listener);
+        this.subject.removeListener(StringListener.class, listener);
+        Mockito.verify(ec).exception(Mockito.any(RuntimeException.class),
+                Mockito.any(), Mockito.any());
+    }
+
+    /**
+     * Passing <code>null</code> to 'remove' should not raise any exceptions
+     */
+    @Test
+    public void testRemoveListenerClassNull() {
+        this.subject.removeListener(null, Mockito.mock(StringListener.class));
+    }
+
+    /**
+     * Passing <code>null</code> to 'remove' should not raise any exceptions
+     */
+    @Test
+    public void testRemoveListenerNull() {
+        this.subject.removeListener(StringListener.class, null);
+    }
+
+    /**
+     * Setting exception callback to null, should set it back to
+     * {@link EventProvider#DEFAULT_HANDLER}
+     */
+    @Test
+    public void testSetExceptionCallbackNull() {
+        this.subject.setExceptionCallback(null);
+        final StringListener listener = Mockito.mock(StringListener.class);
+        Mockito.doThrow(RuntimeException.class).when(listener).onStringEvent(Mockito.any());
+        this.subject.addListener(StringListener.class, listener);
+        this.subject.dispatch(new StringEvent(this.subject, ""), StringListener::onStringEvent);
+    }
+
+    /**
+     * Exceptions thrown by the exception callback should not interrupt
+     * delegation process
+     * 
+     * @throws InterruptedException
+     */
+    @Test
+    public void testExceptionCallbackThrowsException() throws InterruptedException {
+        if (checkSkipNonSequential()) {
+            // this test doesn't work if provider is not sequential because it
+            // relies on
+            // notification order
+            return;
+        }
+        final ExceptionCallback ec = new ExceptionCallback() {
+            @Override
+            public void exception(Exception e, Listener source, Event<?, ?> event)
+                    throws AbortionException {
+                throw new RuntimeException();
+            }
+        };
+        this.subject.setExceptionCallback(ec);
+        final StringListener listener = Mockito.mock(StringListener.class);
+        final StringListener listener2 = Mockito.mock(StringListener.class);
+        Mockito.doThrow(RuntimeException.class).when(listener).onStringEvent(Mockito.any());
+        this.subject.addListener(StringListener.class, listener);
+        this.subject.addListener(StringListener.class, listener2);
+        this.subject.dispatch(new StringEvent(this.subject, ""), StringListener::onStringEvent);
+
+        // HACK: give async providers some time to execute
+        Thread.sleep(THREAD_WAIT_TIME);
+        Mockito.verify(listener2).onStringEvent(Mockito.any());
+    }
+
+    /**
+     * Removing non existent listener should raise no exceptions
+     */
+    @Test
+    public void testRemoveUnregisteredListener() {
+        this.subject.removeListener(StringListener.class, Mockito.mock(StringListener.class));
+    }
+
     /**
      * Tests whether exception is thrown when trying to add <code>null</code> as
      * listener.
@@ -94,7 +187,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     /**
      * Tests whether the event provider registered itself at the event before
      * dispatching
-     * 
+     *
      * @throws InterruptedException
      */
     @Test

@@ -1,6 +1,7 @@
 package de.skuzzle.jeve;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -53,17 +54,16 @@ public abstract class AbstractEventProvider implements EventProvider {
     }
 
     @Override
-    public <T extends Listener> Listeners<T> getListeners(Class<T> listenerClass) {
+    public <T extends Listener> List<T> getListeners(Class<T> listenerClass) {
         if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass");
         }
         synchronized (this.listeners) {
             final List<Object> listeners = this.listeners.get(listenerClass);
             if (listeners == null) {
-                return Listeners.empty(this, listenerClass);
+                return Collections.emptyList();
             }
-            return new Listeners<T>(
-                    copyList(listeners, listenerClass), listenerClass, this);
+            return copyList(listeners, listenerClass);
         }
     }
 
@@ -235,7 +235,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // HINT: getListeners is thread safe
-        final Listeners<L> listeners = this.getListeners(event.getListenerClass());
+        final List<L> listeners = this.getListeners(event.getListenerClass());
         boolean result = true;
 
         event.setEventProvider(this);

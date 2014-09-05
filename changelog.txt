@@ -10,6 +10,10 @@ Version 2.0.0 [Released: TODO]
       the caller of EventProvider#dispatch and will no longer be passed to the
       ExceptionCallback when thrown by a listener.
     * Add reference to the executing EventProvider to Event instances.
+    * Add StatisticsEventProvider which counts dispatching invocations for 
+      debugging purposes.
+    * EventProvider#getListeners now returns a List. The class 'Listeners' has
+      been removed.
 
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own

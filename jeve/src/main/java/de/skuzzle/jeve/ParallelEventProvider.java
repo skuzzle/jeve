@@ -1,5 +1,6 @@
 package de.skuzzle.jeve;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -42,7 +43,7 @@ public class ParallelEventProvider extends AbstractEventProvider {
             return;
         }
 
-        final Listeners<L> listeners = this.getListeners(event.getListenerClass());
+        final List<L> listeners = this.getListeners(event.getListenerClass());
         event.setEventProvider(this);
         listeners.forEach(listener -> {
             try {

@@ -176,4 +176,17 @@ public final class EventProviders {
         return new ParallelEventProvider(executor);
     }
 
+    /**
+     * Creates an EventProvider instance which will delegate all method calls to
+     * the provided {@code wrapped} one. The returned provider will count
+     * certain method invocations to provide statistics about how many listeners
+     * are notified per event.
+     *
+     * @param wrapped The wrapped EventProvider.
+     * @return A new EventProvider instance.
+     * @since 2.0.0
+     */
+    public static StatisticsEventProvider newStatisticsEventProvider(EventProvider wrapped) {
+        return new StatisticsEventProvider(wrapped);
+    }
 }

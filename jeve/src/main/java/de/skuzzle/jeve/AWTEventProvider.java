@@ -33,6 +33,10 @@ class AWTEventProvider extends AbstractEventProvider {
         this.invokeNow = invokeNow;
     }
 
+    public boolean isInvokeNow() {
+        return this.invokeNow;
+    }
+
     @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             final E event, final BiConsumer<L, E> bc, ExceptionCallback ec) {
@@ -53,9 +57,9 @@ class AWTEventProvider extends AbstractEventProvider {
 
                     // this should not be reachable, as notifyListeners can not
                     // throw any other exceptions
-                    throw new RuntimeException(e);
+                    throw new AbortionException(e);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    throw new AbortionException(e);
                 }
             }
         } else {

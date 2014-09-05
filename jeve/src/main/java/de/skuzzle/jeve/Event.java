@@ -89,13 +89,17 @@ public class Event<T, L extends Listener> {
     }
 
     /**
-     * Sets the EventProvider which is currently dispatching this event.
+     * Sets the EventProvider which is currently dispatching this event. The
+     * method will only set the provider once. A second call to this method on
+     * the same event instance has no effect.
      *
      * @param eventProvider The event provider.
      * @since 2.0.0
      */
     void setEventProvider(EventProvider eventProvider) {
-        this.eventProvider = eventProvider;
+        if (this.eventProvider == null) {
+            this.eventProvider = eventProvider;
+        }
     }
 
     /**

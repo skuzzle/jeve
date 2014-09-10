@@ -18,7 +18,7 @@ public class AbstractEventProviderTest {
      * Time to wait to give threaded handlers some time to finish one dispatch
      * action
      */
-    protected static final long THREAD_WAIT_TIME = 150; // ms
+    protected static final long THREAD_WAIT_TIME = 50; // ms
 
     /** The factory to create EventProvider instances for testing */
     protected final EventProviderFactory factory;

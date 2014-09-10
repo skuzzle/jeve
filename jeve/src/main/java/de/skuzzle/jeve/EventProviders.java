@@ -189,4 +189,19 @@ public final class EventProviders {
     public static StatisticsEventProvider newStatisticsEventProvider(EventProvider wrapped) {
         return new StatisticsEventProvider(wrapped);
     }
+
+    /**
+     *
+     * @param wrapped
+     * @return
+     */
+    public static PriorityEventProvider newPriorityEventProvider(EventProvider wrapped) {
+        return new PriorityEventProvider(wrapped);
+    }
+
+    public static PriorityEventProvider newPriorityEventProvider(EventProvider wrapped,
+            int defaultPriority) {
+        return new PriorityEventProvider(wrapped, defaultPriority);
+    }
+
 }

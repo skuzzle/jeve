@@ -89,6 +89,42 @@ public class Event<T, L extends Listener> {
     }
 
     /**
+     * Removes the provided listener from the {@link EventProvider} which is
+     * currently dispatching this event. Hence this method can only be called
+     * from within a listening method while the event is being dispatched.
+     * Calling this method on an Event instance which is not currently
+     * dispatched will raise an exception.
+     *
+     * <pre>
+     * <code>
+     * public class OneTimeUserListener extends UserListener {
+     *     &#64;Override
+     *     public void userAdded(UserEvent e) {
+     *         // logic goes here
+     *         // ...
+     *
+     *         // this listener should not be notified any more about this kind of
+     *         // event.
+     *         e.stopNotifying(this);
+     *     }
+     * }
+     * </code>
+     * </pre>
+     *
+     * Removing the listener will have no effect on the current dispatch action.
+     * Even if you remove a different listener than {@code this}, it will be
+     * notified anyway during this run, because the EventProvider collects the
+     * Listeners before starting to dispatch the event.
+     *
+     * @param listener The listener to remove from the currently dispatching
+     *            {@link EventProvider}
+     * @since 2.0.0
+     */
+    public void stopNotifying(L listener) {
+        this.eventProvider.removeListener(this.getListenerClass(), listener);
+    }
+
+    /**
      * Sets the EventProvider which is currently dispatching this event. The
      * method will only set the provider once. A second call to this method on
      * the same event instance has no effect.
@@ -103,8 +139,9 @@ public class Event<T, L extends Listener> {
     }
 
     /**
-     * Gets whether this was already handled. If this returns <code>true</code>,
-     * no further listeners will be notified about this event.
+     * Gets whether this event was already handled. If this returns
+     * <code>true</code>, no further listeners will be notified about this
+     * event.
      *
      * @return Whether this event was handled.
      */

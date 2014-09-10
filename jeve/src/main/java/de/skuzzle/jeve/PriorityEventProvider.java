@@ -13,7 +13,10 @@ import java.util.function.BiConsumer;
  * An {@link EventProvider} implementation which provides prioritization of
  * Listeners. When adding a Listener to this provider, you can specify an
  * integer priority for it. When dispatching an Event, those Listeners with the
- * lowest assigned int value will be notified first.
+ * lowest assigned int value will be notified first. Therefore, this provider is
+ * not generally sequential as by the specification of EventProviders but it is
+ * sequential per priority level. That is, Listeners with the same priority are
+ * notified in the order in which they have been registered with the provider.
  *
  * <p>
  * This provider wraps around another and delegates all methods to the wrapped
@@ -30,11 +33,11 @@ public class PriorityEventProvider implements EventProvider {
     private final class SortingFilter implements ListenerFilter {
 
         @Override
-        public <L extends Listener> void preprocess(Class<L> listenerClass,
-                List<L> listeners) {
+        public <L extends Listener> void preprocess(EventProvider parent,
+                Class<L> listenerClass, List<L> listeners) {
 
             synchronized (PriorityEventProvider.this.priorityMap) {
-                if (PriorityEventProvider.this.resortMap.remove(listenerClass)) {
+                if (PriorityEventProvider.this.resortSet.remove(listenerClass)) {
                     Collections.sort(listeners, PriorityEventProvider.this::compare);
                 }
             }
@@ -49,7 +52,7 @@ public class PriorityEventProvider implements EventProvider {
     private static final int DEFAULT_PRIORITY = 0;
 
     private final Map<Listener, Integer> priorityMap;
-    private final Set<Class<? extends Listener>> resortMap;
+    private final Set<Class<? extends Listener>> resortSet;
     private final EventProvider wrapped;
     private final int defaultPriority;
     private final ListenerFilter sortingFilter;
@@ -81,7 +84,7 @@ public class PriorityEventProvider implements EventProvider {
         this.sortingFilter = new SortingFilter();
         this.defaultPriority = defaultPriority;
         this.priorityMap = new HashMap<>();
-        this.resortMap = new HashSet<>();
+        this.resortSet = new HashSet<>();
         wrapped.setListenerFilter(this.sortingFilter);
     }
 
@@ -143,7 +146,7 @@ public class PriorityEventProvider implements EventProvider {
      * @param <T> Type of the listener to add.
      * @param listenerClass The class representing the event(s) to listen on.
      * @param listener The listener to add.
-     * @param priority
+     * @param priority The priority of the new listener.
      * @throws IllegalArgumentException If either listenerClass or listener
      *             argument is <code>null</code>.
      */
@@ -152,7 +155,85 @@ public class PriorityEventProvider implements EventProvider {
         this.wrapped.addListener(listenerClass, listener);
         synchronized (this.priorityMap) {
             this.priorityMap.put(listener, priority);
-            this.resortMap.add(listenerClass);
+            this.resortSet.add(listenerClass);
+        }
+    }
+
+    /**
+     * Given that {@code second} is already registered with this provider, this
+     * method adds the new listener {@code first} with a higher priority so it
+     * is notified before the first one. If {@code second} is assigned the
+     * highest possible priority, this method throws an exception.
+     *
+     * <p>
+     * If {@code second} is not already registered, the new Listener will be
+     * added with the default priority specified in the constructor.
+     * </p>
+     *
+     * @param <T> Type of the listener to add.
+     * @param listenerClass The class representing the event(s) to listen on.
+     * @param first The listener to add.
+     * @param second The listener which is already registered.
+     * @throws IllegalArgumentException If either listenerClass or listener
+     *             argument is <code>null</code>.
+     * @see #addListener(Class, Listener, int)
+     */
+    public <T extends Listener> void addListenerBefore(Class<T> listenerClass, T first,
+            T second) {
+
+        synchronized (this.priorityMap) {
+            final Integer secondPriority = this.priorityMap.get(second);
+            int priority = this.defaultPriority;
+            if (secondPriority != null) {
+                if (secondPriority.equals(Integer.MIN_VALUE)) {
+                    throw new IllegalStateException(String.format(
+                            "can't add %s before %s: No higher priority than Integer.MIN_VALUE available",
+                            first, second));
+                }
+                priority = secondPriority - 1;
+            }
+            this.wrapped.addListener(listenerClass, first);
+            this.priorityMap.put(first, priority);
+            this.resortSet.add(listenerClass);
+        }
+    }
+
+    /**
+     * Given that {@code first} is already registered with this provider, this
+     * method adds the new listener {@code second} with a lower priority so it
+     * is notified after the first one. If {@code first} is assigned the lowest
+     * possible priority, this method throws an exception.
+     *
+     * <p>
+     * If {@code first} is not already registered, the new Listener will be
+     * added with the default priority specified in the constructor.
+     * </p>
+     *
+     * @param <T> Type of the listener to add.
+     * @param listenerClass The class representing the event(s) to listen on.
+     * @param first The listener to add.
+     * @param second The listener which is already registered.
+     * @throws IllegalArgumentException If either listenerClass or listener
+     *             argument is <code>null</code>.
+     * @see #addListener(Class, Listener, int)
+     */
+    public <T extends Listener> void addListenerAfter(Class<T> listenerClass, T first,
+            T second) {
+
+        synchronized (this.priorityMap) {
+            final Integer firstPriority = this.priorityMap.get(first);
+            int priority = this.defaultPriority;
+            if (firstPriority != null) {
+                if (firstPriority.equals(Integer.MAX_VALUE)) {
+                    throw new IllegalStateException(String.format(
+                            "can't add %s after %s: No lower priority than Integer.MAX_VALUE available",
+                            second, first));
+                }
+                priority = firstPriority - 1;
+            }
+            this.wrapped.addListener(listenerClass, second);
+            this.priorityMap.put(second, priority);
+            this.resortSet.add(listenerClass);
         }
     }
 

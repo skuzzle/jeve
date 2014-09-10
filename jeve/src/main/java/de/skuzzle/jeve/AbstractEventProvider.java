@@ -249,7 +249,7 @@ public abstract class AbstractEventProvider implements EventProvider {
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // HINT: getListeners is thread safe
         final List<L> listeners = this.getListeners(event.getListenerClass());
-        this.filter.preprocess(event.getListenerClass(), listeners);
+        this.filter.preprocess(this, event.getListenerClass(), listeners);
 
         boolean result = true;
 

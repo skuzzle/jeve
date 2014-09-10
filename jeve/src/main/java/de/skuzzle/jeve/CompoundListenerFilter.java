@@ -26,9 +26,10 @@ class CompoundListenerFilter implements ListenerFilter {
     }
 
     @Override
-    public <L extends Listener> void preprocess(Class<L> listenerClass, List<L> listeners) {
-        this.first.preprocess(listenerClass, listeners);
-        this.second.preprocess(listenerClass, listeners);
+    public <L extends Listener> void preprocess(EventProvider parent,
+            Class<L> listenerClass, List<L> listeners) {
+        this.first.preprocess(parent, listenerClass, listeners);
+        this.second.preprocess(parent, listenerClass, listeners);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class ParallelEventProvider extends AbstractEventProvider {
         }
 
         final List<L> listeners = this.getListeners(event.getListenerClass());
-        this.filter.preprocess(event.getListenerClass(), listeners);
+        this.filter.preprocess(this, event.getListenerClass(), listeners);
         event.setEventProvider(this);
         listeners.forEach(listener -> {
             try {

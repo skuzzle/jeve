@@ -655,7 +655,9 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
                 StringListener::onStringEvent);
 
         sleep(); // HACK: give async providers some time to execute
-        Mockito.verify(filter).preprocess(Mockito.eq(StringListener.class),
+        Mockito.verify(filter).preprocess(
+                Mockito.eq(this.subject),
+                Mockito.eq(StringListener.class),
                 Mockito.anyList());
     }
 }

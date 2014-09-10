@@ -159,8 +159,8 @@ public interface EventProvider extends AutoCloseable {
      */
     public static final ListenerFilter NOP_FILTER = new ListenerFilter() {
         @Override
-        public <L extends Listener> void preprocess(Class<L> listenerClass,
-                List<L> listeners) {
+        public <L extends Listener> void preprocess(EventProvider parent,
+                Class<L> listenerClass, List<L> listeners) {
             /* Do nothing */
         }
 
@@ -297,7 +297,7 @@ public interface EventProvider extends AutoCloseable {
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
-     * 
+     *
      *     public void userDeleted(UserEvent e);
      * }
      * </pre>
@@ -352,7 +352,7 @@ public interface EventProvider extends AutoCloseable {
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
-     * 
+     *
      *     public void userDeleted(UserEvent e);
      * }
      * </pre>

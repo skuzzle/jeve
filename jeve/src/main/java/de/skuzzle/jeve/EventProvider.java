@@ -1,6 +1,7 @@
 package de.skuzzle.jeve;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
@@ -93,8 +94,9 @@ import java.util.function.BiConsumer;
  * listeners are notified in the order in which they were registered for a
  * certain listener class. EventProviders report this property with
  * {@link #isSequential()}. Whether an EventProvider actually is sequential
- * depends on its implementation of the dispatch method. For example, a provider
- * which notifies each listener within a separate thread is not sequential.
+ * depends on its implementation of the dispatch method and the currently used
+ * ListenerFilter (see section below). For example, a provider which notifies
+ * each listener within a separate thread is not sequential.
  * </p>
  *
  * <h2>Aborting Event Delegation</h2>
@@ -113,8 +115,22 @@ import java.util.function.BiConsumer;
  * undefined.
  * </p>
  *
+ * <h2>Listener filtering</h2>
+ * <p>
+ * After collecting the list of targeted listeners for a certain event, the
+ * EventProvider pre-processes this list before starting to notify the single
+ * listeners. The pre-processing logic is implemented by a
+ * {@link ListenerFilter}, an instance of which can be registered to the
+ * EventProvider using {@link #setListenerFilter(ListenerFilter)}. The filter
+ * gets passed the list of registered listeners and may apply any kind of
+ * modifications to it like adding, removing or re-ordering listeners. Thus, the
+ * ListenerFilter has direct impact of the {@code isSequential} property of this
+ * EventProvider.
+ * </p>
+ *
  * @author Simon Taddiken
  * @since 1.0.0
+ * @version 2.0.0
  */
 public interface EventProvider extends AutoCloseable {
 
@@ -135,6 +151,34 @@ public interface EventProvider extends AutoCloseable {
                 );
         e.printStackTrace();
     };
+
+    /**
+     * ListenerFilter which leaves the passed list unmodified.
+     *
+     * @since 2.0.0
+     */
+    public static final ListenerFilter NOP_FILTER = new ListenerFilter() {
+        @Override
+        public <L extends Listener> void preprocess(Class<L> listenerClass,
+                List<L> listeners) {
+            /* Do nothing */
+        }
+
+        @Override
+        public boolean isSequential() {
+            return true;
+        }
+    };
+
+    /**
+     * Sets the {@link ListenerFilter} for pre-processing the targeted listeners
+     * before notifying them about a certain event. If the passed {@code filter}
+     * is <code>null</code>, the {@link #NOP_FILTER} is used.
+     *
+     * @param filter The ListenerFilter to set.
+     * @since 2.0.0
+     */
+    public void setListenerFilter(ListenerFilter filter);
 
     /**
      * Adds a listener which will be notified for every event represented by the
@@ -381,6 +425,13 @@ public interface EventProvider extends AutoCloseable {
      * Returns whether this EventProvider is sequential, which means it strictly
      * notifies listeners in the order in which they were registered for a
      * certain event.
+     *
+     * <p>
+     * <b>Note:</b> Implementors must obey the result of the
+     * {@link ListenerFilter#isSequential() isSequential} property of the
+     * currently used ListenerFilter. If the filter is not sequential, this
+     * provider won't be either.
+     * </p>
      *
      * @return Whether this instance is sequential.
      */

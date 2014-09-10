@@ -29,12 +29,25 @@ public abstract class AbstractEventProvider implements EventProvider {
     /** Default callback to handle event handler exceptions */
     protected ExceptionCallback exceptionHandler;
 
+    /** The currently set ListenerFilter */
+    protected ListenerFilter filter;
+
     /**
      * Creates a new {@link AbstractEventProvider}.
      */
     public AbstractEventProvider() {
         this.listeners = new HashMap<>();
+        this.filter = NOP_FILTER;
         this.exceptionHandler = DEFAULT_HANDLER;
+    }
+
+    @Override
+    public void setListenerFilter(ListenerFilter filter) {
+        if (filter == null) {
+            this.filter = NOP_FILTER;
+        } else {
+            this.filter = filter;
+        }
     }
 
     /**
@@ -236,6 +249,8 @@ public abstract class AbstractEventProvider implements EventProvider {
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // HINT: getListeners is thread safe
         final List<L> listeners = this.getListeners(event.getListenerClass());
+        this.filter.preprocess(event.getListenerClass(), listeners);
+
         boolean result = true;
 
         event.setEventProvider(this);

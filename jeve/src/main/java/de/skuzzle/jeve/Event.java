@@ -48,9 +48,13 @@ public class Event<T, L extends Listener> {
      *
      * @param source The source of this event.
      * @param listenerClass The type of the listener which can handle this
-     *            event.
+     *            event. This value must not be <code>null</code>.
      */
     public Event(T source, Class<L> listenerClass) {
+        if (listenerClass == null) {
+            throw new IllegalArgumentException("listenerClass is null");
+        }
+
         this.source = source;
         this.listenerClass = listenerClass;
         this.isHandled = false;

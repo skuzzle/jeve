@@ -12,8 +12,11 @@ Version 2.0.0 [Released: TODO]
     * Add reference to the executing EventProvider to Event instances.
     * Add StatisticsEventProvider which counts dispatching invocations for 
       debugging purposes.
+    * Add PriorityEventProvider which allows to assign priorities to listeners.
     * EventProvider#getListeners now returns a List. The class 'Listeners' has
       been removed.
+    * Add 'stopNotifying(Listener)' method to event instances to remove a 
+      Listener from the EventProvider which is currently dispatching the event.
 
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own

@@ -47,6 +47,11 @@ public class StatisticsEventProvider implements EventProvider {
     }
 
     @Override
+    public void setListenerFilter(ListenerFilter filter) {
+        this.wrapped.setListenerFilter(filter);
+    }
+
+    @Override
     public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
         this.wrapped.addListener(listenerClass, listener);
     }

@@ -88,7 +88,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     /**
      * Exceptions thrown by the exception callback should not interrupt
      * delegation process
-     * 
+     *
      * @throws InterruptedException
      */
     @Test
@@ -114,8 +114,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         this.subject.addListener(StringListener.class, listener2);
         this.subject.dispatch(new StringEvent(this.subject, ""), StringListener::onStringEvent);
 
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+        sleep(); // HACK: give async providers some time to execute
         Mockito.verify(listener2).onStringEvent(Mockito.any());
     }
 
@@ -195,8 +194,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final StringEvent event = new StringEvent(this.subject, "");
         this.subject.dispatch(event, StringListener::onStringEvent);
 
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+        sleep(); // HACK: give async providers some time to execute
         Assert.assertEquals(this.subject, event.getEventProvider());
     }
 
@@ -282,8 +280,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         this.subject.dispatch(e, StringListener::onStringEvent,
                 (ex, l, ev) -> {
                 }); // swallow exception
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+
+        sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(second).onStringEvent(Mockito.eq(e));
     }
@@ -309,8 +307,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent);
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+
+        sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(second).onStringEvent(Mockito.eq(e));
         Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.eq(e));
@@ -337,8 +335,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent, localEc);
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+
+        sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(globalEc, Mockito.never())
                 .exception(Mockito.any(), Mockito.any(), Mockito.any());
@@ -392,7 +390,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         this.subject.addListener(StringListener.class, secondListener);
         this.subject.dispatch(e, StringListener::onStringEvent);
 
-        Thread.sleep(THREAD_WAIT_TIME);
+        sleep(); // HACK: give async providers some time to execute
+
         Mockito.verify(secondListener, Mockito.never()).onStringEvent(Mockito.eq(e));
     }
 
@@ -494,8 +493,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         this.subject.removeListener(DifferentStringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+
+        sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(listener).onStringEvent(Mockito.any());
         Mockito.verify(listener, Mockito.never()).onDifferentStringEvent(Mockito.any());
@@ -611,11 +610,52 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         this.subject.close();
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
-        // HACK: give async providers some time to execute
-        Thread.sleep(THREAD_WAIT_TIME);
+
+        sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(l, Mockito.never()).onStringEvent(Mockito.any());
         Assert.assertTrue(getFailString("Listener not removed"),
                 this.subject.getListeners(StringListener.class).isEmpty());
+    }
+
+    /**
+     * Setting the listener filter to null should reset it to the NOP_FILTER
+     */
+    @Test
+    public void testSetListenerFilterToNull() {
+        final ListenerFilter temp = Mockito.mock(ListenerFilter.class);
+        this.subject.setListenerFilter(temp);
+        this.subject.setListenerFilter(null);
+        final StringListener listener = Mockito.mock(StringListener.class);
+        this.subject.addListener(StringListener.class, listener);
+
+        // this should at least not throw an exception
+        this.subject.dispatch(new StringEvent(this.subject, ""),
+                StringListener::onStringEvent);
+
+        sleep(); // HACK: give async providers some time to execute
+
+        Mockito.verifyZeroInteractions(temp);
+    }
+
+    /**
+     * Tests whether the filter is called.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSetListenerFilter() {
+        final ListenerFilter filter = Mockito.mock(ListenerFilter.class);
+        this.subject.setListenerFilter(filter);
+
+        final StringListener listener = Mockito.mock(StringListener.class);
+        this.subject.addListener(StringListener.class, listener);
+
+        // this should at least not throw an exception
+        this.subject.dispatch(new StringEvent(this.subject, ""),
+                StringListener::onStringEvent);
+
+        sleep(); // HACK: give async providers some time to execute
+        Mockito.verify(filter).preprocess(Mockito.eq(StringListener.class),
+                Mockito.anyList());
     }
 }

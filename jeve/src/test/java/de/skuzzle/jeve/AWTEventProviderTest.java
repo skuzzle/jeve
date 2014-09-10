@@ -93,8 +93,7 @@ public class AWTEventProviderTest extends EventProviderTestBase {
             // dispatch from the awt thread
             SwingUtilities.invokeAndWait(() -> this.subject.dispatch(event, StringListener::onStringEvent));
 
-            // HACK: give async providers some time to execute
-            Thread.sleep(THREAD_WAIT_TIME);
+            sleep(); // HACK: give async providers some time to execute
             Assert.assertTrue(getFailString("Listener has not been notified from the AWT event thread"), isEventThread[0]);
         }
     }

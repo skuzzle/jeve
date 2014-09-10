@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 public final class EventProviders {
 
     private EventProviders() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("don't do this :(");
     }
 
     /**
@@ -191,17 +191,33 @@ public final class EventProviders {
     }
 
     /**
+     * Creates a new {@link PriorityEventProvider} which wraps the given
+     * {@code provider}. These providers are never sequential as they order
+     * listeners according to their assigned priority.
      *
-     * @param wrapped
-     * @return
+     * @param provider The wrapped EventProvider.
+     * @return A new PriorityEventProvider instance.
+     * @see PriorityEventProvider
+     * @since 2.0.0
      */
-    public static PriorityEventProvider newPriorityEventProvider(EventProvider wrapped) {
-        return new PriorityEventProvider(wrapped);
+    public static PriorityEventProvider newPriorityEventProvider(EventProvider provider) {
+        return new PriorityEventProvider(provider);
     }
 
-    public static PriorityEventProvider newPriorityEventProvider(EventProvider wrapped,
+    /**
+     * Creates a new {@link PriorityEventProvider} which wraps the given
+     * {@code provider}. These providers are never sequential as they order
+     * listeners according to their assigned priority.
+     *
+     * @param provider The wrapped EventProvider.
+     * @param defaultPriority The default priority to assign to added listeners.
+     * @return A new PriorityEventProvider instance
+     * @see PriorityEventProvider
+     * @since 2.0.0
+     */
+    public static PriorityEventProvider newPriorityEventProvider(EventProvider provider,
             int defaultPriority) {
-        return new PriorityEventProvider(wrapped, defaultPriority);
+        return new PriorityEventProvider(provider, defaultPriority);
     }
 
 }

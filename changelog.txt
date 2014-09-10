@@ -17,6 +17,8 @@ Version 2.0.0 [Released: TODO]
       been removed.
     * Add 'stopNotifying(Listener)' method to event instances to remove a 
       Listener from the EventProvider which is currently dispatching the event.
+    * Add 'DefaultTargetEvent' and a new dispatch overload which does not need
+      a method reference to the listening method to notify.
 
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own

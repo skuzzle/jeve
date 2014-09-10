@@ -11,6 +11,7 @@ import de.skuzzle.jeve.EventProviderTestBase;
  *
  * @author Simon Taddiken
  * @since 1.1.0
+ * @version 2.0.0
  */
 public class AbstractEventProviderTest {
 
@@ -18,7 +19,7 @@ public class AbstractEventProviderTest {
      * Time to wait to give threaded handlers some time to finish one dispatch
      * action
      */
-    protected static final long THREAD_WAIT_TIME = 50; // ms
+    private static final long THREAD_WAIT_TIME = 50; // ms
 
     /** The factory to create EventProvider instances for testing */
     protected final EventProviderFactory factory;
@@ -81,5 +82,20 @@ public class AbstractEventProviderTest {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Waits a certain amount of milliseconds to let threaded providers finish
+     * before performing assertions.
+     *
+     * @since 2.0.0
+     */
+    protected void sleep() {
+        try {
+            Thread.sleep(THREAD_WAIT_TIME);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+
+        }
     }
 }

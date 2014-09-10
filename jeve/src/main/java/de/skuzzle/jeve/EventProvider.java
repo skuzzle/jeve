@@ -297,7 +297,7 @@ public interface EventProvider extends AutoCloseable {
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
-     *
+     * 
      *     public void userDeleted(UserEvent e);
      * }
      * </pre>
@@ -332,7 +332,7 @@ public interface EventProvider extends AutoCloseable {
      *            of the listener.
      * @throws IllegalArgumentException If any of the passed arguments is
      *             <code>null</code>.
-     * @throws AbortionException If a listener threw an AbortionException
+     * @throws AbortionException If a listener threw an AbortionException.
      */
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc);
@@ -352,7 +352,7 @@ public interface EventProvider extends AutoCloseable {
      * <pre>
      * public interface UserListener extends Listener {
      *     public void userAdded(UserEvent e);
-     *
+     * 
      *     public void userDeleted(UserEvent e);
      * }
      * </pre>
@@ -392,10 +392,44 @@ public interface EventProvider extends AutoCloseable {
      *            exception.
      * @throws IllegalArgumentException If any of the passed arguments is
      *             <code>null</code>.
-     * @throws AbortionException If a listener threw an AbortionException
+     * @throws AbortionException If a listener threw an AbortionException.
      */
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec);
+
+    /**
+     * Dispatches a {@link DefaultTargetEvent} with the logic of
+     * {@link #dispatch(Event, BiConsumer)}.
+     *
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param event The occurred event which shall be passed to each listener.
+     * @throws IllegalArgumentException If any of the passed arguments is
+     *             <code>null</code>.
+     * @throws AbortionException If a listener threw an AbortionException.
+     */
+    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
+            E event) {
+        dispatch(event, event.getTarget());
+    }
+
+    /**
+     * Dispatches a {@link DefaultTargetEvent} with the logic of
+     * {@link #dispatch(Event, BiConsumer, ExceptionCallback)}.
+     *
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param event The occurred event which shall be passed to each listener.
+     * @param ec Callback to be notified when any of the listeners throws an
+     *            exception.
+     * @throws IllegalArgumentException If any of the passed arguments is
+     *             <code>null</code>.
+     * @throws AbortionException If a listener threw an AbortionException.
+     */
+    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
+            E event, ExceptionCallback ec) {
+        dispatch(event, event.getTarget(), ec);
+    }
 
     /**
      * Gets whether this EventProvider is ready for dispatching.

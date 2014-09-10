@@ -24,10 +24,11 @@ package de.skuzzle.jeve;
  * <code>true</code>.
  * </p>
  *
- * @author Simon Taddiken
- * @since 1.0.0
  * @param <T> Type of the source of this event.
  * @param <L> Type of the listener which can handle this event.
+ * @author Simon Taddiken
+ * @since 1.0.0
+ * @version 2.0.0
  */
 public class Event<T, L extends Listener> {
 

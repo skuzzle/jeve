@@ -92,7 +92,7 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
 
-        Thread.sleep(THREAD_WAIT_TIME);
+        sleep(); // HACK: give async providers some time to execute
         Assert.assertTrue(getFailString("Exception handler not called"), exception[0]);
     }
 }

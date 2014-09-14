@@ -1,8 +1,9 @@
 package de.skuzzle.jeve;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.function.BiConsumer;
+
+import de.skuzzle.jeve.builder.ConfiguratorImpl;
+import de.skuzzle.jeve.builder.EventProviderConfigurator;
 
 /**
  * <p>
@@ -115,24 +116,16 @@ import java.util.function.BiConsumer;
  * undefined.
  * </p>
  *
- * <h2>Listener filtering</h2>
- * <p>
- * After collecting the list of targeted listeners for a certain event, the
- * EventProvider pre-processes this list before starting to notify the single
- * listeners. The pre-processing logic is implemented by a
- * {@link ListenerFilter}, an instance of which can be registered to the
- * EventProvider using {@link #setListenerFilter(ListenerFilter)}. The filter
- * gets passed the list of registered listeners and may apply any kind of
- * modifications to it like adding, removing or re-ordering listeners. Thus, the
- * ListenerFilter has direct impact of the {@code isSequential} property of this
- * EventProvider.
- * </p>
- *
+ * @param <S> The type of the ListenerStore this EventProvider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  * @version 2.0.0
  */
-public interface EventProvider extends AutoCloseable {
+public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
+
+    public static EventProviderConfigurator configure() {
+        return new ConfiguratorImpl();
+    }
 
     /**
      * The default {@link ExceptionCallback} which prints some information about
@@ -152,136 +145,7 @@ public interface EventProvider extends AutoCloseable {
         e.printStackTrace();
     };
 
-    /**
-     * ListenerFilter which leaves the passed list unmodified.
-     *
-     * @since 2.0.0
-     */
-    public static final ListenerFilter NOP_FILTER = new ListenerFilter() {
-        @Override
-        public <L extends Listener> void preprocess(EventProvider parent,
-                Class<L> listenerClass, List<L> listeners) {
-            /* Do nothing */
-        }
-
-        @Override
-        public boolean isSequential() {
-            return true;
-        }
-    };
-
-    /**
-     * Sets the {@link ListenerFilter} for pre-processing the targeted listeners
-     * before notifying them about a certain event. If the passed {@code filter}
-     * is <code>null</code>, the {@link #NOP_FILTER} is used.
-     *
-     * @param filter The ListenerFilter to set.
-     * @since 2.0.0
-     */
-    public void setListenerFilter(ListenerFilter filter);
-
-    /**
-     * Adds a listener which will be notified for every event represented by the
-     * given listener class. After registration, the listener's
-     * {@link Listener#onRegister(RegistrationEvent) onRegister} method gets
-     * called to notify the listener about being added to a new parent. The
-     * {@code onRegister} method is not subject to the dispatching strategy
-     * implemented by this {@link EventProvider} and is called from the current
-     * thread.
-     *
-     * <p>
-     * <b>Note on concurrency:</b> This method can safely be called from within
-     * a listening method during event handling to add a listener. This will
-     * have no impact on the current event delegation process.
-     * </p>
-     *
-     * @param <T> Type of the listener to add.
-     * @param listenerClass The class representing the event(s) to listen on.
-     * @param listener The listener to add.
-     * @throws IllegalArgumentException If either listenerClass or listener
-     *             argument is <code>null</code>.
-     */
-    public <T extends Listener> void addListener(Class<T> listenerClass, T listener);
-
-    /**
-     * Removes a listener. It will only be removed for the specified listener
-     * class and can thus still be registered with this event provider if it was
-     * added for further listener classes. The listener will no longer receive
-     * events represented by the given listener class. After removal, the
-     * listener's {@link Listener#onUnregister(RegistrationEvent) onUnregister}
-     * method gets called to notify the listener about being removed from a
-     * parent. The {@code onUnregister} method is not subject to the dispatching
-     * strategy implemented by this {@link EventProvider} and is called from the
-     * current thread.
-     *
-     * <p>
-     * If any of the arguments is <code>null</code>, this method returns with no
-     * effect.
-     * </p>
-     *
-     * <p>
-     * <b>Note on concurrency:</b> This method can safely be called from within
-     * a listening method during event handling to remove a listener. This will
-     * have no impact on the current event delegation process.
-     * </p>
-     *
-     * @param <T> Type of the listener to remove.
-     * @param listenerClass The class representing the event(s) for which the
-     *            listener should be removed.
-     * @param listener The listener to remove.
-     */
-    public <T extends Listener> void removeListener(Class<T> listenerClass, T listener);
-
-    /**
-     * Gets all listeners that have been registered using
-     * {@link #addListener(Class, Listener)} for the given listener class. The
-     * returned collection contains the listeners in the order in which they
-     * have been registered. Modifying the returned collection has no effects on
-     * this EventProvider.
-     *
-     * @param <T> Type of the listeners to return.
-     * @param listenerClass The class representing the event for which the
-     *            listeners should be retrieved.
-     * @return A collection of listeners that should be notified about the event
-     *         represented by the given listener class.
-     * @throws IllegalArgumentException If listenerClass is <code>null</code>.
-     */
-    public <T extends Listener> Collection<T> getListeners(Class<T> listenerClass);
-
-    /**
-     * Removes all listeners which have been registered for the provided
-     * listener class. Every listner's
-     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will
-     * be called.
-     *
-     * <p>
-     * If listenerClass is <code>null</code> this method returns with no effect.
-     * </p>
-     *
-     * <p>
-     * <b>Note on concurrency:</b> This method can safely be called from within
-     * a listening method during event handling to remove listeners. This will
-     * have no impact on the current event delegation process.
-     * </p>
-     *
-     * @param <T> Type of the listeners to remove.
-     * @param listenerClass The class representing the event for which the
-     *            listeners should be removed
-     */
-    public <T extends Listener> void clearAllListeners(Class<T> listenerClass);
-
-    /**
-     * Removes all registered listeners from this EventProvider. Every listner's
-     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will
-     * be called.
-     *
-     * <p>
-     * <b>Note on concurrency:</b> This method can safely be called from within
-     * a listening method during event handling to remove all listeners. This
-     * will have no impact on the current event delegation process.
-     * </p>
-     */
-    public void clearAllListeners();
+    public S listeners();
 
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this

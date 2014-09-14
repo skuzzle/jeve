@@ -76,7 +76,7 @@ public class Event<T, L extends Listener> {
      * @return The listener's type.
      * @version 2.0.0
      */
-    protected Class<L> getListenerClass() {
+    public Class<L> getListenerClass() {
         return this.listenerClass;
     }
 
@@ -126,7 +126,7 @@ public class Event<T, L extends Listener> {
      * @since 2.0.0
      */
     public void stopNotifying(L listener) {
-        this.eventProvider.removeListener(this.getListenerClass(), listener);
+        this.eventProvider.listeners().remove(this.getListenerClass(), listener);
     }
 
     /**
@@ -137,7 +137,7 @@ public class Event<T, L extends Listener> {
      * @param eventProvider The event provider.
      * @since 2.0.0
      */
-    void setEventProvider(EventProvider eventProvider) {
+    public void setEventProvider(EventProvider eventProvider) {
         if (this.eventProvider == null) {
             this.eventProvider = eventProvider;
         }

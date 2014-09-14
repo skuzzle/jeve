@@ -4,6 +4,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
+import de.skuzzle.jeve.builder.PrioritizedExtension;
+import de.skuzzle.jeve.providers.AWTEventProvider;
+import de.skuzzle.jeve.providers.AsynchronousEventProvider;
+import de.skuzzle.jeve.providers.ParallelEventProvider;
+import de.skuzzle.jeve.providers.StatisticsEventProvider;
+import de.skuzzle.jeve.providers.SynchronousEventProvider;
+
 /**
  * Utility class for obtaining different kinds of {@link EventProvider}
  * implementations.
@@ -191,33 +198,33 @@ public final class EventProviders {
     }
 
     /**
-     * Creates a new {@link PriorityEventProvider} which wraps the given
+     * Creates a new {@link PrioritizedExtension} which wraps the given
      * {@code provider}. These providers are never sequential as they order
      * listeners according to their assigned priority.
      *
      * @param provider The wrapped EventProvider.
-     * @return A new PriorityEventProvider instance.
-     * @see PriorityEventProvider
+     * @return A new PrioritizedExtension instance.
+     * @see PrioritizedExtension
      * @since 2.0.0
      */
-    public static PriorityEventProvider newPriorityEventProvider(EventProvider provider) {
-        return new PriorityEventProvider(provider);
+    public static PrioritizedExtension newPriorityEventProvider(EventProvider provider) {
+        return new PrioritizedExtension(provider);
     }
 
     /**
-     * Creates a new {@link PriorityEventProvider} which wraps the given
+     * Creates a new {@link PrioritizedExtension} which wraps the given
      * {@code provider}. These providers are never sequential as they order
      * listeners according to their assigned priority.
      *
      * @param provider The wrapped EventProvider.
      * @param defaultPriority The default priority to assign to added listeners.
-     * @return A new PriorityEventProvider instance
-     * @see PriorityEventProvider
+     * @return A new PrioritizedExtension instance
+     * @see PrioritizedExtension
      * @since 2.0.0
      */
-    public static PriorityEventProvider newPriorityEventProvider(EventProvider provider,
+    public static PrioritizedExtension newPriorityEventProvider(EventProvider provider,
             int defaultPriority) {
-        return new PriorityEventProvider(provider, defaultPriority);
+        return new PrioritizedExtension(provider, defaultPriority);
     }
 
 }

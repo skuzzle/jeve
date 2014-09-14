@@ -1,8 +1,9 @@
 package de.skuzzle.jeve;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -13,7 +14,6 @@ import de.skuzzle.jeve.util.AbstractEventProviderTest;
 import de.skuzzle.jeve.util.BothListener;
 import de.skuzzle.jeve.util.DifferentStringEvent;
 import de.skuzzle.jeve.util.DifferentStringListener;
-import de.skuzzle.jeve.util.EventProviderFactory;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
@@ -21,39 +21,24 @@ import de.skuzzle.jeve.util.StringListener;
  * This class contains basic tests for all event providers
  *
  * @author Simon Taddiken
+ * @param <S> Type of the listener store being used
  */
 @Ignore
-public abstract class EventProviderTestBase extends AbstractEventProviderTest {
+public abstract class EventProviderTestBase<S extends ListenerStore> extends
+        AbstractEventProviderTest<S> {
 
     /**
      * Creates a new Test class instance.
      *
      * @param factory A factory for creating event providers
      */
-    public EventProviderTestBase(EventProviderFactory factory) {
+    public EventProviderTestBase(Supplier<? extends EventProvider<S>> factory) {
         super(factory);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetListenerClassNull() {
-        this.subject.getListeners(null);
-    }
-
-    /**
-     * Tests whether exceptions raised by the onUnregister method of a listener
-     * are passed to the exception callback.
-     */
-    @Test
-    public void testListenerOnUnregisterException() {
-        final StringListener listener = Mockito.mock(StringListener.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        Mockito.doThrow(RuntimeException.class).when(listener).onUnregister(Mockito.any());
-
-        this.subject.setExceptionCallback(ec);
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.removeListener(StringListener.class, listener);
-        Mockito.verify(ec).exception(Mockito.any(RuntimeException.class),
-                Mockito.any(), Mockito.any());
+        this.subject.listeners().get(null);
     }
 
     /**
@@ -61,7 +46,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
      */
     @Test
     public void testRemoveListenerClassNull() {
-        this.subject.removeListener(null, Mockito.mock(StringListener.class));
+        this.subject.listeners().remove(null, Mockito.mock(StringListener.class));
     }
 
     /**
@@ -69,7 +54,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
      */
     @Test
     public void testRemoveListenerNull() {
-        this.subject.removeListener(StringListener.class, null);
+        this.subject.listeners().remove(StringListener.class, null);
     }
 
     /**
@@ -81,7 +66,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         this.subject.setExceptionCallback(null);
         final StringListener listener = Mockito.mock(StringListener.class);
         Mockito.doThrow(RuntimeException.class).when(listener).onStringEvent(Mockito.any());
-        this.subject.addListener(StringListener.class, listener);
+        this.subject.listeners().add(StringListener.class, listener);
         this.subject.dispatch(new StringEvent(this.subject, ""), StringListener::onStringEvent);
     }
 
@@ -110,8 +95,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final StringListener listener = Mockito.mock(StringListener.class);
         final StringListener listener2 = Mockito.mock(StringListener.class);
         Mockito.doThrow(RuntimeException.class).when(listener).onStringEvent(Mockito.any());
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.addListener(StringListener.class, listener2);
+        this.subject.listeners().add(StringListener.class, listener);
+        this.subject.listeners().add(StringListener.class, listener2);
         this.subject.dispatch(new StringEvent(this.subject, ""), StringListener::onStringEvent);
 
         sleep(); // HACK: give async providers some time to execute
@@ -123,7 +108,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
      */
     @Test
     public void testRemoveUnregisteredListener() {
-        this.subject.removeListener(StringListener.class, Mockito.mock(StringListener.class));
+        this.subject.listeners().remove(StringListener.class, Mockito.mock(StringListener.class));
     }
 
     /**
@@ -134,7 +119,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testAddListenerException() throws Exception {
-        this.subject.addListener(StringListener.class, null);
+        this.subject.listeners().add(StringListener.class, null);
     }
 
     /**
@@ -145,7 +130,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testAddListenerException2() throws Exception {
-        this.subject.addListener(null, null);
+        this.subject.listeners().add(null, null);
     }
 
     /**
@@ -221,15 +206,14 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
                 Assert.assertEquals(finalCopy, counter[0]);
                 ++counter[0];
             };
-            this.subject.addListener(StringListener.class, listener);
+            this.subject.listeners().add(StringListener.class, listener);
         }
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
     }
 
     /**
-     * Tests whether listeners are returned in order they have been added by
-     * {@link EventProvider#getListeners(Class)}.
+     * Tests whether listeners are returned in order they have been added
      *
      * @throws Exception If an exception occurs during testing.
      */
@@ -249,15 +233,16 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
                     return "" + finalCopy;
                 };
             };
-            this.subject.addListener(StringListener.class, listener);
+            this.subject.listeners().add(StringListener.class, listener);
         }
-        final Collection<StringListener> listeners = this.subject.getListeners(
+        final Stream<StringListener> listeners = this.subject.listeners().get(
                 StringListener.class);
-        Assert.assertEquals(getFailString("Listener size differ"), TESTS, listeners.size());
         final Iterator<StringListener> it = listeners.iterator();
         for (int i = 0; i < TESTS; ++i) {
             Assert.assertEquals(getFailString("Wrong order"), "" + i, it.next().toString());
         }
+        Assert.assertFalse(getFailString("Listener size differ"), it.hasNext());
+
     }
 
     /**
@@ -274,8 +259,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         };
         final StringListener second = Mockito.mock(StringListener.class);
 
-        this.subject.addListener(StringListener.class, first);
-        this.subject.addListener(StringListener.class, second);
+        this.subject.listeners().add(StringListener.class, first);
+        this.subject.listeners().add(StringListener.class, second);
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent,
                 (ex, l, ev) -> {
@@ -302,8 +287,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
 
         this.subject.setExceptionCallback(ec);
-        this.subject.addListener(StringListener.class, first);
-        this.subject.addListener(StringListener.class, second);
+        this.subject.listeners().add(StringListener.class, first);
+        this.subject.listeners().add(StringListener.class, second);
 
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -331,7 +316,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final ExceptionCallback localEc = Mockito.mock(ExceptionCallback.class);
 
         this.subject.setExceptionCallback(globalEc);
-        this.subject.addListener(StringListener.class, first);
+        this.subject.listeners().add(StringListener.class, first);
 
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent, localEc);
@@ -360,11 +345,11 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final DifferentStringListener diffString2 =
                 e -> Assert.fail(getFailString("Listener should not have been notified"));
 
-        this.subject.addListener(StringListener.class, string1);
-        this.subject.addListener(DifferentStringListener.class, diffString1);
+        this.subject.listeners().add(StringListener.class, string1);
+        this.subject.listeners().add(DifferentStringListener.class, diffString1);
 
-        this.subject.addListener(StringListener.class, string2);
-        this.subject.addListener(DifferentStringListener.class, diffString2);
+        this.subject.listeners().add(StringListener.class, string2);
+        this.subject.listeners().add(DifferentStringListener.class, diffString2);
 
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -386,8 +371,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final StringListener firstListener = event -> event.setHandled(true);
         final StringListener secondListener = Mockito.mock(StringListener.class);
 
-        this.subject.addListener(StringListener.class, firstListener);
-        this.subject.addListener(StringListener.class, secondListener);
+        this.subject.listeners().add(StringListener.class, firstListener);
+        this.subject.listeners().add(StringListener.class, secondListener);
         this.subject.dispatch(e, StringListener::onStringEvent);
 
         sleep(); // HACK: give async providers some time to execute
@@ -407,8 +392,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final StringListener listener2 = Mockito.mock(StringListener.class);
         Mockito.doThrow(AbortionException.class).when(listener).onStringEvent(Mockito.any());
 
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.addListener(StringListener.class, listener2);
+        this.subject.listeners().add(StringListener.class, listener);
+        this.subject.listeners().add(StringListener.class, listener2);
         final StringEvent e = new StringEvent(this.subject, "");
 
         try {
@@ -426,8 +411,8 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     @Test
     public void testRemoveListener() throws Exception {
         final StringListener listener = Mockito.mock(StringListener.class);
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.removeListener(StringListener.class, listener);
+        this.subject.listeners().add(StringListener.class, listener);
+        this.subject.listeners().remove(StringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
 
@@ -442,40 +427,14 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     @Test
     public void testNotifyListener() throws Exception {
         final StringListener listener = Mockito.mock(StringListener.class);
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.removeListener(StringListener.class, listener);
+        this.subject.listeners().add(StringListener.class, listener);
+        this.subject.listeners().remove(StringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
 
         Mockito.verify(listener, Mockito.never()).onStringEvent(Mockito.any());
         Mockito.verify(listener).onRegister(Mockito.any());
         Mockito.verify(listener).onUnregister(Mockito.any());
-    }
-
-    /**
-     * Tests exceptions are caught by the default ExceptionCallback of an
-     * EventProvider if a listener's onRegister or onUnregister method throws an
-     * exception
-     *
-     * @throws Exception If an exception occurs during testing.
-     */
-    @Test
-    public void testNotifyListenerWithException() throws Exception {
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        this.subject.setExceptionCallback(ec);
-
-        final StringListener listener = Mockito.mock(StringListener.class);
-        Mockito.doThrow(RuntimeException.class).when(listener).onRegister(Mockito.any());
-        Mockito.doThrow(RuntimeException.class).when(listener).onUnregister(Mockito.any());
-
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.removeListener(StringListener.class, listener);
-        final StringEvent e = new StringEvent(this.subject, "");
-        this.subject.dispatch(e, StringListener::onStringEvent);
-
-        Mockito.verify(listener, Mockito.never()).onStringEvent(Mockito.any());
-        Mockito.verify(ec, Mockito.times(2)).exception(
-                Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     /**
@@ -487,10 +446,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     @Test
     public void removeMutliListener() throws Exception {
         final BothListener listener = Mockito.mock(BothListener.class);
-        this.subject.addListener(StringListener.class, listener);
-        this.subject.addListener(DifferentStringListener.class, listener);
+        this.subject.listeners().add(StringListener.class, listener);
+        this.subject.listeners().add(DifferentStringListener.class, listener);
 
-        this.subject.removeListener(DifferentStringListener.class, listener);
+        this.subject.listeners().remove(DifferentStringListener.class, listener);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
 
@@ -514,13 +473,13 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final DifferentStringListener diffString1 = e -> Assert.fail(getFailString("Listener should not have been notified"));
         final DifferentStringListener diffString2 = e -> Assert.fail(getFailString("Listener should not have been notified"));
 
-        this.subject.addListener(StringListener.class, string1);
-        this.subject.addListener(DifferentStringListener.class, diffString1);
+        this.subject.listeners().add(StringListener.class, string1);
+        this.subject.listeners().add(DifferentStringListener.class, diffString1);
 
-        this.subject.addListener(StringListener.class, string2);
-        this.subject.addListener(DifferentStringListener.class, diffString2);
+        this.subject.listeners().add(StringListener.class, string2);
+        this.subject.listeners().add(DifferentStringListener.class, diffString2);
 
-        this.subject.clearAllListeners(DifferentStringListener.class);
+        this.subject.listeners().clearAll(DifferentStringListener.class);
         final StringEvent e = new StringEvent(this.subject, "");
         final DifferentStringEvent e1 = new DifferentStringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -538,10 +497,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final StringListener string1 = Mockito.mock(StringListener.class);
         final DifferentStringListener diffString1 = Mockito.mock(DifferentStringListener.class);
 
-        this.subject.addListener(StringListener.class, string1);
-        this.subject.addListener(DifferentStringListener.class, diffString1);
+        this.subject.listeners().add(StringListener.class, string1);
+        this.subject.listeners().add(DifferentStringListener.class, diffString1);
 
-        this.subject.clearAllListeners(DifferentStringListener.class);
+        this.subject.listeners().clearAll(DifferentStringListener.class);
         Mockito.verify(string1, Mockito.never()).onUnregister(Mockito.any());
         Mockito.verify(diffString1).onUnregister(Mockito.any());
     }
@@ -558,13 +517,13 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final DifferentStringListener diffString1 = Mockito.mock(DifferentStringListener.class);
         final DifferentStringListener diffString2 = Mockito.mock(DifferentStringListener.class);
 
-        this.subject.addListener(StringListener.class, string1);
-        this.subject.addListener(DifferentStringListener.class, diffString1);
+        this.subject.listeners().add(StringListener.class, string1);
+        this.subject.listeners().add(DifferentStringListener.class, diffString1);
 
-        this.subject.addListener(StringListener.class, string2);
-        this.subject.addListener(DifferentStringListener.class, diffString2);
+        this.subject.listeners().add(StringListener.class, string2);
+        this.subject.listeners().add(DifferentStringListener.class, diffString2);
 
-        this.subject.clearAllListeners();
+        this.subject.listeners().clearAll();
         final StringEvent e = new StringEvent(this.subject, "");
         final DifferentStringEvent e1 = new DifferentStringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -588,10 +547,10 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
         final StringListener string1 = Mockito.mock(StringListener.class);
         final DifferentStringListener diffString1 = Mockito.mock(DifferentStringListener.class);
 
-        this.subject.addListener(StringListener.class, string1);
-        this.subject.addListener(DifferentStringListener.class, diffString1);
+        this.subject.listeners().add(StringListener.class, string1);
+        this.subject.listeners().add(DifferentStringListener.class, diffString1);
 
-        this.subject.clearAllListeners();
+        this.subject.listeners().clearAll();
 
         Mockito.verify(string1).onUnregister(Mockito.any());
         Mockito.verify(diffString1).onUnregister(Mockito.any());
@@ -606,7 +565,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     @Test
     public void testClose() throws Exception {
         final StringListener l = Mockito.mock(StringListener.class);
-        this.subject.addListener(StringListener.class, l);
+        this.subject.listeners().add(StringListener.class, l);
         this.subject.close();
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -615,49 +574,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
         Mockito.verify(l, Mockito.never()).onStringEvent(Mockito.any());
         Assert.assertTrue(getFailString("Listener not removed"),
-                this.subject.getListeners(StringListener.class).isEmpty());
-    }
-
-    /**
-     * Setting the listener filter to null should reset it to the NOP_FILTER
-     */
-    @Test
-    public void testSetListenerFilterToNull() {
-        final ListenerFilter temp = Mockito.mock(ListenerFilter.class);
-        this.subject.setListenerFilter(temp);
-        this.subject.setListenerFilter(null);
-        final StringListener listener = Mockito.mock(StringListener.class);
-        this.subject.addListener(StringListener.class, listener);
-
-        // this should at least not throw an exception
-        this.subject.dispatch(new StringEvent(this.subject, ""),
-                StringListener::onStringEvent);
-
-        sleep(); // HACK: give async providers some time to execute
-
-        Mockito.verifyZeroInteractions(temp);
-    }
-
-    /**
-     * Tests whether the filter is called.
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testSetListenerFilter() {
-        final ListenerFilter filter = Mockito.mock(ListenerFilter.class);
-        this.subject.setListenerFilter(filter);
-
-        final StringListener listener = Mockito.mock(StringListener.class);
-        this.subject.addListener(StringListener.class, listener);
-
-        // this should at least not throw an exception
-        this.subject.dispatch(new StringEvent(this.subject, ""),
-                StringListener::onStringEvent);
-
-        sleep(); // HACK: give async providers some time to execute
-        Mockito.verify(filter).preprocess(
-                Mockito.eq(this.subject),
-                Mockito.eq(StringListener.class),
-                Mockito.anyList());
+                this.subject.listeners().get(StringListener.class).count() == 0);
     }
 }

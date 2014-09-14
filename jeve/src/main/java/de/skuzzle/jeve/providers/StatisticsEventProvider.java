@@ -1,24 +1,32 @@
-package de.skuzzle.jeve;
+package de.skuzzle.jeve.providers;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+
+import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
 
 /**
  * EventProvider which delegates all method calls to a wrapped instance but
  * counts all notifications.
  *
  * @author Simon Taddiken
+ * @param <P> The type of the wrapped provider.
  * @since 2.0.0
  */
-public class StatisticsEventProvider implements EventProvider {
+public class StatisticsEventProvider<S extends ListenerStore, P extends EventProvider<S>>
+        implements EventProvider<S> {
 
-    private final EventProvider wrapped;
     private final Map<Class<? extends Listener>, Integer> notifications;
 
-    StatisticsEventProvider(EventProvider wrapped) {
+    final P wrapped;
+
+    public StatisticsEventProvider(P wrapped) {
         if (wrapped == null) {
             throw new IllegalArgumentException("wrapped is null");
         }
@@ -34,6 +42,10 @@ public class StatisticsEventProvider implements EventProvider {
         map.put(key, val + 1);
     }
 
+    public P getWrapped() {
+        return this.wrapped;
+    }
+
     /**
      * Gets a map containing statistics about how often a certain kind of
      * listener has been notified. The returned map is read only and backed by
@@ -44,36 +56,6 @@ public class StatisticsEventProvider implements EventProvider {
      */
     public Map<Class<? extends Listener>, Integer> getNotificationStatistics() {
         return Collections.unmodifiableMap(this.notifications);
-    }
-
-    @Override
-    public void setListenerFilter(ListenerFilter filter) {
-        this.wrapped.setListenerFilter(filter);
-    }
-
-    @Override
-    public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
-        this.wrapped.addListener(listenerClass, listener);
-    }
-
-    @Override
-    public <T extends Listener> void removeListener(Class<T> listenerClass, T listener) {
-        this.wrapped.removeListener(listenerClass, listener);
-    }
-
-    @Override
-    public boolean canDispatch() {
-        return this.wrapped.canDispatch();
-    }
-
-    @Override
-    public void clearAllListeners() {
-        this.wrapped.clearAllListeners();
-    }
-
-    @Override
-    public <T extends Listener> void clearAllListeners(Class<T> listenerClass) {
-        this.wrapped.clearAllListeners(listenerClass);
     }
 
     @Override
@@ -101,13 +83,19 @@ public class StatisticsEventProvider implements EventProvider {
     }
 
     @Override
-    public <T extends Listener> Collection<T> getListeners(Class<T> listenerClass) {
-        return this.wrapped.getListeners(listenerClass);
+    public void close() {
+        this.wrapped.close();
+        this.notifications.clear();
     }
 
     @Override
-    public boolean isSequential() {
-        return this.wrapped.isSequential();
+    public S listeners() {
+        return this.wrapped.listeners();
+    }
+
+    @Override
+    public boolean canDispatch() {
+        return this.wrapped.canDispatch();
     }
 
     @Override
@@ -116,7 +104,7 @@ public class StatisticsEventProvider implements EventProvider {
     }
 
     @Override
-    public void close() {
-        this.wrapped.close();
+    public boolean isSequential() {
+        return this.wrapped.isSequential();
     }
 }

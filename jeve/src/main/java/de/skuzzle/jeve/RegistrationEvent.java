@@ -6,11 +6,9 @@ package de.skuzzle.jeve;
  *
  * @author Simon Taddiken
  * @since 1.0.0
+ * @version 2.0.0
  */
-public final class RegistrationEvent {
-
-    /** The {@link EventProvider} to which the listener has been added */
-    private final EventProvider source;
+public final class RegistrationEvent extends Event<ListenerStore, Listener> {
 
     /** The class for which the listener has been added or removed */
     private final Class<? extends Listener> cls;
@@ -21,18 +19,9 @@ public final class RegistrationEvent {
      * @param source The EventProvider for which a Listener as added or removed.
      * @param cls The class for which the Listener was added ore removed.
      */
-    RegistrationEvent(EventProvider source, Class<? extends Listener> cls) {
-        this.source = source;
+    public RegistrationEvent(ListenerStore source, Class<? extends Listener> cls) {
+        super(source, Listener.class);
         this.cls = cls;
-    }
-
-    /**
-     * Gets the EventProvider to which the listener has been added.
-     *
-     * @return The EventProvider.
-     */
-    public EventProvider getSource() {
-        return this.source;
     }
 
     /**

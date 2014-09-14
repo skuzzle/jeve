@@ -1,9 +1,16 @@
-package de.skuzzle.jeve;
+package de.skuzzle.jeve.providers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
 
 import javax.swing.SwingUtilities;
+
+import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
 
 /**
  * {@link EventProvider} implementation that dispatches all events in the AWT
@@ -12,7 +19,7 @@ import javax.swing.SwingUtilities;
  * @author Simon Taddiken
  * @since 1.0.0
  */
-class AWTEventProvider extends AbstractEventProvider {
+public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProvider<S> {
 
     private final boolean invokeNow;
 
@@ -24,12 +31,14 @@ class AWTEventProvider extends AbstractEventProvider {
      * {@link SwingUtilities#invokeAndWait(Runnable)} to run notify the
      * listeners).
      *
+     * @param store The store which supplies the listeners to this provider.
      * @param invokeNow If <code>true</code>,
      *            {@link #dispatch(Event, BiConsumer, ExceptionCallback)
      *            dispatch} uses <code>invokeAndWait</code>, otherwise
      *            <code>invokeLater</code>.
      */
-    public AWTEventProvider(boolean invokeNow) {
+    public AWTEventProvider(S store, boolean invokeNow) {
+        super(store);
         this.invokeNow = invokeNow;
     }
 
@@ -68,12 +77,12 @@ class AWTEventProvider extends AbstractEventProvider {
     }
 
     @Override
-    public boolean isSequential() {
+    public boolean canDispatch() {
         return true;
     }
 
     @Override
-    public boolean canDispatch() {
+    protected boolean isImplementationSequential() {
         return true;
     }
 }

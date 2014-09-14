@@ -38,8 +38,8 @@ public interface Listener extends EventListener {
 
     /**
      * This method is called right after this listener has been registered to a
-     * new {@link EventProvider}. If this method throws an unchecked exception,
-     * it will be covered by the new EventProvider's {@link ExceptionCallback}.
+     * new {@link EventProvider}. Setting the passed Event's {@code handled}
+     * attribute to <code>true</code> will have no effet.
      *
      * <p>
      * Note: The default implementation does nothing.

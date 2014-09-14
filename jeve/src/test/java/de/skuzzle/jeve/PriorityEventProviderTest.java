@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,12 +11,13 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.util.EventProviderFactory;
+import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(Parameterized.class)
-public class PriorityEventProviderTest extends EventProviderTestBase {
+public class PriorityEventProviderTest extends
+        EventProviderTestBase<PriorityListenerStore> {
 
     /**
      * Parameterizes the test instances.
@@ -26,18 +28,14 @@ public class PriorityEventProviderTest extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new EventProviderFactory[] { () -> EventProviders.newPriorityEventProvider(
-                        EventProviders.newDefaultEventProvider()) },
-                new EventProviderFactory[] { () -> EventProviders.newPriorityEventProvider(
-                        EventProviders.newDefaultEventProvider(), 0) });
+                new Object[] { EventProvider.configure().store(PriorityListenerStore::new).with().synchronousProvider().asSupplier() },
+                new Object[] { EventProvider.configure().store(new PriorityListenerStore(0)).with().synchronousProvider().asSupplier() }
+                );
     }
 
-    public PriorityEventProviderTest(EventProviderFactory factory) {
+    public PriorityEventProviderTest(
+            Supplier<? extends EventProvider<PriorityListenerStore>> factory) {
         super(factory);
-    }
-
-    private PriorityEventProvider subject() {
-        return (PriorityEventProvider) this.subject;
     }
 
     @Test
@@ -46,8 +44,8 @@ public class PriorityEventProviderTest extends EventProviderTestBase {
         final StringListener l2 = Mockito.mock(StringListener.class);
 
         // Add l1 before l2, but l2 with lower precedence
-        subject().addListener(StringListener.class, l1, 2);
-        subject().addListener(StringListener.class, l2, 1);
+        this.subject.listeners().add(StringListener.class, l1, 2);
+        this.subject.listeners().add(StringListener.class, l2, 1);
 
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -63,8 +61,8 @@ public class PriorityEventProviderTest extends EventProviderTestBase {
         final StringListener l2 = Mockito.mock(StringListener.class);
 
         // Add l1 before l2, but l2 with lower precedence
-        subject().addListener(StringListener.class, l1);
-        subject().addListener(StringListener.class, l2, -1);
+        this.subject.listeners().add(StringListener.class, l1);
+        this.subject.listeners().add(StringListener.class, l2, -1);
 
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);

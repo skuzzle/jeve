@@ -6,15 +6,16 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 
+import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.AbstractEventProviderTest;
-import de.skuzzle.jeve.util.EventProviderFactory;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
@@ -27,7 +28,8 @@ import de.skuzzle.jeve.util.StringListener;
  * @since 1.1.0
  */
 @RunWith(Parameterized.class)
-public class BrokenExecutorServiceEventProviderTest extends AbstractEventProviderTest {
+public class BrokenExecutorServiceEventProviderTest extends
+        AbstractEventProviderTest<DefaultListenerStore> {
 
     /**
      * ExecutorService which always throws an Exception when trying to execute a
@@ -56,10 +58,9 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Collections.singleton(
-                new EventProviderFactory[] {
-                        () -> EventProviders.newParallelEventProvider(
-                                new BrokenExecutorService()) }
-                );
+                new Object[] {
+                        EventProvider.configure().defaultStore().with().parallelProvider().and().executor(BrokenExecutorService::new).asSupplier()
+                });
     }
 
     /**
@@ -67,7 +68,8 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
      *
      * @param factory A factory for creating event providers
      */
-    public BrokenExecutorServiceEventProviderTest(EventProviderFactory factory) {
+    public BrokenExecutorServiceEventProviderTest(
+            Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }
 
@@ -79,20 +81,14 @@ public class BrokenExecutorServiceEventProviderTest extends AbstractEventProvide
      */
     @Test
     public void testHandleException() throws Exception {
-        final boolean[] exception = new boolean[1];
-        final ExceptionCallback ec = new ExceptionCallback() {
-            @Override
-            public void exception(Exception e, Listener source, Event<?, ?> event) {
-                exception[0] = true;
-            }
-        };
+        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         this.subject.setExceptionCallback(ec);
-        this.subject.addListener(StringListener.class, se -> {
+        this.subject.listeners().add(StringListener.class, se -> {
         });
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
 
         sleep(); // HACK: give async providers some time to execute
-        Assert.assertTrue(getFailString("Exception handler not called"), exception[0]);
+        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.any());
     }
 }

@@ -1,9 +1,16 @@
-package de.skuzzle.jeve;
+package de.skuzzle.jeve.providers;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
+import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
 
 /**
  * EventProvider implementation which uses an {@link ExecutorService} to notify
@@ -18,19 +25,35 @@ import java.util.function.BiConsumer;
  * @author Simon Taddiken
  * @since 1.1.0
  */
-public class ParallelEventProvider extends AbstractEventProvider {
+public class ParallelEventProvider<S extends ListenerStore> extends
+        AbstractEventProvider<S> implements ExecutorAware {
 
-    private final ExecutorService executor;
+    private ExecutorService executor;
+
+    public ParallelEventProvider(S store) {
+        this(store, Executors.newCachedThreadPool());
+    }
 
     /**
      * Creates a new ParallelEventPRovider.
      *
+     * @param store The store which supplies the listeners to this provider.
      * @param executor The executor to use.
      */
-    ParallelEventProvider(ExecutorService executor) {
+    public ParallelEventProvider(S store, ExecutorService executor) {
+        super(store);
         if (executor == null) {
             throw new IllegalArgumentException("executor is null");
         }
+        this.executor = executor;
+    }
+
+    @Override
+    public void setExecutorService(ExecutorService executor) {
+        if (executor == null) {
+            throw new IllegalArgumentException("executor is null");
+        }
+
         this.executor = executor;
     }
 
@@ -43,8 +66,7 @@ public class ParallelEventProvider extends AbstractEventProvider {
             return;
         }
 
-        final List<L> listeners = this.getListeners(event.getListenerClass());
-        this.filter.preprocess(this, event.getListenerClass(), listeners);
+        final Stream<L> listeners = listeners().get(event.getListenerClass());
         event.setEventProvider(this);
         listeners.forEach(listener -> {
             try {
@@ -61,11 +83,6 @@ public class ParallelEventProvider extends AbstractEventProvider {
     }
 
     @Override
-    public boolean isSequential() {
-        return false;
-    }
-
-    @Override
     public void close() {
         super.close();
         this.executor.shutdownNow();
@@ -74,5 +91,10 @@ public class ParallelEventProvider extends AbstractEventProvider {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected boolean isImplementationSequential() {
+        return false;
     }
 }

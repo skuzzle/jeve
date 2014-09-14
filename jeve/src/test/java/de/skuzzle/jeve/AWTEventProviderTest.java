@@ -3,6 +3,7 @@ package de.skuzzle.jeve;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import javax.swing.SwingUtilities;
 
@@ -13,7 +14,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.skuzzle.jeve.util.EventProviderFactory;
+import de.skuzzle.jeve.providers.AWTEventProvider;
+import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
@@ -23,7 +25,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class AWTEventProviderTest extends EventProviderTestBase {
+public class AWTEventProviderTest extends EventProviderTestBase<DefaultListenerStore> {
 
     /**
      * Parameterizes the test instances.
@@ -34,10 +36,10 @@ public class AWTEventProviderTest extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new EventProviderFactory[] { EventProviders::newWaitingAWTEventProvider },
-                new EventProviderFactory[] { EventProviders::newAsynchronousAWTEventProvider },
-                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newWaitingAWTEventProvider()) },
-                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newAsynchronousEventProvider()) }
+                new Object[] { EventProvider.configure().defaultStore().with().waitingAWTEventProvider().asSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().with().asynchronAWTEventProvider().asSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().with().waitingAWTEventProvider().and().statistics().asSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().with().asynchronAWTEventProvider().and().statistics().asSupplier() }
                 );
     }
 
@@ -46,7 +48,8 @@ public class AWTEventProviderTest extends EventProviderTestBase {
      *
      * @param factory Factory to create a single provider
      */
-    public AWTEventProviderTest(EventProviderFactory factory) {
+    public AWTEventProviderTest(
+            Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }
 
@@ -60,7 +63,7 @@ public class AWTEventProviderTest extends EventProviderTestBase {
         final StringListener l = event -> Assert.assertTrue(
                 getFailString("Not invoked on AWT thread"),
                 SwingUtilities.isEventDispatchThread());
-        this.subject.addListener(StringListener.class, l);
+        this.subject.listeners().add(StringListener.class, l);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
     }
@@ -80,14 +83,14 @@ public class AWTEventProviderTest extends EventProviderTestBase {
     @Test
     public void testInvokeFromEventThread() throws InvocationTargetException, InterruptedException {
         if (this.subject instanceof AWTEventProvider) {
-            final AWTEventProvider eventProvider = (AWTEventProvider) this.subject;
+            final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
             if (!eventProvider.isInvokeNow()) {
                 System.out.println("Skipping test for AWTEventProvider because its not set to 'invokeNow'");
             }
 
             final boolean[] isEventThread = new boolean[1];
             final StringListener listener = se -> isEventThread[0] = SwingUtilities.isEventDispatchThread();
-            this.subject.addListener(StringListener.class, listener);
+            this.subject.listeners().add(StringListener.class, listener);
             final StringEvent event = new StringEvent(this.subject, "");
 
             // dispatch from the awt thread
@@ -105,14 +108,14 @@ public class AWTEventProviderTest extends EventProviderTestBase {
     @Ignore
     public void testInterrupt() {
         if (this.subject instanceof AWTEventProvider) {
-            final AWTEventProvider eventProvider = (AWTEventProvider) this.subject;
+            final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
             if (!eventProvider.isInvokeNow()) {
                 System.out.println("Skipping test for AWTEventProvider because its not set to 'invokeNow'");
             }
 
             final Thread mainThread = Thread.currentThread();
             final StringListener listener = se -> mainThread.interrupt();
-            this.subject.addListener(StringListener.class, listener);
+            this.subject.listeners().add(StringListener.class, listener);
             final StringEvent event = new StringEvent(this.subject, "");
             this.subject.dispatch(event, StringListener::onStringEvent);
         } else {

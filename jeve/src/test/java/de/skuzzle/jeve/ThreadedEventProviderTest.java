@@ -2,12 +2,11 @@ package de.skuzzle.jeve;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import de.skuzzle.jeve.util.EventProviderFactory;
 
 /**
  * Runs all basic tests for all default provided event providers.
@@ -26,10 +25,10 @@ public class ThreadedEventProviderTest extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new EventProviderFactory[] { EventProviders::newParallelEventProvider },
-                new EventProviderFactory[] { EventProviders::newAsynchronousEventProvider },
-                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newParallelEventProvider()) },
-                new EventProviderFactory[] { () -> EventProviders.newStatisticsEventProvider(EventProviders.newAsynchronousEventProvider()) }
+                new Object[] { EventProvider.configure().defaultStore().with().parallelProvider().asSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().with().asynchronousProvider().asSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().with().parallelProvider().and().statistics().asSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().with().asynchronousProvider().and().statistics().asSupplier() }
                 );
     }
 
@@ -38,7 +37,7 @@ public class ThreadedEventProviderTest extends EventProviderTestBase {
      *
      * @param factory Factory to create a single provider
      */
-    public ThreadedEventProviderTest(EventProviderFactory factory) {
+    public ThreadedEventProviderTest(Supplier<? extends EventProvider<?>> factory) {
         super(factory);
     }
 }

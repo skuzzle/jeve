@@ -1,13 +1,15 @@
-package de.skuzzle.jeve;
+package de.skuzzle.jeve.providers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
+import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations
@@ -21,159 +23,32 @@ import java.util.function.BiConsumer;
  * @author Simon Taddiken
  * @since 1.0.0
  */
-public abstract class AbstractEventProvider implements EventProvider {
-
-    /** Holds the listener classes mapped to listener instances */
-    protected final Map<Class<? extends Listener>, List<Object>> listeners;
+public abstract class AbstractEventProvider<S extends ListenerStore> implements
+        EventProvider<S> {
 
     /** Default callback to handle event handler exceptions */
     protected ExceptionCallback exceptionHandler;
 
-    /** The currently set ListenerFilter */
-    protected ListenerFilter filter;
+    private final S store;
 
     /**
      * Creates a new {@link AbstractEventProvider}.
+     *
+     * @param listenerStore Responsible for storing and retrieving listeners of
+     *            this provider.
      */
-    public AbstractEventProvider() {
-        this.listeners = new HashMap<>();
-        this.filter = NOP_FILTER;
+    public AbstractEventProvider(S listenerStore) {
+        if (listenerStore == null) {
+            throw new IllegalArgumentException("listenerStore is null");
+        }
+
+        this.store = listenerStore;
         this.exceptionHandler = DEFAULT_HANDLER;
     }
 
     @Override
-    public void setListenerFilter(ListenerFilter filter) {
-        if (filter == null) {
-            this.filter = NOP_FILTER;
-        } else {
-            this.filter = filter;
-        }
-    }
-
-    /**
-     * Copies a list of listeners into a new list, casting each element to the
-     * target listener type.
-     *
-     * @param <T> Type of listeners in the result.
-     * @param listeners List to copy.
-     * @param listenerClass Target listener type.
-     * @return A new typed list of listeners.
-     */
-    private static <T extends Listener> List<T> copyList(List<Object> listeners,
-            Class<T> listenerClass) {
-        final List<T> result = new ArrayList<>(listeners.size());
-        listeners.forEach(l -> result.add(listenerClass.cast(l)));
-        return result;
-    }
-
-    @Override
-    public <T extends Listener> List<T> getListeners(Class<T> listenerClass) {
-        if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass");
-        }
-        synchronized (this.listeners) {
-            final List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners == null) {
-                return Collections.emptyList();
-            }
-            return copyList(listeners, listenerClass);
-        }
-    }
-
-    @Override
-    public <T extends Listener> void clearAllListeners(Class<T> listenerClass) {
-        synchronized (this.listeners) {
-            final List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners != null) {
-                final Iterator<Object> it = listeners.iterator();
-                while (it.hasNext()) {
-                    this.removeInternal(listenerClass, it);
-                }
-                this.listeners.remove(listenerClass);
-            }
-        }
-    }
-
-    @Override
-    public void clearAllListeners() {
-        synchronized (this.listeners) {
-            this.listeners.forEach((k, v) -> {
-                final Iterator<Object> it = v.iterator();
-                while (it.hasNext()) {
-                    removeInternal(k, it);
-                }
-            });
-            this.listeners.clear();
-        }
-    }
-
-    /**
-     * Internal method for removing a single listener and notifying it about the
-     * removal. Prior to calling this method, the passed iterators
-     * {@link Iterator#hasNext() hasNext} method must hold <code>true</code>.
-     *
-     * @param <T> Type of the listener to remove
-     * @param listenerClass The class of the listener to remove.
-     * @param it Iterator which provides the next listener to remove.
-     */
-    protected <T extends Listener> void removeInternal(Class<T> listenerClass,
-            Iterator<Object> it) {
-        final Object next = it.next();
-        final T listener = listenerClass.cast(next);
-        it.remove();
-        try {
-            final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
-            listener.onUnregister(e);
-        } catch (Exception e) {
-            handleException(this.exceptionHandler, e, listener, null);
-        }
-    }
-
-    @Override
-    public <T extends Listener> void addListener(Class<T> listenerClass, T listener) {
-        if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass is null");
-        } else if (listener == null) {
-            throw new IllegalArgumentException("listener is null");
-        }
-        synchronized (this.listeners) {
-            List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners == null) {
-                listeners = new LinkedList<>();
-                this.listeners.put(listenerClass, listeners);
-            }
-            listeners.add(listener);
-        }
-        try {
-            final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
-            listener.onRegister(e);
-        } catch (Exception e) {
-            handleException(this.exceptionHandler, e, listener, null);
-        }
-    }
-
-    @Override
-    public <T extends Listener> void removeListener(Class<T> listenerClass,
-            T listener) {
-        if (listenerClass == null || listener == null) {
-            return;
-        }
-        synchronized (this.listeners) {
-            final List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners == null) {
-                return;
-            }
-            listeners.remove(listener);
-            if (listeners.isEmpty()) {
-                this.listeners.remove(listenerClass);
-            }
-        }
-        try {
-            final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
-            listener.onUnregister(e);
-        } catch (Exception e) {
-            handleException(this.exceptionHandler, e, listener, null);
-        }
+    public S listeners() {
+        return this.store;
     }
 
     @Override
@@ -248,13 +123,13 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // HINT: getListeners is thread safe
-        final List<L> listeners = this.getListeners(event.getListenerClass());
-        this.filter.preprocess(this, event.getListenerClass(), listeners);
-
+        final Stream<L> listeners = listeners().get(event.getListenerClass());
         boolean result = true;
 
         event.setEventProvider(this);
-        for (L listener : listeners) {
+        final Iterator<L> it = listeners.iterator();
+        while (it.hasNext()) {
+            final L listener = it.next();
             if (event.isHandled()) {
                 return result;
             }
@@ -317,12 +192,19 @@ public abstract class AbstractEventProvider implements EventProvider {
     }
 
     @Override
+    public final boolean isSequential() {
+        return this.store.isSequential() && isImplementationSequential();
+    }
+
+    protected abstract boolean isImplementationSequential();
+
+    @Override
     public void close() {
-        this.clearAllListeners();
+        this.store.close();
     }
 
     @Override
     public String toString() {
-        return this.listeners.toString();
+        return this.store.toString();
     }
 }

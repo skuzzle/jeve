@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.builder.EventProviderConfigurator.And;
+import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderConfigurator;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 
@@ -40,9 +40,9 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     }
 
     @Override
-    public And<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec) {
+    public Final<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec) {
         this.ecSupplier = () -> ec;
-        return new And<ProviderConfigurator<S, E>, E>() {
+        return new Final<ProviderConfigurator<S, E>, E>() {
 
             @Override
             public ProviderConfigurator<S, E> and() {
@@ -58,13 +58,13 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     }
 
     @Override
-    public And<ProviderConfigurator<S, E>, E> exceptionCallBack(
+    public Final<ProviderConfigurator<S, E>, E> exceptionCallBack(
             Supplier<ExceptionCallback> callBackSupplier) {
         if (callBackSupplier == null) {
             throw new IllegalArgumentException("callBackSupplier is null");
         }
         this.ecSupplier = callBackSupplier;
-        return new And<ProviderConfigurator<S, E>, E>() {
+        return new Final<ProviderConfigurator<S, E>, E>() {
 
             @Override
             public ProviderConfigurator<S, E> and() {
@@ -80,11 +80,11 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     }
 
     @Override
-    public And<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>> statistics() {
+    public Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>> statistics() {
         final Supplier<StatisticsEventProvider<S, E>> supplier =
                 () -> new StatisticsEventProvider<S, E>(this.providerSupplier.get());
 
-        return new And<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>>() {
+        return new Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>>() {
 
             @Override
             public ProviderConfigurator<S, StatisticsEventProvider<S, E>> and() {

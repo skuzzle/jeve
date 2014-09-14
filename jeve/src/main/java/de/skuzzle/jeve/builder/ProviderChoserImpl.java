@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.builder.EventProviderConfigurator.And;
+import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.AsyncProviderConfigurator;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderChoser;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderConfigurator;
@@ -26,13 +26,13 @@ class ProviderChoserImpl<S extends ListenerStore> implements ProviderChoser<S> {
     }
 
     @Override
-    public <C, E extends EventProvider<S>> And<C, E> customProvider(
+    public <C, E extends EventProvider<S>> Final<C, E> customProvider(
             CustomConfigurator<S, C, E> configurator) {
         if (configurator == null) {
             throw new IllegalArgumentException("configurator is null");
         }
 
-        return new And<C, E>() {
+        return new Final<C, E>() {
 
             @Override
             public C and() {
@@ -51,10 +51,10 @@ class ProviderChoserImpl<S extends ListenerStore> implements ProviderChoser<S> {
         };
     }
 
-    private <E extends EventProvider<S>> And<ProviderConfigurator<S, E>, E> synchronAnd(
+    private <E extends EventProvider<S>> Final<ProviderConfigurator<S, E>, E> synchronAnd(
             Supplier<E> supplier) {
 
-        return new And<ProviderConfigurator<S, E>, E>() {
+        return new Final<ProviderConfigurator<S, E>, E>() {
             @Override
             public ProviderConfigurator<S, E> and() {
                 return new ProviderConfiguratorImpl<S, E>(supplier);
@@ -72,10 +72,10 @@ class ProviderChoserImpl<S extends ListenerStore> implements ProviderChoser<S> {
         };
     }
 
-    private <E extends EventProvider<S>> And<AsyncProviderConfigurator<S, E>, E> asynchronAnd(
+    private <E extends EventProvider<S>> Final<AsyncProviderConfigurator<S, E>, E> asynchronAnd(
             Supplier<E> supplier) {
 
-        return new And<AsyncProviderConfigurator<S, E>, E>() {
+        return new Final<AsyncProviderConfigurator<S, E>, E>() {
             @Override
             public AsyncProviderConfigurator<S, E> and() {
                 return new AsyncProviderConfiguratorImpl<S, E>(supplier);
@@ -95,35 +95,35 @@ class ProviderChoserImpl<S extends ListenerStore> implements ProviderChoser<S> {
 
 
     @Override
-    public And<ProviderConfigurator<S, SynchronousEventProvider<S>>, SynchronousEventProvider<S>> synchronousProvider() {
+    public Final<ProviderConfigurator<S, SynchronousEventProvider<S>>, SynchronousEventProvider<S>> synchronousProvider() {
         final Supplier<SynchronousEventProvider<S>> supplier =
                 () -> new SynchronousEventProvider<S>(this.storeSupplier.get());
         return synchronAnd(supplier);
     }
 
     @Override
-    public And<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>, AsynchronousEventProvider<S>> asynchronousProvider() {
+    public Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>, AsynchronousEventProvider<S>> asynchronousProvider() {
         final Supplier<AsynchronousEventProvider<S>> supplier =
                 () -> new AsynchronousEventProvider<S>(this.storeSupplier.get());
         return asynchronAnd(supplier);
     }
 
     @Override
-    public And<AsyncProviderConfigurator<S, ParallelEventProvider<S>>, ParallelEventProvider<S>> parallelProvider() {
+    public Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>, ParallelEventProvider<S>> parallelProvider() {
         final Supplier<ParallelEventProvider<S>> supplier =
                 () -> new ParallelEventProvider<S>(this.storeSupplier.get());
         return asynchronAnd(supplier);
     }
 
     @Override
-    public And<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> waitingAWTEventProvider() {
+    public Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> waitingAWTEventProvider() {
         final Supplier<AWTEventProvider<S>> supplier =
                 () -> new AWTEventProvider<S>(this.storeSupplier.get(), true);
         return synchronAnd(supplier);
     }
 
     @Override
-    public And<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> asynchronAWTEventProvider() {
+    public Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> asynchronAWTEventProvider() {
         final Supplier<AWTEventProvider<S>> supplier =
                 () -> new AWTEventProvider<S>(this.storeSupplier.get(), false);
         return synchronAnd(supplier);

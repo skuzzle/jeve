@@ -15,8 +15,9 @@ import de.skuzzle.jeve.ListenerStore;
  * EventProvider which delegates all method calls to a wrapped instance but
  * counts all notifications.
  *
- * @author Simon Taddiken
+ * @param <S> The type of the ListenerStore this provider uses.
  * @param <P> The type of the wrapped provider.
+ * @author Simon Taddiken
  * @since 2.0.0
  */
 public class StatisticsEventProvider<S extends ListenerStore, P extends EventProvider<S>>
@@ -66,7 +67,7 @@ public class StatisticsEventProvider<S extends ListenerStore, P extends EventPro
         }
 
         increment(this.notifications, event.getListenerClass());
-        event.setEventProvider(this);
+        event.setListenerStore(listeners());
         this.wrapped.dispatch(event, bc);
     }
 
@@ -78,7 +79,7 @@ public class StatisticsEventProvider<S extends ListenerStore, P extends EventPro
         }
 
         increment(this.notifications, event.getListenerClass());
-        event.setEventProvider(this);
+        event.setListenerStore(listeners());
         this.wrapped.dispatch(event, bc, ec);
     }
 

@@ -41,8 +41,8 @@ public class Event<T, L extends Listener> {
     /** The class of the listener which can handle this event */
     private final Class<L> listenerClass;
 
-    /** The event provider which is currently delegating this event */
-    private EventProvider eventProvider;
+    /** The store from which this listener is currently being notified */
+    private ListenerStore store;
 
     /**
      * Creates a new event with a given source.
@@ -80,25 +80,16 @@ public class Event<T, L extends Listener> {
         return this.listenerClass;
     }
 
-    /**
-     * The event provider which is currently dispatching this event. The
-     * provider is set to the event at the beginning of the dispatching process.
-     * You should never dispatch the same Event instance concurrently on two
-     * different EventProviders.
-     *
-     * @return The dispatching EventProvider.
-     * @since 2.0.0
-     */
-    protected EventProvider getEventProvider() {
-        return this.eventProvider;
+    protected ListenerStore getListenerStore() {
+        return this.store;
     }
 
     /**
-     * Removes the provided listener from the {@link EventProvider} which is
-     * currently dispatching this event. Hence this method can only be called
-     * from within a listening method while the event is being dispatched.
-     * Calling this method on an Event instance which is not currently
-     * dispatched will raise an exception.
+     * Removes the provided listener from the {@link ListenerStore} from which
+     * it was supplied to the EventProvider which is currently dispatching this
+     * event. Hence this method can only be called from within a listening
+     * method while the event is being dispatched. Calling this method on an
+     * Event instance which is not currently dispatched will raise an exception.
      *
      * <pre>
      * <code>
@@ -126,20 +117,20 @@ public class Event<T, L extends Listener> {
      * @since 2.0.0
      */
     public void stopNotifying(L listener) {
-        this.eventProvider.listeners().remove(this.getListenerClass(), listener);
+        this.getListenerStore().remove(this.getListenerClass(), listener);
     }
 
     /**
-     * Sets the EventProvider which is currently dispatching this event. The
-     * method will only set the provider once. A second call to this method on
-     * the same event instance has no effect.
+     * Sets the ListenerStore from which the currently dispatching EventProvider
+     * retrieves its Listeners. The method will only set the store once. A
+     * second call to this method on the same event instance has no effect.
      *
-     * @param eventProvider The event provider.
+     * @param store The listener store.
      * @since 2.0.0
      */
-    public void setEventProvider(EventProvider eventProvider) {
-        if (this.eventProvider == null) {
-            this.eventProvider = eventProvider;
+    public void setListenerStore(ListenerStore store) {
+        if (this.store == null) {
+            this.store = store;
         }
     }
 

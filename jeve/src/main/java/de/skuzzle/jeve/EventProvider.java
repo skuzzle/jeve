@@ -1,45 +1,64 @@
 package de.skuzzle.jeve;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import de.skuzzle.jeve.builder.ConfiguratorImpl;
 import de.skuzzle.jeve.builder.EventProviderConfigurator;
 
 /**
  * <p>
- * EventProvider instances are the heart of jeve and can be obtained using
- * static factory methods of the {@link EventProviders} class. They manage
- * listener classes mapped to a collection of {@link Listener Listeners} to
- * represent one kind of event. All listeners registered for a certain listener
- * class can be notified about an {@link Event}. The way in which they are
- * notified is an internal property of the actual EventProvider instance. For
- * example, one kind of EventProvider might create a new thread for notifying
- * the registered listeners or it may simply notify them using the current
- * thread.
+ * EventProvider instances are the heart of jeve. They implement the logic of
+ * how {@link Listener Listeners} are notified about an {@link Event}. The way
+ * in which they are notified is an internal property of the actual
+ * EventProvider instance. For example, one kind of EventProvider might create a
+ * new thread for notifying the registered listeners or it may simply notify
+ * them using the current thread.
+ * </p>
+ *
+ * <p>
+ * jeve provides a fluent builder API to configure and create EventProvider
+ * instances. See {@link #configure()} for more information on how to build
+ * providers. A simple provider which dispatches Events from the current thread
+ * can be created by calling:
  * </p>
  *
  * <pre>
- * EventProvider eventProvider = EventProviders.newDefaultEventProvider();
+ * <code>
+ * EventProvider&lt;?&gt; eventProvider = EventProvider.configure()
+ *         .defaultStore().with()
+ *         .synchronousProvider()
+ *         .create();
+ * </code>
  * </pre>
  *
  * <h2>Managing and Notifying Listeners</h2>
  * <p>
- * Listeners can be registered using {@link #addListener(Class, Listener)} and
- * unregistered using {@link #removeListener(Class, Listener)}. The same
- * listener object can be registered for distinct listener classes if it
- * implements different listeners. The {@link Listener} interface has two
- * default methods which are called when a listener is registered or removed
- * respectively. Listeners registered for a certain class can be obtained by
- * {@link #getListeners(Class)}. Client code should avoid using this method as
- * it is not needed in most cases.
+ * Listeners are manage by a {@link ListenerStore}. An instance of such a store
+ * is typically supplied to the EventProvider at construction time. It is
+ * allowed that multiple providers share a single ListenerStore. Listeners are
+ * registered and unregistered by calling the respective methods on the
+ * ListenerStore which belongs to this provider. The store can be obtained by
+ * calling {@link #listeners()}.
  * </p>
  *
+ * <pre>
+ * <code>
+ * eventProvider.listeners().add(UserListener.class, myUserListener);
+ * eventProvider.listeners().remove(UserListener.class, myUserListener);
+ * </code>
+ * </pre>
+ *
  * <p>
- * The reason why not to query the registered listeners from client code, is
- * that EventProviders use <em>internal iteration</em> when notifying listeners.
- * This reduces the use cases where client code explicitly needs a list of
- * listeners. The logic of how listeners are iterated is moved into the
- * framework, reducing duplicated and error prone code on the client side.
+ * The same listener object can be registered for distinct listener classes if
+ * it implements different listeners. The {@link Listener} interface has two
+ * default methods which are called when a listener is registered or removed
+ * respectively. Client code should never query the registered listeners
+ * directly from a ListenerStore. The reason is, that EventProviders use
+ * <em>internal iteration</em> when notifying listeners. This reduces the use
+ * cases where client code explicitly needs a list of listeners. The logic of
+ * how listeners are iterated is moved into the framework, reducing duplicated
+ * and error prone code on the client side.
  * </p>
  *
  * <p>
@@ -96,19 +115,20 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator;
  * certain listener class. EventProviders report this property with
  * {@link #isSequential()}. Whether an EventProvider actually is sequential
  * depends on its implementation of the dispatch method and the currently used
- * ListenerFilter (see section below). For example, a provider which notifies
- * each listener within a separate thread is not sequential.
+ * {@link ListenerStore}. For example, a provider which notifies each listener
+ * within a separate thread is not sequential.
  * </p>
  *
  * <h2>Aborting Event Delegation</h2>
  * <p>
  * As stated above, event delegation can generally not be interrupted by
- * throwing exceptions. Instead, listeners can modify the passed Event instance
- * and set its {@link Event#setHandled(boolean) handled} property to
- * <code>true</code>. Before notifying the next listener, the EventProvider
- * queries the {@link Event#isHandled() isHandled} property of the currently
- * processed event. If it is handled, event delegation stops and no further
- * listeners are notified.
+ * throwing exceptions (as they are passed to the ExceptionCallack). Instead,
+ * listeners can modify the passed Event instance and set its
+ * {@link Event#setHandled(boolean) handled} property to <code>true</code>.
+ * Before notifying the next listener, the EventProvider queries the
+ * {@link Event#isHandled() isHandled} property of the currently processed
+ * event. If it is handled, event delegation stops and no further listeners are
+ * notified.
  * </p>
  *
  * <p>
@@ -123,6 +143,51 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator;
  */
 public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
 
+    /**
+     * Provides a fluent builder API to construct several kinds of
+     * EventProviders. This replaces the static factory methods used in previous
+     * versions of jeve.
+     *
+     * <p>
+     * Configuring an EventProvider always starts with choosing an appropriate
+     * {@link ListenerStore}. In most cases, the default store is sufficient,
+     * but you could also use a store which provides listener prioritization
+     * like in:
+     * </p>
+     *
+     * <pre>
+     * <code>
+     * EventProvider&lt;PriorityListenerStore&gt; eventProvider = EventProvider.configure()
+     *          .store(PriorityListenerStore::new).with()
+     *          .synchronousEventProvider()
+     *          .create();
+     * </code>
+     * </pre>
+     *
+     * <p>
+     * After configuring the ListenerStore, several other attributes can be set.
+     * E.g. the {@link ExceptionCallback} to use or, on some threaded
+     * EventProviders, the ExecutorService to use. When configuring multiple
+     * attributes, methods can be chained using <code>and()</code> as shown in
+     * the example below. After your configuration is final, you can either
+     * directly obtain an EventProvider instance using <code>create()</code> or
+     * a {@link Supplier} using <code>asSupplier()</code> which can be used to
+     * recreate the configuration at any time.
+     * </p>
+     *
+     * <pre>
+     * <code>
+     * Supplier&lt;EventProvider&lt;?&gt;&gt; eventProvider = EventProvider.configure()
+     *          .defaultStore().with()
+     *          .synchronousEventProvider().and()
+     *          .exceptionCallBack(myCallback)
+     *          .asSupplier();
+     * </code>
+     * </pre>
+     *
+     * @return A configurator instance to build an EventProvider.
+     * @since 2.0.0
+     */
     public static EventProviderConfigurator configure() {
         return new ConfiguratorImpl();
     }
@@ -145,6 +210,12 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
         e.printStackTrace();
     };
 
+    /**
+     * Retrieves the {@link ListenerStore} which supplies {@link Listener
+     * Listeners} to this EventProvider.
+     *
+     * @return The listener store.
+     */
     public S listeners();
 
     /**
@@ -326,8 +397,8 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      *
      * <p>
      * <b>Note:</b> Implementors must obey the result of the
-     * {@link ListenerFilter#isSequential() isSequential} property of the
-     * currently used ListenerFilter. If the filter is not sequential, this
+     * {@link ListenerStore#isSequential() isSequential} property of the
+     * currently used ListenerStore. If the store is not sequential, this
      * provider won't be either.
      * </p>
      *
@@ -336,10 +407,11 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
     public boolean isSequential();
 
     /**
-     * Closes this EventProvider and removes all registered listeners. Depending
-     * on the actual implementation, the EventProvider might not be able to
-     * dispatch further events after closing. On some implementations closing
-     * might have no additional effect.
+     * Closes this EventProvider and its {@link ListenerStore} (thus, removes
+     * all registered Listeners from the store). Depending on the actual
+     * implementation, the EventProvider might not be able to dispatch further
+     * events after closing. On some implementations closing might have no
+     * additional effect.
      */
     @Override
     public void close();

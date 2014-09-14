@@ -20,6 +20,7 @@ import de.skuzzle.jeve.ListenerStore;
  * safe, internal and protected helper methods are not thread safe.
  * </p>
  *
+ * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  */
@@ -34,15 +35,15 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     /**
      * Creates a new {@link AbstractEventProvider}.
      *
-     * @param listenerStore Responsible for storing and retrieving listeners of
-     *            this provider.
+     * @param store Responsible for storing and retrieving listeners of this
+     *            provider.
      */
-    public AbstractEventProvider(S listenerStore) {
-        if (listenerStore == null) {
+    public AbstractEventProvider(S store) {
+        if (store == null) {
             throw new IllegalArgumentException("listenerStore is null");
         }
 
-        this.store = listenerStore;
+        this.store = store;
         this.exceptionHandler = DEFAULT_HANDLER;
     }
 
@@ -126,7 +127,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         final Stream<L> listeners = listeners().get(event.getListenerClass());
         boolean result = true;
 
-        event.setEventProvider(this);
+        event.setListenerStore(this.store);
         final Iterator<L> it = listeners.iterator();
         while (it.hasNext()) {
             final L listener = it.next();

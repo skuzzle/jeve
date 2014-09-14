@@ -16,6 +16,7 @@ import de.skuzzle.jeve.ListenerStore;
  * {@link EventProvider} implementation that dispatches all events in the AWT
  * event thread.
  *
+ * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  */
@@ -31,7 +32,8 @@ public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProv
      * {@link SwingUtilities#invokeAndWait(Runnable)} to run notify the
      * listeners).
      *
-     * @param store The store which supplies the listeners to this provider.
+     * @param store Responsible for storing and retrieving listeners of this
+     *            provider.
      * @param invokeNow If <code>true</code>,
      *            {@link #dispatch(Event, BiConsumer, ExceptionCallback)
      *            dispatch} uses <code>invokeAndWait</code>, otherwise

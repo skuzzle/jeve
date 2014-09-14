@@ -14,6 +14,7 @@ import de.skuzzle.jeve.ListenerStore;
  * This EventProvider fires events asynchronously using an
  * {@link ExecutorService} for managing the creation of threads.
  *
+ * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  */
@@ -27,7 +28,8 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
      * Creates a new {@link AsynchronousEventProvider} which uses a single
      * threaded {@link ExecutorService}.
      *
-     * @param store The store which supplies the listeners to this provider.
+     * @param store Responsible for storing and retrieving listeners of this
+     *            provider.
      */
     public AsynchronousEventProvider(S store) {
         this(store, Executors.newFixedThreadPool(1));
@@ -37,7 +39,8 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
      * Creates a new {@link AsynchronousEventProvider} which uses the provided
      * {@link ExecutorService} for event dispatching.
      *
-     * @param store The store which supplies the listeners to this provider.
+     * @param store Responsible for storing and retrieving listeners of this
+     *            provider.
      * @param executor ExecutorService to use.
      */
     public AsynchronousEventProvider(S store, ExecutorService executor) {

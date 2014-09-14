@@ -22,6 +22,7 @@ import de.skuzzle.jeve.ListenerStore;
  * the {@link EventProvider} interface.
  * </p>
  *
+ * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.1.0
  */
@@ -37,7 +38,8 @@ public class ParallelEventProvider<S extends ListenerStore> extends
     /**
      * Creates a new ParallelEventPRovider.
      *
-     * @param store The store which supplies the listeners to this provider.
+     * @param store Responsible for storing and retrieving listeners of this
+     *            provider.
      * @param executor The executor to use.
      */
     public ParallelEventProvider(S store, ExecutorService executor) {
@@ -67,7 +69,7 @@ public class ParallelEventProvider<S extends ListenerStore> extends
         }
 
         final Stream<L> listeners = listeners().get(event.getListenerClass());
-        event.setEventProvider(this);
+        event.setListenerStore(listeners());
         listeners.forEach(listener -> {
             try {
                 this.executor.execute(() -> notifySingle(listener, event, bc, ec));

@@ -175,12 +175,12 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
      * @throws InterruptedException
      */
     @Test
-    public void testEventProviderSet() throws InterruptedException {
+    public void testListenerStoreSet() throws InterruptedException {
         final StringEvent event = new StringEvent(this.subject, "");
         this.subject.dispatch(event, StringListener::onStringEvent);
 
         sleep(); // HACK: give async providers some time to execute
-        Assert.assertEquals(this.subject, event.getEventProvider());
+        Assert.assertEquals(this.subject.listeners(), event.getListenerStore());
     }
 
     /**
@@ -219,6 +219,9 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
      */
     @Test
     public void testListenerOrder() throws Exception {
+        if (checkSkipNonSequential()) {
+            return;
+        }
         final int TESTS = 5;
         for (int i = 0; i < TESTS; ++i) {
             final int finalCopy = i;

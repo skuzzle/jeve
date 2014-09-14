@@ -64,6 +64,8 @@ public interface EventProviderConfigurator {
          * {@link EventProvider} instances. See the {@link CustomConfigurator}
          * for further information.
          *
+         * @param <C> Type of the returned Fluent API object
+         * @param <E> Type of the configured EventProvider.
          * @param configurator The custom fluent API entry point.
          * @return Fluent API object for further configuration.
          */
@@ -201,13 +203,15 @@ public interface EventProviderConfigurator {
         /**
          * Returns a {@link Supplier} which can be used to recreate instances of
          * the configured EventProvider.
+         * <p>
+         * The default implementation behaves as if
+         * </p>
+         *
+         * <pre>
+         * <code>return () -&gt; create()</code>
+         * </pre>
          *
          * @return A supplier for creating EventProviders.
-         * @implNote The default implementation behaves as if
-         *
-         *           <pre>
-         * <code>return () -> create()</code>
-         * </pre>
          */
         default Supplier<E> asSupplier() {
             return () -> create();
@@ -333,6 +337,7 @@ public interface EventProviderConfigurator {
      * Use the provided supplier to lazily create the {@link ListenerStore} to
      * use.
      *
+     * @param <S> The type of the ListenerStore.
      * @param storeSupplier Supplier which supplies the ListenerStore.
      * @return Fluent API object for further configuration.
      */
@@ -343,6 +348,7 @@ public interface EventProviderConfigurator {
      * Chooses the provided {@code store} to manage {@link Listener Listeners}
      * for the EventProvider instance to be created.
      *
+     * @param <S> The type of the ListenerStore.
      * @param store The ListenerStore to use.
      * @return Fluent API object for further configuration.
      */

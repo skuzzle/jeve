@@ -25,6 +25,18 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
         }
 
         @Override
+        public int hashCode() {
+            return 31 * Integer.hashCode(this.priority);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj == this || obj != null &&
+                    obj instanceof ListenerWrapper &&
+                    this.listener.equals(((ListenerWrapper) obj).listener);
+        }
+
+        @Override
         public String toString() {
             return this.listener.toString();
         }
@@ -58,6 +70,10 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
 
     @Override
     public <T extends Listener> Stream<T> get(Class<T> listenerClass) {
+        if (listenerClass == null) {
+            throw new IllegalArgumentException("listenerClass is null");
+        }
+
         synchronized (this.listenerMap) {
             final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
             if (listeners == null) {
@@ -162,9 +178,15 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
 
         synchronized (this.listenerMap) {
             final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
-            listeners.remove(listener);
+            if (listeners == null) {
+                return;
+            }
+            // HINT: priority irrelevant here
+            final ListenerWrapper key = new ListenerWrapper(listener, 0);
+
+            listeners.remove(key);
             if (listeners.isEmpty()) {
-                this.listenerMap.remove(listeners);
+                this.listenerMap.remove(listenerClass);
             }
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
@@ -176,7 +198,9 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
         synchronized (this.listenerMap) {
             this.listenerMap.forEach((k, v) -> {
                 final Iterator<ListenerWrapper> it = v.iterator();
-                it.forEachRemaining(wrapper -> removeInternal(k, it));
+                while (it.hasNext()) {
+                    removeInternal(k, it, it.next());
+                }
             });
         }
     }
@@ -187,7 +211,9 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
             final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
             if (listeners != null) {
                 final Iterator<ListenerWrapper> it = listeners.iterator();
-                it.forEachRemaining(wrapper -> removeInternal(listenerClass, it));
+                while (it.hasNext()) {
+                    removeInternal(listenerClass, it, it.next());
+                }
             }
         }
     }
@@ -200,10 +226,10 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
      * @param <T> Type of the listener to remove
      * @param listenerClass The class of the listener to remove.
      * @param it Iterator which provides the next listener to remove.
+     * @param next The current wrapper element
      */
     protected <T extends Listener> void removeInternal(Class<T> listenerClass,
-            Iterator<ListenerWrapper> it) {
-        final ListenerWrapper next = it.next();
+            Iterator<ListenerWrapper> it, ListenerWrapper next) {
         final T listener = listenerClass.cast(next.listener);
         it.remove();
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);

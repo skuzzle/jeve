@@ -8,13 +8,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import de.skuzzle.jeve.stores.DefaultListenerStore;
+
 /**
  * Runs all basic tests for all default provided event providers.
  *
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class ThreadedEventProviderTest extends EventProviderTestBase {
+public class ThreadedEventProviderTest extends
+        EventProviderTestBase<DefaultListenerStore> {
 
     /**
      * Parameterizes the test instances.
@@ -37,7 +40,8 @@ public class ThreadedEventProviderTest extends EventProviderTestBase {
      *
      * @param factory Factory to create a single provider
      */
-    public ThreadedEventProviderTest(Supplier<? extends EventProvider<?>> factory) {
+    public ThreadedEventProviderTest(
+            Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }
 }

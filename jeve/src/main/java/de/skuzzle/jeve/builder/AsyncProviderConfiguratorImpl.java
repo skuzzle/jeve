@@ -6,9 +6,10 @@ import java.util.function.Supplier;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.AsyncProviderConfigurator;
+import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderConfigurator;
+import de.skuzzle.jeve.providers.ExecutorAware;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 
 class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<S>>
@@ -33,6 +34,14 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
             result.setExceptionCallback(this.ecSupplier.get());
         }
         if (this.executorSupplier != null) {
+            if (result instanceof ExecutorAware) {
+                final ExecutorAware ea = (ExecutorAware) result;
+                ea.setExecutorService(this.executorSupplier.get());
+            } else {
+                throw new IllegalStateException(String.format(
+                        "The configured EventProvider %s does not support setting an ExecutorService",
+                        result));
+            }
         }
         return result;
     }

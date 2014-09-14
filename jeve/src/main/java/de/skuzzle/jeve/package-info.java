@@ -1,7 +1,7 @@
 /**
- * jeve is an open source framework for implementing the observer pattern in
- * Java 8 . It makes use of lambda expressions and method references to clarify
- * event delegation code.
+ * This package defines the main public API of jeve. jeve is an open source
+ * framework for implementing the observer pattern in Java 8 . It makes use of
+ * lambda expressions and method references to clarify event delegation code.
  *
  * <p>
  * jeve is designed to be simple and easy to use, yet granting the ability to

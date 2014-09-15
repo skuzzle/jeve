@@ -12,8 +12,8 @@ import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 
 /**
- * EventProvider which delegates all method calls to a wrapped instance but
- * counts all notifications.
+ * EventProvider which delegates all method calls to a wrapped instance and
+ * counts all dispatch actions.
  *
  * @param <S> The type of the ListenerStore this provider uses.
  * @param <P> The type of the wrapped provider.
@@ -24,9 +24,14 @@ public class StatisticsEventProvider<S extends ListenerStore, P extends EventPro
         implements EventProvider<S> {
 
     private final Map<Class<? extends Listener>, Integer> notifications;
+    private final P wrapped;
 
-    final P wrapped;
-
+    /**
+     * Creates a new StatisticsEventProvider which counts dispatch action of the
+     * given {@link EventProvider}.
+     *
+     * @param wrapped The provider to wrap.
+     */
     public StatisticsEventProvider(P wrapped) {
         if (wrapped == null) {
             throw new IllegalArgumentException("wrapped is null");

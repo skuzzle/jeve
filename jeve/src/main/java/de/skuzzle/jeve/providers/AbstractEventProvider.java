@@ -197,6 +197,15 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         return this.store.isSequential() && isImplementationSequential();
     }
 
+    /**
+     * Whether this EventProvider implementation is sequential. The
+     * {@link #isSequential()} method considers the result of this method and
+     * the result of the current ListenerStore's
+     * {@link ListenerStore#isSequential() isSequential} method for determining
+     * whether dispatch events of this provider are sequential.
+     *
+     * @return Whether this EventProvider implementation is sequential.
+     */
     protected abstract boolean isImplementationSequential();
 
     @Override

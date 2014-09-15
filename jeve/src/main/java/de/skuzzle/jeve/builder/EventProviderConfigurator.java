@@ -326,6 +326,14 @@ public interface EventProviderConfigurator {
     }
 
     /**
+     * Create a synchronous EventProvider with a {@link DefaultListenerStore}
+     * without options to further configure it.
+     *
+     * @return The EventProvider.
+     */
+    public SynchronousEventProvider<DefaultListenerStore> createInstantly();
+
+    /**
      * Chooses a {@link DefaultListenerStore} to manage {@link Listener
      * Listeners} for the EventProvider instance to be created.
      *

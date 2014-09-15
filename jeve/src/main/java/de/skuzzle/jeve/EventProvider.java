@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import de.skuzzle.jeve.builder.ConfiguratorImpl;
 import de.skuzzle.jeve.builder.EventProviderConfigurator;
+import de.skuzzle.jeve.stores.DefaultListenerStore;
 
 /**
  * <p>
@@ -192,21 +193,25 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
         return new ConfiguratorImpl();
     }
 
+    public static EventProviderConfigurator.ProviderChoser<DefaultListenerStore> Void() {
+        return configure().defaultStore().with();
+    }
+
     /**
      * The default {@link ExceptionCallback} which prints some information about
      * the occurred error to the standard output. The exact format is not
      * specified.
      */
     public static final ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
-        System.err.println(
-                "Listener threw an exception while being notified\n" +
-                        "Details\n" +
-                        "    Listener: " + l + "\n" +
-                        "    Event: " + ev + "\n" +
-                        "    Message: " + e.getMessage() + "\n" +
-                        "    Current Thread: " + Thread.currentThread().getName() + "\n" +
-                        "    Stacktrace: "
-                );
+        System.err.printf(
+                "Listener threw an exception while being notified%n" +
+                        "Details%n" +
+                        "    Listener: %s%n" +
+                        "    Event: %s%n" +
+                        "    Message: %s%n" +
+                        "    Current Thread: %s%n" +
+                        "    Stacktrace:%n",
+                l, ev, e.getMessage(), Thread.currentThread().getName());
         e.printStackTrace();
     };
 

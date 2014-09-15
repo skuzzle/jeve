@@ -31,6 +31,12 @@ public class ParallelEventProvider<S extends ListenerStore> extends
 
     private ExecutorService executor;
 
+    /**
+     * Creates a new ParallelEventProvider using the provided store.
+     *
+     * @param store Responsible for storing and retrieving listeners of this
+     *            provider.
+     */
     public ParallelEventProvider(S store) {
         this(store, Executors.newCachedThreadPool());
     }

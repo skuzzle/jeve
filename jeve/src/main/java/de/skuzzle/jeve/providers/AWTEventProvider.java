@@ -44,6 +44,14 @@ public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProv
         this.invokeNow = invokeNow;
     }
 
+    /**
+     * Whether this provider will block the current thread until dispatch is
+     * done. When this method returns <code>false</code>, the notification of
+     * Events is queued in the AWT event queue and {@code dispatch} returns
+     * immediately.
+     *
+     * @return Whether this provider blocks the current thread upon dispatching.
+     */
     public boolean isInvokeNow() {
         return this.invokeNow;
     }

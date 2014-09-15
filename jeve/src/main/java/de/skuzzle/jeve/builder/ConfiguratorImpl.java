@@ -3,9 +3,21 @@ package de.skuzzle.jeve.builder;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.providers.SynchronousEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 
+/**
+ * Default implementation of jeve's fluent builder API.
+ * 
+ * @author Simon Taddiken
+ */
 public class ConfiguratorImpl implements EventProviderConfigurator {
+
+    @Override
+    public SynchronousEventProvider<DefaultListenerStore> createInstantly() {
+        return new SynchronousEventProvider<DefaultListenerStore>(
+                new DefaultListenerStore());
+    }
 
     @Override
     public With<ProviderChoser<DefaultListenerStore>> defaultStore() {

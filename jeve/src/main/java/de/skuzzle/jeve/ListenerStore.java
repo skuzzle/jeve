@@ -3,6 +3,44 @@ package de.skuzzle.jeve;
 import java.io.Closeable;
 import java.util.stream.Stream;
 
+/**
+ * Allows to register and unregister {@link Listener Listeners} for certain
+ * listener classes and supplies {@code Listeners} to an {@link EventProvider}.
+ * Every EventProvider implementation needs a reference to a ListenerStore which
+ * manages its Listeners. It is allowed for different EventProviders to share a
+ * single ListenerStore instance.
+ *
+ * <p>
+ * When dispatching an {@link Event}, the EventProvider will query
+ * {@link #get(Class)} with the respective {@link Event#getListenerClass()
+ * listener class} of the event to dispatch. This method returns a
+ * {@link Stream} of Listeners which were registered for that listener class
+ * using {@link #add(Class, Listener)}. A ListenerStore is said to be
+ * <b>sequential</b>, iff its {@code get} method returns the registered
+ * Listeners in the exact order in which they have been registered (FIFO). When
+ * using a non-sequential store with a sequential EventProvider, dispatching
+ * with that provider immediately turns non-sequential too.
+ * </p>
+ *
+ * <h2>Thread Safety</h2>
+ * <p>
+ * For general purpose use with different kinds of EventProviders, the
+ * ListenerStore implementation <em>must</em> be thread-safe. For example, an
+ * asynchronous EventProvider could dispatch two Events concurrently, where
+ * Listeners for both access the ListenerStore while being notified (E.g. they
+ * remove themselves from the store for not being notified again).
+ * </p>
+ *
+ * <h2>Closing</h2>
+ * <p>
+ * {@link #close() Closing} the ListenerStore will remove all registered
+ * Listeners. Implementations may perform additional tasks. The ListenerStore is
+ * automatically closed when an EventProvider which uses the store is closed.
+ * </p>
+ *
+ * @author Simon Taddiken
+ * @since 2.0.0
+ */
 public interface ListenerStore extends Closeable {
 
     /**
@@ -108,8 +146,27 @@ public interface ListenerStore extends Closeable {
      */
     public void clearAll();
 
+    /**
+     * States whether this ListenerStore implementation is sequential. This is
+     * the case if, and only if the Stream returned by {@link #get(Class)}
+     * returns the registered Listeners in FIFO order regarding their time of
+     * registration.
+     *
+     * @return Whether this store is sequential.
+     */
     public boolean isSequential();
 
+    /**
+     * Removes all registered Listeners from this store (
+     * {@link Listener#onUnregister(RegistrationEvent)} will be called on each
+     * Listener). Implementors may also release additional resource held by
+     * their implementations.
+     *
+     * <p>
+     * <b>Note:</b> This method is automatically called upon closing an
+     * {@link EventProvider} which uses this store.
+     * </p>
+     */
     @Override
     public void close();
 }

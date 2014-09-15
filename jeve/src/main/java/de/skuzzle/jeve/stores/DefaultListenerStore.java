@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.stores;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,9 +10,26 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.RegistrationEvent;
+import de.skuzzle.jeve.Sequential;
 
-public final class DefaultListenerStore implements SequentialListenerStore {
+/**
+ * Sequential {@link ListenerStore} implementation. This class implements the
+ * default semantics of a ListenerStore with no additional features.
+ *
+ * <p>
+ * Performance notes: This store uses a {@link HashMap} of {@link ArrayList
+ * ArrayLists} to manage the Listeners. Thus, adding a Listener performs in
+ * {@code O(1)} and removing in {@code O(n)} where {@code n} is the number of
+ * Listeners registered for the class for which the Listener should be removed.
+ * {@link #get(Class)} also performs in {@code O(1)}.
+ * </p>
+ *
+ * @author Simon Taddiken
+ * @since 2.0.0
+ */
+public final class DefaultListenerStore implements ListenerStore, Sequential {
 
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<? extends Listener>, List<Object>> listeners;
@@ -125,5 +143,10 @@ public final class DefaultListenerStore implements SequentialListenerStore {
     @Override
     public String toString() {
         return this.listeners.toString();
+    }
+
+    @Override
+    public boolean isSequential() {
+        return true;
     }
 }

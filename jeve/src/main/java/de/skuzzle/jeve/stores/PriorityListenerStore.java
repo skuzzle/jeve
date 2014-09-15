@@ -11,9 +11,33 @@ import java.util.stream.Stream;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.NonSequential;
 import de.skuzzle.jeve.RegistrationEvent;
 
-public class PriorityListenerStore implements NonSequentialListenerStore {
+/**
+ * Non-sequential {@link ListenerStore} implementation which provides Listener
+ * prioritization upon registering. When registering a {@link Listener} with
+ * this store, you may use an overload of {@link #add(Class, Listener, int) add}
+ * to specify a priority for the Listener. The lower the priority, the sooner
+ * the Listener will notified when an Event is dispatched for its listener
+ * class. When using the normal {@link #add(Class, Listener) add} method, the
+ * Listener is assigned a default priority which may be specified in the
+ * constructor.
+ *
+ * <p>
+ * Performance notes: This store uses a {@link HashMap} of {@link LinkedList
+ * LinkedLists} to manage the Listeners and inserts Listeners sorted by priority
+ * upon registering. Thus, adding a Listener as well as removing one performs in
+ * {@code O(n)}, where {@code n} is the number of Listeners registered for the
+ * class for which the Listener should be added/removed. {@link #get(Class)}
+ * performs in {@code O(1)}.
+ * </p>
+ *
+ * @author Simon Taddiken
+ * @since 2.0.
+ */
+public class PriorityListenerStore implements ListenerStore, NonSequential {
 
     private static class ListenerWrapper {
         private final Object listener;
@@ -246,5 +270,10 @@ public class PriorityListenerStore implements NonSequentialListenerStore {
     @Override
     public String toString() {
         return this.listenerMap.toString();
+    }
+
+    @Override
+    public boolean isSequential() {
+        return false;
     }
 }

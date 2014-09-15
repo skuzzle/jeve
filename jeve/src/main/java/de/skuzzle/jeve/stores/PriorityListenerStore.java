@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.NonSequential;
 import de.skuzzle.jeve.RegistrationEvent;
 
 /**
@@ -37,7 +36,7 @@ import de.skuzzle.jeve.RegistrationEvent;
  * @author Simon Taddiken
  * @since 2.0.
  */
-public class PriorityListenerStore implements ListenerStore, NonSequential {
+public class PriorityListenerStore implements ListenerStore {
 
     private static class ListenerWrapper {
         private final Object listener;

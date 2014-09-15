@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.RegistrationEvent;
-import de.skuzzle.jeve.Sequential;
 
 /**
  * Sequential {@link ListenerStore} implementation. This class implements the
@@ -29,7 +28,7 @@ import de.skuzzle.jeve.Sequential;
  * @author Simon Taddiken
  * @since 2.0.0
  */
-public final class DefaultListenerStore implements ListenerStore, Sequential {
+public final class DefaultListenerStore implements ListenerStore {
 
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<? extends Listener>, List<Object>> listeners;

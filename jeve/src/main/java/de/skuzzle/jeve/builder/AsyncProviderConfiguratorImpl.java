@@ -20,7 +20,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<ExecutorService> executorSupplier;
 
-    public AsyncProviderConfiguratorImpl(Supplier<E> providerSupplier) {
+    AsyncProviderConfiguratorImpl(Supplier<E> providerSupplier) {
         if (providerSupplier == null) {
             throw new IllegalArgumentException("providerSupplier is null");
         }
@@ -100,7 +100,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
             }
 
             @Override
-            public Supplier<StatisticsEventProvider<S, E>> asSupplier() {
+            public Supplier<StatisticsEventProvider<S, E>> createSupplier() {
                 return supplier;
             }
 

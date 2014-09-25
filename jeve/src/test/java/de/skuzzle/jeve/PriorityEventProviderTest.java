@@ -28,8 +28,8 @@ public class PriorityEventProviderTest extends
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().store(new PriorityListenerStore()).with().synchronousProvider().asSupplier() },
-                new Object[] { EventProvider.configure().store(new PriorityListenerStore(0)).with().synchronousProvider().asSupplier() }
+                new Object[] { EventProvider.configure().store(new PriorityListenerStore()).useSynchronousProvider().createSupplier() },
+                new Object[] { EventProvider.configure().store(new PriorityListenerStore(0)).useSynchronousProvider().createSupplier() }
                 );
     }
 

@@ -31,7 +31,7 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * intended to be implemented by clients. Instead, when you want to incorporate
  * the fluent builder API for your own EventProvider implementation, implement
  * {@link CustomConfigurator} and pass an instance to
- * {@link ProviderChoser#customProvider(CustomConfigurator)}:
+ * {@link ProviderChooser#useCustomProvider(CustomConfigurator)}:
  * </p>
  *
  * <pre>
@@ -57,7 +57,7 @@ public interface EventProviderConfigurator {
      *            step.
      * @since 2.0.0
      */
-    interface ProviderChoser<S extends ListenerStore> {
+    interface ProviderChooser<S extends ListenerStore> {
 
         /**
          * Entry point method for incorporating the fluent API to create custom
@@ -69,7 +69,7 @@ public interface EventProviderConfigurator {
          * @param configurator The custom fluent API entry point.
          * @return Fluent API object for further configuration.
          */
-        <C, E extends EventProvider<S>> Final<C, E> customProvider(
+        <C, E extends EventProvider<S>> Final<C, E> useCustomProvider(
                 CustomConfigurator<S, C, E> configurator);
 
         /**
@@ -83,7 +83,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          */
         Final<ProviderConfigurator<S, SynchronousEventProvider<S>>, SynchronousEventProvider<S>>
-            synchronousProvider();
+            useSynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which fires each event in a
@@ -110,7 +110,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          */
         Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>, AsynchronousEventProvider<S>>
-                asynchronousProvider();
+                useAsynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which notifies each listener
@@ -131,7 +131,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          */
         Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>, ParallelEventProvider<S>>
-                parallelProvider();
+                useParallelProvider();
 
         /**
          * Configures an {@link EventProvider} which dispatches all events in
@@ -147,7 +147,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> waitingAWTEventProvider();
+        Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
+                useWaitingAWTEventProvider();
 
         /**
          * Configures an {@link EventProvider} which dispatches all events in
@@ -163,23 +164,8 @@ public interface EventProviderConfigurator {
          *
          * @return A new EventProvider instance.
          */
-        Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> asynchronAWTEventProvider();
-    }
-
-    /**
-     * Allows chaining of fluent API objects using the word 'with'.
-     *
-     * @author Simon Taddiken
-     * @param <C> The type of the chained fluent API object.
-     * @since 2.0.0
-     */
-    interface With<C> {
-        /**
-         * Returns the chained fluent API object
-         *
-         * @return The fluent API object.
-         */
-        C with();
+        Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
+                useAsynchronAWTEventProvider();
     }
 
     /**
@@ -213,7 +199,7 @@ public interface EventProviderConfigurator {
          *
          * @return A supplier for creating EventProviders.
          */
-        default Supplier<E> asSupplier() {
+        default Supplier<E> createSupplier() {
             return () -> create();
         }
 
@@ -339,7 +325,7 @@ public interface EventProviderConfigurator {
      *
      * @return Fluent API object for further configuration.
      */
-    With<ProviderChoser<DefaultListenerStore>> defaultStore();
+    ProviderChooser<DefaultListenerStore> defaultStore();
 
     /**
      * Use the provided supplier to lazily create the {@link ListenerStore} to
@@ -349,7 +335,7 @@ public interface EventProviderConfigurator {
      * @param storeSupplier Supplier which supplies the ListenerStore.
      * @return Fluent API object for further configuration.
      */
-    <S extends ListenerStore> With<ProviderChoser<S>> store(
+    <S extends ListenerStore> ProviderChooser<S> store(
             Supplier<S> storeSupplier);
 
     /**
@@ -360,5 +346,5 @@ public interface EventProviderConfigurator {
      * @param store The ListenerStore to use.
      * @return Fluent API object for further configuration.
      */
-    <S extends ListenerStore> With<ProviderChoser<S>> store(S store);
+    <S extends ListenerStore> ProviderChooser<S> store(S store);
 }

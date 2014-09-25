@@ -8,7 +8,7 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
 
 /**
  * Default implementation of jeve's fluent builder API.
- * 
+ *
  * @author Simon Taddiken
  */
 public class ConfiguratorImpl implements EventProviderConfigurator {
@@ -20,35 +20,22 @@ public class ConfiguratorImpl implements EventProviderConfigurator {
     }
 
     @Override
-    public With<ProviderChoser<DefaultListenerStore>> defaultStore() {
+    public ProviderChooser<DefaultListenerStore> defaultStore() {
         final Supplier<DefaultListenerStore> supplier = DefaultListenerStore::new;
-        return new With<ProviderChoser<DefaultListenerStore>>() {
-            @Override
-            public ProviderChoser<DefaultListenerStore> with() {
-                return new ProviderChoserImpl<DefaultListenerStore>(supplier);
-            }
-
-        };
+        return new ProviderChooserImpl<DefaultListenerStore>(supplier);
     }
 
     @Override
-    public <S extends ListenerStore> With<ProviderChoser<S>> store(
+    public <S extends ListenerStore> ProviderChooser<S> store(
             Supplier<S> storeSupplier) {
         if (storeSupplier == null) {
             throw new IllegalArgumentException("storeSupplier is null");
         }
-
-        return new With<ProviderChoser<S>>() {
-            @Override
-            public ProviderChoser<S> with() {
-                return new ProviderChoserImpl<S>(storeSupplier);
-            }
-
-        };
+        return new ProviderChooserImpl<S>(storeSupplier);
     }
 
     @Override
-    public <S extends ListenerStore> With<ProviderChoser<S>> store(S store) {
+    public <S extends ListenerStore> ProviderChooser<S> store(S store) {
         if (store == null) {
             throw new IllegalArgumentException("store is null");
         }

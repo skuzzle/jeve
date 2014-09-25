@@ -33,6 +33,9 @@ public final class DefaultListenerStore implements ListenerStore {
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<? extends Listener>, List<Object>> listeners;
 
+    /**
+     * Creates a new DefaultListenerStore.
+     */
     public DefaultListenerStore() {
         this.listeners = new HashMap<>();
     }

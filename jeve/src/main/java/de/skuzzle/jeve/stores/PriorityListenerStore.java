@@ -19,7 +19,7 @@ import de.skuzzle.jeve.RegistrationEvent;
  * prioritization upon registering. When registering a {@link Listener} with
  * this store, you may use an overload of {@link #add(Class, Listener, int) add}
  * to specify a priority for the Listener. The lower the priority, the sooner
- * the Listener will notified when an Event is dispatched for its listener
+ * the Listener will be notified when an Event is dispatched for its listener
  * class. When using the normal {@link #add(Class, Listener) add} method, the
  * Listener is assigned a default priority which may be specified in the
  * constructor.
@@ -34,7 +34,7 @@ import de.skuzzle.jeve.RegistrationEvent;
  * </p>
  *
  * @author Simon Taddiken
- * @since 2.0.
+ * @since 2.0.0
  */
 public class PriorityListenerStore implements ListenerStore {
 
@@ -42,7 +42,7 @@ public class PriorityListenerStore implements ListenerStore {
         private final Object listener;
         private final int priority;
 
-        public ListenerWrapper(Object listener, int priority) {
+        private ListenerWrapper(Object listener, int priority) {
             this.listener = listener;
             this.priority = priority;
         }

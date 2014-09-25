@@ -26,8 +26,8 @@ public class SynchronousEventProviderTest extends
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().defaultStore().with().synchronousProvider().asSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().with().synchronousProvider().and().statistics().asSupplier() }
+                new Object[] { EventProvider.configure().defaultStore().useSynchronousProvider().createSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().useSynchronousProvider().and().statistics().createSupplier() }
                 );
     }
 

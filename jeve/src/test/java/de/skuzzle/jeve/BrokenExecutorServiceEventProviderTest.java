@@ -60,10 +60,10 @@ public class BrokenExecutorServiceEventProviderTest extends
         return Collections.singleton(
                 new Object[] {
                         EventProvider.configure()
-                        .defaultStore().with()
-                        .parallelProvider().and()
-                        .executor(BrokenExecutorService::new)
-                        .asSupplier()
+                                .defaultStore()
+                                .useParallelProvider().and()
+                                .executor(BrokenExecutorService::new)
+                                .createSupplier()
                 });
     }
 

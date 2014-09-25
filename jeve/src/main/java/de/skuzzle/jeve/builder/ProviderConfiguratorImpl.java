@@ -16,7 +16,7 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
 
     private Supplier<ExceptionCallback> ecSupplier;
 
-    public ProviderConfiguratorImpl(Supplier<E> providerSupplier) {
+    ProviderConfiguratorImpl(Supplier<E> providerSupplier) {
         if (providerSupplier == null) {
             throw new IllegalArgumentException("providerSupplier is null");
         }
@@ -93,7 +93,7 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
             }
 
             @Override
-            public Supplier<StatisticsEventProvider<S, E>> asSupplier() {
+            public Supplier<StatisticsEventProvider<S, E>> createSupplier() {
                 return supplier;
             }
 

@@ -48,6 +48,12 @@ public class StatisticsEventProvider<S extends ListenerStore, P extends EventPro
         map.put(key, val + 1);
     }
 
+    /**
+     * Gets the underlying EventProvider which is wrapped by this
+     * StatisticsEventProvider.
+     * 
+     * @return The wrapped provider.
+     */
     public P getWrapped() {
         return this.wrapped;
     }

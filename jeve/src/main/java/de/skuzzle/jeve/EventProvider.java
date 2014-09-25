@@ -27,8 +27,8 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * <pre>
  * <code>
  * EventProvider&lt;?&gt; eventProvider = EventProvider.configure()
- *         .defaultStore().with()
- *         .synchronousProvider()
+ *         .defaultStore()
+ *         .useSynchronousProvider()
  *         .create();
  * </code>
  * </pre>
@@ -159,8 +159,8 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * <pre>
      * <code>
      * EventProvider&lt;PriorityListenerStore&gt; eventProvider = EventProvider.configure()
-     *          .store(PriorityListenerStore::new).with()
-     *          .synchronousEventProvider()
+     *          .store(PriorityListenerStore::new)
+     *          .useSynchronousEventProvider()
      *          .create();
      * </code>
      * </pre>
@@ -193,8 +193,17 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
         return new ConfiguratorImpl();
     }
 
-    public static EventProviderConfigurator.ProviderChoser<DefaultListenerStore> Void() {
-        return configure().defaultStore().with();
+    /**
+     * Creates a configurator which skips the step of choosing a ListenerStore
+     * and always uses a {@link DefaultListenerStore}.
+     *
+     * @return A configurator with pre-configure default listener store.
+     * @see #configure()
+     * @since 2.0.0
+     */
+    public static EventProviderConfigurator.ProviderChooser<DefaultListenerStore>
+            configureDefault() {
+        return configure().defaultStore();
     }
 
     /**

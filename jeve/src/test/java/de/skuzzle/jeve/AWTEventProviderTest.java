@@ -36,10 +36,10 @@ public class AWTEventProviderTest extends EventProviderTestBase<DefaultListenerS
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().defaultStore().with().waitingAWTEventProvider().asSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().with().asynchronAWTEventProvider().asSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().with().waitingAWTEventProvider().and().statistics().asSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().with().asynchronAWTEventProvider().and().statistics().asSupplier() }
+                new Object[] { EventProvider.configure().defaultStore().useWaitingAWTEventProvider().createSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().useAsynchronAWTEventProvider().createSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().useWaitingAWTEventProvider().and().statistics().createSupplier() },
+                new Object[] { EventProvider.configure().defaultStore().useAsynchronAWTEventProvider().and().statistics().createSupplier() }
                 );
     }
 

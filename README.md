@@ -228,6 +228,8 @@ identical to:
 ```java
     UserEvent e = new UserEvent(userManager);
     eventProvider.dispatch(e, e.getTarget());
+    // or
+    eventProvider.dispatch(e, UserListener::userAdded);
 ```
 
 ## Stopping event delegation

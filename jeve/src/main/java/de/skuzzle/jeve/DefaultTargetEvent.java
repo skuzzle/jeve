@@ -5,25 +5,25 @@ import java.util.function.BiConsumer;
 /**
  * Provides a convenient way to implement Listeners which only have a single
  * listening method. If a listener only has a single listening method, it is
- * redundant to specify it when calling the {@link EventProvider 
+ * redundant to specify it when calling the {@link EventProvider
  * EventProvider's} {@code dispatch} method. As dispatch may be called often for
  * some kind of events, it is easier to statically provide the method reference
  * to the listening method. That is what this event class is for.
  *
  * <p>
  * Due to Java's type system, this kind of events need a third type parameter
- * {@code E} which must be set to the class you are implementing. Here is a
+ * {@code SELF} which must be set to the class you are implementing. Here is a
  * sample implementation:
  * </p>
  *
  * <pre>
  * <code>
  * public class UserEvent extends DefaultTargetEvent&lt;UserManager, UserEvent, UserListener&gt; {
- * 
+ *
  *     public UserEvent(UserManager source) {
  *         super(source, UserListener.class);
  *     }
- * 
+ *
  *     &#64;Override
  *     public BiConsumer&lt;UserListener, UserEvent&gt; getTarget() {
  *         return UserListener::userAdded;

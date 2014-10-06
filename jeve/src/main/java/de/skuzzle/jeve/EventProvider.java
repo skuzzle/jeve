@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import de.skuzzle.jeve.builder.ConfiguratorImpl;
 import de.skuzzle.jeve.builder.EventProviderConfigurator;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
+import de.skuzzle.jeve.stores.PriorityListenerStore;
 
 /**
  * <p>
@@ -33,9 +34,14 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * </code>
  * </pre>
  *
+ * <p>
+ * As of jeve 2.0.0, all shipped provider implementations are public and thus
+ * also constructible by simply calling their constructors.
+ * </p>
+ *
  * <h2>Managing and Notifying Listeners</h2>
  * <p>
- * Listeners are manage by a {@link ListenerStore}. An instance of such a store
+ * Listeners are managed by a {@link ListenerStore}. An instance of such a store
  * is typically supplied to the EventProvider at construction time. It is
  * allowed that multiple providers share a single ListenerStore. Listeners are
  * registered and unregistered by calling the respective methods on the
@@ -65,17 +71,17 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * <p>
  * To notify the registered listeners, you need to specify the {@link Event}
  * instance which is passed to each listener and the actual method to call on
- * each listener. Jeve obtains the class of the listeners to notify from the
- * event's {@link Event#getListenerClass() getListenerClass} method. Thus, the
- * class has not to be specified explicitly for each dispatch action. Here is an
- * example of notifying listeners which have been registered for the class
- * {@code UserListener}.
+ * each listener as a method reference. Jeve obtains the class of the listeners
+ * to notify from the event's {@link Event#getListenerClass() getListenerClass}
+ * method. Thus, the class has not to be specified explicitly for each dispatch
+ * action. Here is an example of notifying listeners which have been registered
+ * for the class {@code UserListener}.
  * </p>
  *
  * <pre>
  * // create an event which holds its source and some additional data
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // notify all UserListeners with this event.
  * eventProvider.dispatch(e, UserListener::userAdded);
  * </pre>
@@ -86,6 +92,14 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * {@code e}. {@link #dispatch(Event, BiConsumer) Dispatch} is the core of any
  * EventProvider. It implements the logic of how the listeners are notified in a
  * way that is transparent for the user of the EventProvider.
+ * </p>
+ *
+ * <p>
+ * If a listener has only one listening method, it is obsolete to specify the
+ * method reference for every dispatch action. For this case jeve provides the
+ * class {@link DefaultTargetEvent} and an overload of
+ * {@link #dispatch(DefaultTargetEvent)} which allows to specify the method
+ * reference within the Event implementation.
  * </p>
  *
  * <h2>Error handling</h2>
@@ -117,7 +131,10 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * {@link #isSequential()}. Whether an EventProvider actually is sequential
  * depends on its implementation of the dispatch method and the currently used
  * {@link ListenerStore}. For example, a provider which notifies each listener
- * within a separate thread is not sequential.
+ * within a separate thread is not sequential. Likewise, a provider which
+ * notifies listeners sequentially within one thread, but uses a ListenerStore
+ * which re-orders listeners (like {@link PriorityListenerStore}), is not
+ * sequential.
  * </p>
  *
  * <h2>Aborting Event Delegation</h2>

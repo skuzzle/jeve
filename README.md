@@ -10,13 +10,9 @@ great additional features. jeve explained in one Java statement:
 ```java
 eventProvider.dispatch(new UserEvent(this, user), UserListener::userAdded);
 ```
-
-
 ## License
 jeve is distributed under the MIT License. See `LICENSE.md` in this directory
 for detailed information.
-
-
 
 ## Documentation
 JavaDoc is available at www.jeve.skuzzle.de/2.0.0/doc
@@ -25,8 +21,6 @@ Scroll down in this readme for a quick start guide and some advanced topics.
 
 Further support can be found in IRC (irc.euirc.net, #pollyisawesome) or via
 Twitter (@ProjectPolly).
-
-
 
 ## Maven Dependency
 Jeve is available as dependency for your projects through Maven's Central Repository:
@@ -38,8 +32,6 @@ Jeve is available as dependency for your projects through Maven's Central Reposi
         <version>2.0.0</version>
     </dependency>
 ```
-
-
 
 # Why jeve?
 jeve avoids client code from ending up cluttered with event delegation routines
@@ -85,7 +77,6 @@ Most of these weaknesses can be solved by using *internal iteration*. That is,
 moving iteration **into** the framework, making it transparent for the caller.
 See the quick start guid below to learn how jeve addresses these issues.
 
-
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
 an `EventProvider` as first step:
@@ -94,9 +85,10 @@ an `EventProvider` as first step:
 import de.skuzzle.jeve.EventProvider;
 
 public class UserManager {
-    // The default event provider dispatches events sequentially within
-    // the current thread.
-    private final EventProvider events = EventProviders.newDefaultEventProvider();
+    // Dispatches events sequentially within the current thread
+    private final EventProvider events = EventProvider.configureDefault()
+        .useSynchronousProvider()
+        .create();
 }
 ```
 
@@ -145,11 +137,11 @@ public class UserManager {
     private final EventProvider events = EventProvider.newDefaultEventProvider();
 
     public void addUserListener(UserListener listener) {
-        this.events.addListener(UserListener.class, listener);
+        this.events.listeners().add(UserListener.class, listener);
     }
 
     public void removeUserListener(UserListener listener) {
-        this.events.removeListener(UserListener.class, listener);
+        this.events.listeners().remove(UserListener.class, listener);
     }
 
     public void addUser(User user) {
@@ -175,15 +167,70 @@ With jeve, all the above listed flaws can be treated in a safe and clear way:
   delegation (see below)
 * by simply obtaining a different EventProvider implementation, event
   dispatching can be parallelized without touching any existing code
-* the event delegation process can be stopped by setting the event to be handled
-  (see below)
+* the event delegation process can be stopped gracefully by setting the event 
+  to be _handled_ (see below)
 * the EventProvider internally manages different kinds of listeners.
-
-
 
 # Advanced Topics
 
-## Stop event delegation
+## Listener Stores
+In jeve 2.0.0, listeners are managed by an implementation of `ListenerStore`, 
+an instance of which is passed to an EventProvider at construction time. When
+dispatching an event, the EventProvider queries the store to obtain a `Stream`
+of listeners which should be notified. This grants the ability to share a 
+single store between multiple providers and to re-order listeners before 
+delivering them to the provider. For example, jeve comes with a 
+`PriorityListenerStore`, which allows to order listeners by a priority value 
+before passing them to the EventProvider:
+
+```java
+    EventProvider<PriorityListenerStore> events = EventProvider.configure()
+        .store(new PriorityListenerStore())
+        .useSynchronousProvider()
+        .create();
+
+    ...
+    events.listeners().add(UserListener.class, myListener, 2);
+    events.listeners().add(UserListener.class, myOtherListener, 1);
+```
+In this example, `myOtherListener` would always be notified before `myListener` 
+because it has a lower priority value.
+
+## Default Target Events
+A common case in real life applications is, that listener interfaces only 
+contain a single listening method. If so, always specifying the method 
+reference when dispatching an event is verbose and inconvenient. Instead, you 
+may use `DefaultTargetEvent` which is fully compatible with normal events. It
+allows to statically provide the method reference of its targeted listener and 
+can be used with a overload of `EventProvider.dispatch`:
+
+```java
+public class UserEvent extends DefaultTargetEvent<UserManager, UserEvent, UserListener> {
+
+    public UserEvent(UserManager source) {
+        super(source, UserListener.class);
+    }
+    
+    @Override
+    public BiConsumer<UserListener, UserEvent> getTarget() {
+        return UserListener::userAdded;
+    }
+}
+```
+Dispatching this event is as easy as:
+
+```java
+    UserEvent e = new UserEvent(userManager);
+    eventProvider.dispatch(e);
+```
+As default target events are compatible with normal events, the above code is 
+identical to:
+```java
+    UserEvent e = new UserEvent(userManager);
+    eventProvider.dispatch(e, e.getTarget());
+```
+
+## Stopping event delegation
 Listeners are notified in order they have been registered with the
 `EventProvider`. If you want to stop the delegation of an event to further
 listeners, you may use the `Event.setHandled(boolean)` method.
@@ -218,11 +265,10 @@ should only be used in exceptional cases.
 The behavior of both methods for aborting the delegation process is generally
 undefined for multi-threaded and non-sequential EventProvider implementations.
 
-
 ## Automatically remove listeners
-Automatically removing listeners from an EventProvider as of jeve version 1.0.0
-is now deprecated, because it was inconvenient to use and error prone. Instead,
-you should remove the listener manually from its source.
+jeve 2.0.0 provides a convenient way to remove a listener which is currently 
+being notified from the listener store it was retrieved from. Thus, this 
+listener won't be notified again:
 
 ```java
 // ...
@@ -233,8 +279,7 @@ public class SampleUserListener implements UserListener {
         // do something
         // ...
         // this listener should not be notified about further events anymore
-        // Note: Event's source must support removing the listener
-        e.getSource().removeUserListener(this);
+        e.stopNotifying(this);
     }
 
     @Override
@@ -243,7 +288,6 @@ public class SampleUserListener implements UserListener {
     }
 }
 ```
-
 
 ## Errors during event delegation
 All provided `EventProvider` implementations provide error tolerant event
@@ -306,7 +350,7 @@ implementations which run all listeners within the AWT Event Thread.
 If you want to customize the process of event dispatching, you can create your
 own `EventProvider` by extending `AbstractEventProvider` and overriding the
 `dispatch(Class, Event, BiConsumer, ExceptionCallback)` method. Within that
-method you can use `EventProvider.getListeners` to get a collection of all
+method you can use `EventProvider.listeners()` to get a stream of all
 registered listeners for a specified class.
 
 # Tests

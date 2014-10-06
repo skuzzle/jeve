@@ -80,6 +80,14 @@ public class Event<T, L extends Listener> {
         return this.listenerClass;
     }
 
+    /**
+     * Gets the {@link ListenerStore} from which the currently notified listener
+     * has been retrieved. The result of this method will be <code>null</code>
+     * right after creation of the Event object. The actual value is set right
+     * before dispatching the event.
+     *
+     * @return The ListenerStore
+     */
     protected ListenerStore getListenerStore() {
         return this.store;
     }

@@ -41,17 +41,15 @@ public class StatisticsEventProvider<S extends ListenerStore, P extends EventPro
     }
 
     private <K> void increment(Map<K, Integer> map, K key) {
-        Integer val = map.get(key);
-        if (val == null) {
-            val = 0;
-        }
-        map.put(key, val + 1);
+        map.compute(key, (k, i) -> i == null
+                ? 1
+                : i + 1);
     }
 
     /**
      * Gets the underlying EventProvider which is wrapped by this
      * StatisticsEventProvider.
-     * 
+     *
      * @return The wrapped provider.
      */
     public P getWrapped() {

@@ -7,5 +7,5 @@ import de.skuzzle.jeve.annotation.ListenerKind;
 
 @ListenerInterface(ListenerKind.NORMAL)
 public interface NormalListenerFailReturnType extends Listener {
-    public int foo(Event<String> e);
+    public int foo(Event<?, ? extends Listener> e);
 }

@@ -8,5 +8,5 @@ import java.io.IOException;
 
 @ListenerInterface(ListenerKind.NORMAL)
 public interface NormalListenerFailException extends Listener {
-    public void foo(Event<String> e) throws IOException;
+    public void foo(Event<?, ? extends Listener> e) throws IOException;
 }

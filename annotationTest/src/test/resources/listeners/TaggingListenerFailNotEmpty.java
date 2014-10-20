@@ -7,5 +7,5 @@ import de.skuzzle.jeve.annotation.ListenerKind;
 
 @ListenerInterface(ListenerKind.TAGGING)
 public interface TaggingListenerFailNotEmpty extends Listener {
-    public void foo(Event<String> e);
+    public void foo(Event<?, ? extends Listener> e);
 }

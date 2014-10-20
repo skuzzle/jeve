@@ -1,6 +1,28 @@
 This is the jeve version history.
 Author: Simon Taddiken
 
+Version 2.0.0 [Released: TODO]
+    * New package layout
+    * Remove 'listenerClass' parameter from EventProvider#dispatch. Each Event 
+      instance now specifies the class of the listener which can handle it.
+    * Add 'Fluent API' to build EventProviders, remove static factory methods.
+    * Removed deprecated method 'workDone' from the Listener interface
+    * Corrected semantics of AbortionException: those will be delegated up to 
+      the caller of EventProvider#dispatch and will no longer be passed to the
+      ExceptionCallback when thrown by a listener.
+    * Separate EventProviders and registered Listeners. A provider now needs 
+      a 'ListenerStore' instance for managing listeners. Hence, all methods for 
+      managing listeners were removed from EventProvider
+    * Add reference to the ListenerStore from which the currently dispatching 
+      EventProvider obtained its listeners to Event instances.
+    * Add 'stopNotifying(Listener)' method to Event instances to remove a 
+      Listener from the ListenerStore from which it was retrieved by the 
+      currently dispatching the EventProvider.
+    * Add StatisticsEventProvider which counts dispatching invocations for 
+      debugging purposes.
+    * 'PriorityListenerStore' allows to assign priorities to listeners.
+    * Add 'DefaultTargetEvent' and a new dispatch overload which does not need
+      a method reference to the listening method to notify.
 
 Version 1.1.0 [Released: 04.06.2014]
     * Added ParallelEventProvider which notifies each listener within an own
@@ -10,5 +32,6 @@ Version 1.1.0 [Released: 04.06.2014]
     * Added annotation @ListenerInterface and AnnotationProcessor which checks
       whether your listeners adhere to the default style of listener interfaces
     * Added AbortionException as a way to brutally stop event delegation
+
 Version 1.0.0 [Released: 21.04.2014]
     * initial API and implementation

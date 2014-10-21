@@ -86,9 +86,7 @@ import de.skuzzle.jeve.EventProvider;
 
 public class UserManager {
     // Dispatches events sequentially within the current thread
-    private final EventProvider events = EventProvider.configureDefault()
-        .useSynchronousProvider()
-        .create();
+    private final EventProvider<?> events = EventProvider.createDefault();
 }
 ```
 
@@ -337,8 +335,11 @@ public class UserManager {
     private final ExecutorService eventService = Executors.newSingleThreadExecutor();
 
     // EventProvider which will use the executor to fire events asynchronously
-    private final EventProvider events =
-        EventProvider.newAsynchronousEventProvider(eventService);
+    private final EventProvider<?> events = EventProvider.configure()
+            .defaultStore()
+            .useAsynchronousProvider().and()
+            .executor(eventService)
+            .create();
 
     // remaining code stays the same
     // ...

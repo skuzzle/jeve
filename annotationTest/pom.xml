@@ -5,25 +5,42 @@
     <parent>
         <groupId>de.skuzzle</groupId>
         <artifactId>jeve-parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jeve-annotation-test</artifactId>
     <packaging>jar</packaging>
     <name>jeve-annotation-test</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>de.skuzzle</groupId>
             <artifactId>jeve</artifactId>
-            <version>2.0.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.truth0</groupId>
+            <artifactId>truth</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.google.testing.compile</groupId>
             <artifactId>compile-testing</artifactId>
-            <version>0.5</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <!-- Disable deployment of (sub)projects -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <configuration>
+                    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -16,7 +16,7 @@ public final class RegistrationEvent extends Event<ListenerStore, Listener> {
     /**
      * Creates a new RegistrationEvent.
      *
-     * @param source The EventProvider for which a Listener as added or removed.
+     * @param source The ListenerStore for which a Listener as added or removed.
      * @param cls The class for which the Listener was added ore removed.
      */
     public RegistrationEvent(ListenerStore source, Class<? extends Listener> cls) {

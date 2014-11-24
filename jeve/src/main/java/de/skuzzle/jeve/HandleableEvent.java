@@ -6,7 +6,7 @@ public class HandleableEvent<S, L extends Listener, O> extends Event<S, L> {
 
     private O reason;
 
-    public HandlableEvent(S source, Class<L> listenerClass) {
+    public HandleableEvent(S source, Class<L> listenerClass) {
         super(source, listenerClass);
     }
     

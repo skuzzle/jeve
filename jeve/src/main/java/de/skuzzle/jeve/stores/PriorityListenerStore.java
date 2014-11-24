@@ -49,7 +49,7 @@ public class PriorityListenerStore implements ListenerStore {
 
         @Override
         public int hashCode() {
-            return 31 * Integer.hashCode(this.priority);
+            return 31 * listener.hashCode();
         }
 
         @Override

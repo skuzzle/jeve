@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.xml.internal.txw2.IllegalSignatureException;
-
 import de.skuzzle.jeve.providers.SuppressedEvent;
 
 
@@ -178,7 +176,7 @@ public class Event<T, L extends Listener> {
      */
     protected ListenerStore getListenerStore() {
         if (this.store == null) {
-            throw new IllegalSignatureException("Event is not currently dispatched");
+            throw new IllegalStateException("Event is not currently dispatched");
         }
         return this.store;
     }

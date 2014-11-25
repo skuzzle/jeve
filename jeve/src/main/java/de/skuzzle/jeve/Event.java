@@ -1,5 +1,6 @@
 package de.skuzzle.jeve;
 
+
 /**
  * <p>
  * This class is the base of all events that can be fired. It holds the source
@@ -131,7 +132,9 @@ public class Event<T, L extends Listener> {
     /**
      * Sets the ListenerStore from which the currently dispatching EventProvider
      * retrieves its Listeners. The method will only set the store once. A
-     * second call to this method on the same event instance has no effect.
+     * second call to this method on the same event instance has no effect. This
+     * is to allow wrapping EventProviders so that the store set by the
+     * outermost provider is not overridden by an inner (wrapped) provider.
      *
      * @param store The listener store.
      * @since 2.0.0

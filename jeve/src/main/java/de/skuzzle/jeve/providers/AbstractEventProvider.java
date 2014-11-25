@@ -1,6 +1,7 @@
 package de.skuzzle.jeve.providers;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
@@ -27,8 +28,11 @@ import de.skuzzle.jeve.ListenerStore;
 public abstract class AbstractEventProvider<S extends ListenerStore> implements
         EventProvider<S> {
 
-    /** Default callback to handle event handler exceptions */
+    /** Default callback to handle event handler exceptions. */
     protected ExceptionCallback exceptionHandler;
+
+    /** The event stack to use */
+    protected final EventStack eventStack;
 
     private final S store;
 
@@ -44,6 +48,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         }
 
         this.store = store;
+        this.eventStack = new EventStack();
         this.exceptionHandler = DEFAULT_HANDLER;
     }
 
@@ -123,18 +128,33 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
      */
     protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
+
+        // check if any of the currently dispatched events marked the target
+        // listener class to be prevented.
+        final Optional<Event<?, ?>> preCascade = this.eventStack.preventDispatch(
+                event.getListenerClass());
+        if (preCascade.isPresent()) {
+            preCascade.get().addSuppressedEvent(new SuppressedEvent<L, E>(event, ec, bc));
+            return false;
+        }
+
         // HINT: getListeners is thread safe
         final Stream<L> listeners = listeners().get(event.getListenerClass());
         boolean result = true;
 
-        event.setListenerStore(this.store);
-        final Iterator<L> it = listeners.iterator();
-        while (it.hasNext()) {
-            final L listener = it.next();
-            if (event.isHandled()) {
-                return result;
+        try {
+            event.setListenerStore(this.store);
+            this.eventStack.pushEvent(event);
+            final Iterator<L> it = listeners.iterator();
+            while (it.hasNext()) {
+                final L listener = it.next();
+                if (event.isHandled()) {
+                    return result;
+                }
+                result &= notifySingle(listener, event, bc, ec);
             }
-            result &= notifySingle(listener, event, bc, ec);
+        } finally {
+            this.eventStack.popEvent(event);
         }
         return result;
     }

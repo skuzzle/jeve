@@ -102,6 +102,45 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * reference within the Event implementation.
  * </p>
  *
+ * <h2>Cascading Events</h2>
+ * <p>
+ * Sometimes, during dispatching an Event of type X, it might happen that a
+ * cascaded dispatch action for the same type, or for another type Y is
+ * triggered. If you want to prevent cascaded events, you may register listener
+ * classes to be prevented on the event to dispatch:
+ * </p>
+ *
+ * <pre>
+ * UserEvent e = new UserEvent(this, user);
+ *
+ * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
+ * e.preventCascade(UIRefreshEvent.class);
+ * eventProvider.dispatch(e, UserListener::userAdded);
+ * </pre>
+ *
+ * <p>
+ * With {@link Event#preventCascade()} comes a convenience method to prevent
+ * cascaded events of the same type. During dispatch, all events which have been
+ * suppressed using the prevention mechanism, are collected and can be retrieved
+ * with {@link Event#getSuppressedEvents()}. This allows you to re-dispatch them
+ * afterwards:
+ * </p>
+ *
+ * <pre>
+ * UserEvent e = new UserEvent(this, user);
+ *
+ * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
+ * e.preventCascade(UIRefreshEvent.class);
+ * eventProvider.dispatch(e, UserListener::userAdded);
+ *
+ * for (final SuppressedEvent&lt;?, ?&gt; suppressed : e.getSuppressedEvents()) {
+ *     if (suppressed.getEvent().getListenerClass() == UIRefreshEvent.class) {
+ *         // redeliver all UIRefreshEvents
+ *         suppressed.redispatch(eventProvider);
+ *     }
+ * }
+ * </pre>
+ *
  * <h2>Error handling</h2>
  * <p>
  * The main goal of jeve is, that event delegation must never be interrupted

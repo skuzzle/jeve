@@ -1,5 +1,16 @@
 package de.skuzzle.jeve;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.sun.xml.internal.txw2.IllegalSignatureException;
+
+import de.skuzzle.jeve.providers.SuppressedEvent;
+
 
 /**
  * <p>
@@ -25,6 +36,14 @@ package de.skuzzle.jeve;
  * <code>true</code>.
  * </p>
  *
+ * <h2>Note on multi-threading</h2>
+ * <p>
+ * Event objects are not thread safe! Some EventProviders dispatch events
+ * asynchronously. If the same event instance is used within different threads,
+ * avoid modifying properties of the Event. Those modifications will result in
+ * undefined behavior.
+ * </p>
+ *
  * @param <T> Type of the source of this event.
  * @param <L> Type of the listener which can handle this event.
  * @author Simon Taddiken
@@ -41,6 +60,18 @@ public class Event<T, L extends Listener> {
 
     /** The class of the listener which can handle this event */
     private final Class<L> listenerClass;
+
+    /**
+     * Collects listener classes for which cascade should be prevented. Will be
+     * lazily initialized.
+     */
+    private Set<Class<?>> prevent;
+
+    /**
+     * Stores all events which were prevented due to the registered listener
+     * classes.
+     */
+    private List<SuppressedEvent<?, ?>> suppressedEvents;
 
     /** The store from which this listener is currently being notified */
     private ListenerStore store;
@@ -71,6 +102,63 @@ public class Event<T, L extends Listener> {
         return this.source;
     }
 
+    public void addSuppressedEvent(SuppressedEvent<?, ?> e) {
+        if (e == null) {
+            throw new IllegalArgumentException("e is null");
+        } else if (this.suppressedEvents == null) {
+            this.suppressedEvents = new ArrayList<>();
+        }
+        this.suppressedEvents.add(e);
+    }
+
+    public List<SuppressedEvent<?, ?>> getSuppressedEvents() {
+        if (this.suppressedEvents == null) {
+            return Collections.emptyList();
+        }
+        return this.suppressedEvents;
+    }
+
+    /**
+     * Prevents to dispatch events to the given listener class while this event
+     * is being dispatched.
+     *
+     * @param listenerClass The listener class to prevent being notified.
+     * @since 2.1.0
+     * @see #preventCascade()
+     */
+    public <E extends Listener> void preventCascade(Class<E> listenerClass) {
+        if (this.prevent == null) {
+            this.prevent = new HashSet<>();
+        }
+        this.prevent.add(listenerClass);
+    }
+
+    /**
+     * Prevents to dispatch events with the same listener class as this one as
+     * long as this event is being dispatched.
+     *
+     * @since 2.1.0
+     * @see #preventCascade(Class)
+     */
+    public void preventCascade() {
+        preventCascade(this.listenerClass);
+    }
+
+    /**
+     * Gets the listener classes to which dispatching should be prevented while
+     * this event is being dispatched.
+     *
+     * @return The listener classes marked to prevent.
+     * @see #preventCascade(Class)
+     * @since 2.1.0
+     */
+    public Collection<Class<?>> getPrevented() {
+        if (this.prevent == null) {
+            return Collections.emptySet();
+        }
+        return this.prevent;
+    }
+
     /**
      * Gets the type of the listener which can handle this event.
      *
@@ -83,13 +171,15 @@ public class Event<T, L extends Listener> {
 
     /**
      * Gets the {@link ListenerStore} from which the currently notified listener
-     * has been retrieved. The result of this method will be <code>null</code>
-     * right after creation of the Event object. The actual value is set right
-     * before dispatching the event.
+     * has been retrieved. If this Event is not currently dispatched, an
+     * exception will be thrown.
      *
      * @return The ListenerStore
      */
     protected ListenerStore getListenerStore() {
+        if (this.store == null) {
+            throw new IllegalSignatureException("Event is not currently dispatched");
+        }
         return this.store;
     }
 

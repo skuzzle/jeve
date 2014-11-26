@@ -402,24 +402,23 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
             E event, BiConsumer<L, E> bc, ExceptionCallback ec);
 
     /**
-     * Dispatches a {@link DefaultTargetEvent} with the logic of
-     * {@link #dispatch(Event, BiConsumer)}.
+     * Dispatches a {@link DefaultTargetEvent} by calling its
+     * {@link DefaultTargetEvent#dispatch(EventProvider, ExceptionCallback)
+     * dispatch} method.
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
      * @param event The occurred event which shall be passed to each listener.
-     * @throws IllegalArgumentException If any of the passed arguments is
-     *             <code>null</code>.
+     * @throws IllegalArgumentException If the event is <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
      */
-    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
-            E event) {
-        dispatch(event, event.getTarget());
-    }
+    public <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
+            E event);
 
     /**
-     * Dispatches a {@link DefaultTargetEvent} with the logic of
-     * {@link #dispatch(Event, BiConsumer, ExceptionCallback)}.
+     * Dispatches a {@link DefaultTargetEvent} by calling its
+     * {@link DefaultTargetEvent#dispatch(EventProvider, ExceptionCallback)
+     * dispatch} method.
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -432,7 +431,13 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      */
     public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
             E event, ExceptionCallback ec) {
-        dispatch(event, event.getTarget(), ec);
+        if (event == null) {
+            throw new IllegalArgumentException("event is null");
+        } else if (ec == null) {
+            throw new IllegalArgumentException("ec is null");
+        }
+
+        event.dispatch(this, ec);
     }
 
     /**

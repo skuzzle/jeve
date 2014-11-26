@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.DefaultTargetEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
@@ -69,6 +70,17 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         checkDispatchArgs(event, bc, ec);
         if (canDispatch()) {
             notifyListeners(event, bc, ec);
+        }
+    }
+
+    @Override
+    public <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
+            E event) {
+        if (event == null) {
+            throw new IllegalArgumentException("event is null");
+        }
+        if (canDispatch()) {
+            event.dispatch(this, this.exceptionHandler);
         }
     }
 

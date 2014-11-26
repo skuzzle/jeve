@@ -32,12 +32,10 @@ public class EventStack {
     }
 
     /**
-     * Pushes the event's listener class onto the event stack. This action must
-     * be performed immediately before an event is being dispatched for that
-     * listener class. Additionally, after the event has been dispatched, the
-     * class has to be {@link #popEvent(Event) popped} off the stack.
-     *
-     *
+     * Pushes the event onto the event stack. This action must be performed
+     * immediately before the event is being dispatched. Additionally, after the
+     * event has been dispatched, it has to be {@link #popEvent(Event) popped}
+     * off the stack again.
      *
      * @param event the event which will be dispatched.
      * @see #popEvent(Event)
@@ -49,11 +47,11 @@ public class EventStack {
     }
 
     /**
-     * Pops a listener class off the current event stack. This action has to be
-     * performed immediately after an event has been dispatched to all
+     * Pops the top event off the current event stack. This action has to be
+     * performed immediately after the event has been dispatched to all
      * listeners.
      *
-     * @param expected Event which provides the expected listener class.
+     * @param expected The Event which is expected at the top of the stack.
      * @see #pushEvent(Event)
      */
     public <L extends Listener> void popEvent(Event<?, L> expected) {

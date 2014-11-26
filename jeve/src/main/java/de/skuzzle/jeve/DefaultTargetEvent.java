@@ -74,10 +74,44 @@ public abstract class DefaultTargetEvent<T, SELF extends Event<?, L>, L extends 
     }
 
     /**
+     * <p>
+     * Dispatches this event with the given EventProvider using the listener's
+     * default listening method. For example, if {@code userAdded} is the only
+     * listeneing method (or the default one among others), this method should
+     * be implemented as follows:
+     * </p>
+     *
+     * <pre>
+     * public void dispatch(EventProvider&lt;?&gt; eventProvider, ExceptionCallback ec) {
+     *     eventProvider.dispatch(this, UserListener::userAdded, ec);
+     * }
+     * </pre>
+     *
+     * <p>
+     * This method should not be called directly on an Event object. Instead,
+     * pass the event to {@link EventProvider#dispatch(DefaultTargetEvent)} or
+     * {@link EventProvider#dispatch(DefaultTargetEvent, ExceptionCallback)}.
+     * </p>
+     *
+     * @param eventProvider The EventProvider to use for dispatching.
+     * @param ec The exception call back to use for this dispatch action.
+     * @since 2.1.0
+     */
+    public void dispatch(EventProvider<?> eventProvider, ExceptionCallback ec) {
+        if (eventProvider == null) {
+            throw new IllegalArgumentException("eventProvider is null");
+        }
+        eventProvider.dispatch((SELF) this, getTarget(), ec);
+    }
+
+    /**
      * Returns a method reference to the method of the listener which should be
      * called with this event.
      *
      * @return A method reference to a listening method of a listener.
+     * @deprecated Since 2.1.0 - override
+     *             {@link #dispatch(EventProvider, ExceptionCallback)} instead.
      */
+    @Deprecated
     public abstract BiConsumer<L, SELF> getTarget();
 }

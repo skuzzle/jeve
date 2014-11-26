@@ -1,17 +1,19 @@
 package de.skuzzle.jeve.providers;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.AbortionException;
-import de.skuzzle.jeve.DefaultTargetEvent;
+import de.skuzzle.jeve.DoubleDispatchedEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.SuppressedEvent;
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations
@@ -74,13 +76,22 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     }
 
     @Override
-    public <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
+    public <L extends Listener, E extends DoubleDispatchedEvent<?, L>> void dispatch(
             E event) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
         }
-        if (canDispatch()) {
-            event.dispatch(this, this.exceptionHandler);
+        event.dispatch(this, this.exceptionHandler);
+    }
+
+    public void unrollSuppressed(Event<?, ?> event,
+            Collection<Class<? extends Listener>> listenerClasses) {
+        for (final SuppressedEvent<?, ?> suppressed : event.getSuppressedEvents()) {
+            if (listenerClasses.isEmpty() ||
+                    listenerClasses.contains(suppressed.getEvent().getListenerClass())) {
+                suppressed.redispatch(this);
+                unrollSuppressed(suppressed.getEvent(), listenerClasses);
+            }
         }
     }
 

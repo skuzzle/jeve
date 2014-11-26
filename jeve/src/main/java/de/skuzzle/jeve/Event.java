@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.skuzzle.jeve.providers.SuppressedEvent;
-
 
 /**
  * <p>
@@ -67,7 +65,7 @@ public class Event<T, L extends Listener> {
 
     /**
      * Stores all events which were prevented due to the registered listener
-     * classes.
+     * classes. Will be lazily initialized.
      */
     private List<SuppressedEvent<?, ?>> suppressedEvents;
 

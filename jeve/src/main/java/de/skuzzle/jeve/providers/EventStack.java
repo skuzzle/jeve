@@ -1,8 +1,8 @@
 package de.skuzzle.jeve.providers;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Stack;
 
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.Listener;
@@ -22,13 +22,13 @@ public class EventStack {
      * Contains the listener classes for which a dispatch action is currently
      * active.
      */
-    private final Stack<Event<?, ?>> eventStack;
+    private final LinkedList<Event<?, ?>> eventStack;
 
     /**
      * Creates a new EventStack.
      */
     public EventStack() {
-        this.eventStack = new Stack<>();
+        this.eventStack = new LinkedList<>();
     }
 
     /**
@@ -99,6 +99,7 @@ public class EventStack {
         }
     }
 
+
     public Optional<Event<?, ?>> preventDispatch(Event<?, ?> event) {
         return preventDispatch(event.getListenerClass());
     }
@@ -107,7 +108,7 @@ public class EventStack {
         synchronized (this.eventStack) {
             return this.eventStack.stream()
                     .filter(event -> event.getPrevented().contains(listenerClass))
-                    .findAny();
+                    .findFirst();
         }
     }
 }

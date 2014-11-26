@@ -81,7 +81,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * <pre>
  * // create an event which holds its source and some additional data
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // notify all UserListeners with this event.
  * eventProvider.dispatch(e, UserListener::userAdded);
  * </pre>
@@ -97,8 +97,8 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * <p>
  * If a listener has only one listening method, it is obsolete to specify the
  * method reference for every dispatch action. For this case jeve provides the
- * class {@link DefaultTargetEvent} and an overload of
- * {@link #dispatch(DefaultTargetEvent)} which allows to specify the method
+ * class {@link DoubleDispatchedEvent} and an overload of
+ * {@link #dispatch(DoubleDispatchedEvent)} which allows to specify the method
  * reference within the Event implementation.
  * </p>
  *
@@ -112,7 +112,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
@@ -128,11 +128,11 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
- *
+ * 
  * for (final SuppressedEvent&lt;?, ?&gt; suppressed : e.getSuppressedEvents()) {
  *     if (suppressed.getEvent().getListenerClass() == UIRefreshEvent.class) {
  *         // redeliver all UIRefreshEvents
@@ -401,24 +401,45 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec);
 
+    public <L extends Listener, E extends DoubleDispatchedEvent<?, L>> void dispatch(
+            E event);
+
+    public default <L extends Listener, E extends DoubleDispatchedEvent<?, L>> void dispatch(
+            E event, ExceptionCallback ec) {
+        if (event == null) {
+            throw new IllegalArgumentException("event is null");
+        } else if (ec == null) {
+            throw new IllegalArgumentException("ec is null");
+        }
+
+        event.dispatch(this, ec);
+    }
+
     /**
-     * Dispatches a {@link DefaultTargetEvent} by calling its
-     * {@link DefaultTargetEvent#dispatch(EventProvider, ExceptionCallback)
-     * dispatch} method.
+     * Dispatches a {@link DefaultTargetEvent} with the logic of
+     * {@link #dispatch(Event, BiConsumer)}.
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
      * @param event The occurred event which shall be passed to each listener.
      * @throws IllegalArgumentException If the event is <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
+     * @deprecated Since 2.1.0 - Use {@link #dispatch(DoubleDispatchedEvent)}
+     *             instead.
      */
-    public <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
-            E event);
+    @Deprecated
+    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
+            E event) {
+        if (event == null) {
+            throw new IllegalArgumentException("event is null");
+        }
+
+        dispatch(event, event.getTarget());
+    }
 
     /**
-     * Dispatches a {@link DefaultTargetEvent} by calling its
-     * {@link DefaultTargetEvent#dispatch(EventProvider, ExceptionCallback)
-     * dispatch} method.
+     * Dispatches a {@link DefaultTargetEvent} with the logic of
+     * {@link #dispatch(Event, BiConsumer, ExceptionCallback)}.
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -428,7 +449,11 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * @throws IllegalArgumentException If any of the passed arguments is
      *             <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
+     * @deprecated Since 2.1.0 - Use
+     *             {@link #dispatch(DoubleDispatchedEvent, ExceptionCallback)}
+     *             instead.
      */
+    @Deprecated
     public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
             E event, ExceptionCallback ec) {
         if (event == null) {
@@ -437,7 +462,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
             throw new IllegalArgumentException("ec is null");
         }
 
-        event.dispatch(this, ec);
+        dispatch(event, event.getTarget(), ec);
     }
 
     /**

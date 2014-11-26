@@ -1,17 +1,13 @@
-package de.skuzzle.jeve.providers;
+package de.skuzzle.jeve;
 
 import java.util.function.BiConsumer;
-
-import de.skuzzle.jeve.Event;
-import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.ExceptionCallback;
-import de.skuzzle.jeve.Listener;
 
 public class SuppressedEvent<L extends Listener, E extends Event<?, L>> {
 
     private final E event;
     private final ExceptionCallback ec;
     private final BiConsumer<L, E> consumer;
+    private boolean dispatched;
 
     public SuppressedEvent(E event, ExceptionCallback ec, BiConsumer<L, E> consumer) {
         this.event = event;
@@ -24,6 +20,9 @@ public class SuppressedEvent<L extends Listener, E extends Event<?, L>> {
     }
 
     public void redispatch(EventProvider<?> provider) {
-        provider.dispatch(this.event, this.consumer, this.ec);
+        if (!this.dispatched) {
+            this.dispatched = true;
+            provider.dispatch(this.event, this.consumer, this.ec);
+        }
     }
 }

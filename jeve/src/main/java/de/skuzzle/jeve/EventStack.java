@@ -11,6 +11,10 @@ import java.util.Optional;
  * and right after it has been dispatched to all listeners it is popped off
  * again. This allows queries such as which events are currently active.
  *
+ * <p>
+ * This class is thread safe.
+ * </p>
+ * 
  * @author Simon Taddiken
  * @since 2.1.0
  */
@@ -20,13 +24,13 @@ public class EventStack {
      * Contains the listener classes for which a dispatch action is currently
      * active.
      */
-    private final LinkedList<Event<?, ?>> eventStack;
+    private final LinkedList<Event<?, ?>> stack;
 
     /**
      * Creates a new EventStack.
      */
     public EventStack() {
-        this.eventStack = new LinkedList<>();
+        this.stack = new LinkedList<>();
     }
 
     /**
@@ -39,8 +43,8 @@ public class EventStack {
      * @see #popEvent(Event)
      */
     public <L extends Listener> void pushEvent(Event<?, L> event) {
-        synchronized (this.eventStack) {
-            this.eventStack.push(event);
+        synchronized (this.stack) {
+            this.stack.push(event);
         }
     }
 
@@ -53,8 +57,8 @@ public class EventStack {
      * @see #pushEvent(Event)
      */
     public <L extends Listener> void popEvent(Event<?, L> expected) {
-        synchronized (this.eventStack) {
-            final Event<?, ?> actual = this.eventStack.pop();
+        synchronized (this.stack) {
+            final Event<?, ?> actual = this.stack.pop();
             if (actual != expected) {
                 throw new IllegalStateException(String.format(
                         "Unbalanced pop: expected '%s' but encountered '%s'",
@@ -84,15 +88,15 @@ public class EventStack {
      *         dispatched.
      */
     public boolean isAnyActive(Collection<? extends Class<? extends Listener>> c) {
-        synchronized (this.eventStack) {
-            return this.eventStack.stream()
+        synchronized (this.stack) {
+            return this.stack.stream()
                     .anyMatch(cls -> c.contains(cls));
         }
     }
 
     public boolean isActive(Class<? extends Listener> listenerClass) {
-        synchronized (this.eventStack) {
-            return this.eventStack.stream()
+        synchronized (this.stack) {
+            return this.stack.stream()
                     .anyMatch(event -> event.getListenerClass() == listenerClass);
         }
     }
@@ -103,8 +107,8 @@ public class EventStack {
     }
 
     public Optional<Event<?, ?>> preventDispatch(Class<? extends Listener> listenerClass) {
-        synchronized (this.eventStack) {
-            final Iterator<Event<?, ?>> it = this.eventStack.descendingIterator();
+        synchronized (this.stack) {
+            final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
             while (it.hasNext()) {
                 final Event<?, ?> event = it.next();
                 if (event.getPrevented().contains(listenerClass)) {

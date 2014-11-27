@@ -35,6 +35,7 @@ import de.skuzzle.jeve.SuppressedEvent;
 public abstract class AbstractEventProvider<S extends ListenerStore> implements
         EventProvider<S> {
 
+    /** The logger associated with this event provider */
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The event stack to use */
@@ -184,7 +185,10 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         final Optional<Event<?, ?>> preCascade = this.eventStack.preventDispatch(
                 event.getListenerClass());
         if (preCascade.isPresent()) {
-            preCascade.get().addSuppressedEvent(new SuppressedEventImpl<L, E>(event, ec, bc));
+            this.logger.debug("Dispatch prevented for '{}' by '{}'",
+                    event, preCascade.get());
+            preCascade.get().addSuppressedEvent(
+                    new SuppressedEventImpl<L, E>(event, ec, bc));
             return false;
         }
 

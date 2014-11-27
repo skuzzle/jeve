@@ -5,8 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.providers.SuppressedEventImpl;
-
 public class EventTest {
 
     private interface SampleListener extends Listener {
@@ -95,7 +93,7 @@ public class EventTest {
 
     @Test
     public void testAddSuppressed() {
-        final SuppressedEventImpl<?, ?> sup = Mockito.mock(SuppressedEventImpl.class);
+        final SuppressedEvent sup = Mockito.mock(SuppressedEvent.class);
         this.subject.addSuppressedEvent(sup);
         Assert.assertTrue(this.subject.getSuppressedEvents().contains(sup));
     }

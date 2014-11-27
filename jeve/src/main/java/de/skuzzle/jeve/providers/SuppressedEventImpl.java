@@ -8,7 +8,7 @@ import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.SuppressedEvent;
 
-public class SuppressedEventImpl<L extends Listener, E extends Event<?, L>> implements
+class SuppressedEventImpl<L extends Listener, E extends Event<?, L>> implements
         SuppressedEvent {
 
     private final E event;
@@ -38,5 +38,16 @@ public class SuppressedEventImpl<L extends Listener, E extends Event<?, L>> impl
             this.dispatched = true;
             provider.dispatch(this.event, this.consumer, this.ec);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return this.event.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj instanceof SuppressedEvent &&
+                this.event.equals(((SuppressedEvent) obj).getEvent());
     }
 }

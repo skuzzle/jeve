@@ -1,9 +1,7 @@
 package de.skuzzle.jeve;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -15,11 +13,14 @@ import java.util.Set;
  * living objects which are only used once - one Event instance for each call to
  * {@link EventProvider#dispatch(Event, java.util.function.BiConsumer) dispatch}
  * . Any different usage might result in undefined behavior, especially when
- * using the {@link #isHandled()} property. Events explicitly belong to one kind
- * of {@link Listener} implementation which is able to handle it. The class of
- * this listener is passed to the constructor and queried by the
- * {@link EventProvider} when collecting a list of targeted listeners for a
- * dispatch action.
+ * using the {@link #isHandled()} property. Also, to prevent memory leaks, Event
+ * objects should never be stored over longer time.
+ * </p>
+ * <p>
+ * Events explicitly belong to one kind of {@link Listener} implementation which
+ * is able to handle it. The class of this listener is passed to the constructor
+ * and queried by the {@link EventProvider} when collecting a list of targeted
+ * listeners for a dispatch action.
  * </p>
  *
  * <p>
@@ -66,10 +67,16 @@ public class Event<T, L extends Listener> {
      * Stores all events which were prevented due to the registered listener
      * classes. Will be lazily initialized.
      */
-    private List<SuppressedEvent> suppressedEvents;
+    private Set<SuppressedEvent> suppressedEvents;
 
-    /** The store from which this listener is currently being notified */
+    /** The store from which this listener is currently being notified. */
     private ListenerStore store;
+
+    /**
+     * Whether this event was prevented the last time it was passed to any
+     * dispatch method.
+     */
+    private boolean prevented;
 
     /**
      * Creates a new event with a given source.
@@ -97,18 +104,38 @@ public class Event<T, L extends Listener> {
         return this.source;
     }
 
+    /**
+     * Whether this event was prevented the last time it has been passed to any
+     * dispatch method of an {@link EventProvider}.
+     *
+     * @return Whether this event has been prevented.
+     */
+    public boolean isPrevented() {
+        return this.prevented;
+    }
+
+    /**
+     * Called only by {@link EventProvider EventProvider's} dispatch method if
+     * this event was prevented from being dispatched.
+     *
+     * @param prevented Whether the event was prevented.
+     */
+    public void setPrevented(boolean prevented) {
+        this.prevented = prevented;
+    }
+
     public void addSuppressedEvent(SuppressedEvent e) {
         if (e == null) {
             throw new IllegalArgumentException("e is null");
         } else if (this.suppressedEvents == null) {
-            this.suppressedEvents = new ArrayList<>();
+            this.suppressedEvents = new HashSet<>();
         }
         this.suppressedEvents.add(e);
     }
 
-    public List<SuppressedEvent> getSuppressedEvents() {
+    public Set<SuppressedEvent> getSuppressedEvents() {
         if (this.suppressedEvents == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         return this.suppressedEvents;
     }

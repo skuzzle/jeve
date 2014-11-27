@@ -49,7 +49,7 @@ public class PriorityListenerStore implements ListenerStore {
 
         @Override
         public int hashCode() {
-            return 31 * listener.hashCode();
+            return 31 * this.listener.hashCode();
         }
 
         @Override
@@ -166,11 +166,8 @@ public class PriorityListenerStore implements ListenerStore {
         }
 
         synchronized (this.listenerMap) {
-            List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
-            if (listeners == null) {
-                listeners = new LinkedList<>();
-                this.listenerMap.put(listenerClass, listeners);
-            }
+            final List<ListenerWrapper> listeners = this.listenerMap.computeIfAbsent(
+                    listenerClass, key -> new LinkedList<>());
             addSorted(listeners, listener, priority);
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
@@ -184,7 +181,7 @@ public class PriorityListenerStore implements ListenerStore {
             final ListenerWrapper next = it.next();
 
             // '<=' important here
-            if (listenerPriority <= next.priority) {
+            if (listenerPriority < next.priority) {
                 it.set(new ListenerWrapper(listener, listenerPriority));
                 it.add(next);
                 return;
@@ -261,9 +258,7 @@ public class PriorityListenerStore implements ListenerStore {
 
     @Override
     public void close() {
-        synchronized (this.listenerMap) {
-            this.listenerMap.clear();
-        }
+        this.clearAll();
     }
 
     @Override

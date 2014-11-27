@@ -12,7 +12,7 @@ import com.google.testing.compile.JavaFileObjects;
 import de.skuzzle.jeve.annotation.ListenerAnnotationProcessor;
 
 
-public class ListenerAnnotationProcessorTest {
+public class ListenerAnnotationProcessorIT {
     
     
     

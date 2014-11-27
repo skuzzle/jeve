@@ -7,12 +7,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StatisticsEventProviderTest {
+public class StatisticsEventProviderIT {
 
     @Mock
     private EventProvider<ListenerStore> eventProvider;

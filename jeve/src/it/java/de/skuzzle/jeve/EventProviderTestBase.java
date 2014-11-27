@@ -10,6 +10,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.util.AbstractEventProviderTest;
 import de.skuzzle.jeve.util.BothListener;
 import de.skuzzle.jeve.util.DifferentStringEvent;

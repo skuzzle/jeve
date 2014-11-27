@@ -11,6 +11,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.providers.ExecutorAware;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -22,7 +23,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class ThreadedEventProviderTest extends
+public class ThreadedEventProviderIT extends
         EventProviderTestBase<DefaultListenerStore> {
 
     /**
@@ -46,7 +47,7 @@ public class ThreadedEventProviderTest extends
      *
      * @param factory Factory to create a single provider
      */
-    public ThreadedEventProviderTest(
+    public ThreadedEventProviderIT(
             Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }

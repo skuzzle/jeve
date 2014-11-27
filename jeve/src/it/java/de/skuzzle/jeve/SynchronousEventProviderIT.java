@@ -9,12 +9,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(Parameterized.class)
-public class SynchronousEventProviderTest extends
+public class SynchronousEventProviderIT extends
         EventProviderTestBase<DefaultListenerStore> {
 
     /**
@@ -31,7 +34,7 @@ public class SynchronousEventProviderTest extends
                 );
     }
 
-    public SynchronousEventProviderTest(
+    public SynchronousEventProviderIT(
             Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }

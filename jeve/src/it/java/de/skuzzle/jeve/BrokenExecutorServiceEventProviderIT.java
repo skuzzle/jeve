@@ -14,6 +14,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.AbstractEventProviderTest;
 import de.skuzzle.jeve.util.StringEvent;
@@ -28,7 +30,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @since 1.1.0
  */
 @RunWith(Parameterized.class)
-public class BrokenExecutorServiceEventProviderTest extends
+public class BrokenExecutorServiceEventProviderIT extends
         AbstractEventProviderTest<DefaultListenerStore> {
 
     /**
@@ -72,7 +74,7 @@ public class BrokenExecutorServiceEventProviderTest extends
      *
      * @param factory A factory for creating event providers
      */
-    public BrokenExecutorServiceEventProviderTest(
+    public BrokenExecutorServiceEventProviderIT(
             Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }

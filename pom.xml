@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.skuzzle</groupId>
         <artifactId>skuzzle-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <relativePath>../skuzzle-parent/pom.xml</relativePath>
     </parent>
 
@@ -32,7 +32,8 @@
         <site.name>jeve</site.name>
         <github.name>jeve</github.name>
         
-        <sonar.jacoco.itReportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.itReportPath>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.itReportPath>
     </properties>
 
     <dependencyManagement>
@@ -64,10 +65,19 @@
     </modules>
     
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.9.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

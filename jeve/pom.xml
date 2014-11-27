@@ -32,6 +32,25 @@
                 </configuration>
             </plugin>
 
+            <!-- Add Integration Test source folder -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-it-sources</id>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/it/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Package tests into jar file -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

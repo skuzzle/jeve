@@ -11,12 +11,13 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(Parameterized.class)
-public class PriorityEventProviderTest extends
+public class PriorityEventProviderIT extends
         EventProviderTestBase<PriorityListenerStore> {
 
     /**
@@ -33,7 +34,7 @@ public class PriorityEventProviderTest extends
                 );
     }
 
-    public PriorityEventProviderTest(
+    public PriorityEventProviderIT(
             Supplier<? extends EventProvider<PriorityListenerStore>> factory) {
         super(factory);
     }

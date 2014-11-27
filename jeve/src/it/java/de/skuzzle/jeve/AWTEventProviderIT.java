@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -25,7 +27,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class AWTEventProviderTest extends EventProviderTestBase<DefaultListenerStore> {
+public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerStore> {
 
     /**
      * Parameterizes the test instances.
@@ -48,7 +50,7 @@ public class AWTEventProviderTest extends EventProviderTestBase<DefaultListenerS
      *
      * @param factory Factory to create a single provider
      */
-    public AWTEventProviderTest(
+    public AWTEventProviderIT(
             Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
         super(factory);
     }

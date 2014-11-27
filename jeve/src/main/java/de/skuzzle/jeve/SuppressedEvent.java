@@ -7,10 +7,10 @@ package de.skuzzle.jeve;
  * attaches an instance of this class to the event which prevented this one.
  *
  * <p>
- * Implementations must implement {@link #equals(Object)} and
- * {@link #hashCode()} based on the object returned by {@link #getEvent()}. This
- * ensures that no duplicated {@linkplain SuppressedEvent SuppressedEvents} for
- * the same {@linkplain Event} are added to an event.
+ * Implementations must implement {@code equals} and {@code hashCode} based on
+ * the object returned by {@link #getEvent()}. This ensures that no duplicated
+ * {@linkplain SuppressedEvent SuppressedEvents} for the same {@linkplain Event}
+ * are added to an event.
  * </p>
  *
  * @author Simon Taddiken

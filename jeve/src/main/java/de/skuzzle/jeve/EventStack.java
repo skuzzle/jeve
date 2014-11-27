@@ -14,7 +14,7 @@ import java.util.Optional;
  * <p>
  * This class is thread safe.
  * </p>
- * 
+ *
  * @author Simon Taddiken
  * @since 2.1.0
  */
@@ -39,6 +39,7 @@ public class EventStack {
      * event has been dispatched, it has to be {@link #popEvent(Event) popped}
      * off the stack again.
      *
+     * @param <L> Type of the listener.
      * @param event the event which will be dispatched.
      * @see #popEvent(Event)
      */
@@ -53,6 +54,7 @@ public class EventStack {
      * performed immediately after the event has been dispatched to all
      * listeners.
      *
+     * @param <L> Type of the listener.
      * @param expected The Event which is expected at the top of the stack.
      * @see #pushEvent(Event)
      */

@@ -144,6 +144,7 @@ public class Event<T, L extends Listener> {
      * Prevents to dispatch events to the given listener class while this event
      * is being dispatched.
      *
+     * @param <E> Type of the listener class.
      * @param listenerClass The listener class to prevent being notified.
      * @since 2.1.0
      * @see #preventCascade()

@@ -66,7 +66,7 @@ public class Event<T, L extends Listener> {
      * Stores all events which were prevented due to the registered listener
      * classes. Will be lazily initialized.
      */
-    private List<SuppressedEvent<?, ?>> suppressedEvents;
+    private List<SuppressedEvent> suppressedEvents;
 
     /** The store from which this listener is currently being notified */
     private ListenerStore store;
@@ -97,7 +97,7 @@ public class Event<T, L extends Listener> {
         return this.source;
     }
 
-    public void addSuppressedEvent(SuppressedEvent<?, ?> e) {
+    public void addSuppressedEvent(SuppressedEvent e) {
         if (e == null) {
             throw new IllegalArgumentException("e is null");
         } else if (this.suppressedEvents == null) {
@@ -106,7 +106,7 @@ public class Event<T, L extends Listener> {
         this.suppressedEvents.add(e);
     }
 
-    public List<SuppressedEvent<?, ?>> getSuppressedEvents() {
+    public List<SuppressedEvent> getSuppressedEvents() {
         if (this.suppressedEvents == null) {
             return Collections.emptyList();
         }

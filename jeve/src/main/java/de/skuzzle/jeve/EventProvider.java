@@ -81,7 +81,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * <pre>
  * // create an event which holds its source and some additional data
  * UserEvent e = new UserEvent(this, user);
- * 
+ *
  * // notify all UserListeners with this event.
  * eventProvider.dispatch(e, UserListener::userAdded);
  * </pre>
@@ -112,7 +112,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- * 
+ *
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
@@ -128,12 +128,12 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- * 
+ *
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
- * 
- * for (final SuppressedEvent&lt;?, ?&gt; suppressed : e.getSuppressedEvents()) {
+ *
+ * for (final SuppressedEventImpl&lt;?, ?&gt; suppressed : e.getSuppressedEvents()) {
  *     if (suppressed.getEvent().getListenerClass() == UIRefreshEvent.class) {
  *         // redeliver all UIRefreshEvents
  *         suppressed.redispatch(eventProvider);
@@ -158,8 +158,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * {@link #setExceptionCallback(ExceptionCallback)}. Additionally, you can set a
  * callback for a single dispatch action by using an override of
  * {@link #dispatch(Event, BiConsumer, ExceptionCallback) dispatch}. If you do
- * not specify a callback, a {@link #DEFAULT_HANDLER default} instance will be
- * used.
+ * not specify a callback, a default instance will be used.
  * </p>
  *
  * <h2>Sequential EventProviders</h2>
@@ -265,7 +264,11 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * The default {@link ExceptionCallback} which prints some information about
      * the occurred error to the standard output. The exact format is not
      * specified.
+     * 
+     * @deprecated Since 2.1.0 - The default call back is now an internal
+     *             property of the specific provider implementation.
      */
+    @Deprecated
     public static final ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
         System.err.printf(
                 "Listener threw an exception while being notified%n" +

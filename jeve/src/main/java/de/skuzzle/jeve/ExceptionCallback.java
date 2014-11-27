@@ -31,6 +31,5 @@ public interface ExceptionCallback {
      *             {@link EventProvider#dispatch(Event, java.util.function.BiConsumer)
      *             dispatch} will receive this exception.
      */
-    public void exception(Exception e, Listener source, Event<?, ?> event)
-            throws AbortionException;
+    public void exception(Exception e, Listener source, Event<?, ?> event);
 }

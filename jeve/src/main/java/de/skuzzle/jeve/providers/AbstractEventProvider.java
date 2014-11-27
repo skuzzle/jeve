@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.skuzzle.jeve.AbortionException;
 import de.skuzzle.jeve.DoubleDispatchedEvent;
 import de.skuzzle.jeve.Event;
@@ -32,13 +35,36 @@ import de.skuzzle.jeve.SuppressedEvent;
 public abstract class AbstractEventProvider<S extends ListenerStore> implements
         EventProvider<S> {
 
-    /** Default callback to handle event handler exceptions. */
-    protected ExceptionCallback exceptionHandler;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The event stack to use */
     protected final EventStack eventStack;
 
+    /** The listener store associated with this provider */
     private final S store;
+
+    /** Callback to handle event handler exceptions. */
+    protected ExceptionCallback exceptionHandler;
+
+    /**
+     * The default {@link ExceptionCallback} which prints some information about
+     * the occurred error to logger. The exact format is not specified.
+     */
+    protected final ExceptionCallback defaultHandler = new ExceptionCallback() {
+
+        @Override
+        public void exception(Exception e, Listener source, Event<?, ?> event) {
+            AbstractEventProvider.this.logger.error(
+                    "Listener threw an exception while being notified\n" +
+                    "Details\n" +
+                    "    Listener:{}\n" +
+                    "    Event: {}\n" +
+                    "    Message: {}\n" +
+                    "    Current Thread: {}\n" +
+                    "    Stacktrace:\n",
+                    source, event, e.getMessage(), Thread.currentThread().getName(), e);
+        }
+    };
 
     /**
      * Creates a new {@link AbstractEventProvider}.
@@ -53,7 +79,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
 
         this.store = store;
         this.eventStack = new EventStack();
-        this.exceptionHandler = DEFAULT_HANDLER;
+        this.exceptionHandler = this.defaultHandler;
     }
 
     @Override
@@ -87,9 +113,9 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
 
     public void unrollSuppressed(Event<?, ?> event,
             Collection<Class<? extends Listener>> listenerClasses) {
-        for (final SuppressedEvent<?, ?> suppressed : event.getSuppressedEvents()) {
+        for (final SuppressedEvent suppressed : event.getSuppressedEvents()) {
             if (listenerClasses.isEmpty() ||
-                    listenerClasses.contains(suppressed.getEvent().getListenerClass())) {
+                    listenerClasses.contains(suppressed.getListenerClass())) {
                 suppressed.redispatch(this);
                 unrollSuppressed(suppressed.getEvent(), listenerClasses);
             }
@@ -122,7 +148,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     public synchronized void setExceptionCallback(ExceptionCallback callBack) {
         final ExceptionCallback ec;
         if (callBack == null) {
-            ec = DEFAULT_HANDLER;
+            ec = this.defaultHandler;
         } else {
             ec = callBack;
         }
@@ -158,7 +184,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         final Optional<Event<?, ?>> preCascade = this.eventStack.preventDispatch(
                 event.getListenerClass());
         if (preCascade.isPresent()) {
-            preCascade.get().addSuppressedEvent(new SuppressedEvent<L, E>(event, ec, bc));
+            preCascade.get().addSuppressedEvent(new SuppressedEventImpl<L, E>(event, ec, bc));
             return false;
         }
 
@@ -231,7 +257,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         } catch (AbortionException abort) {
             throw abort;
         } catch (Exception ignore) {
-            ignore.printStackTrace();
+            this.logger.error("ExceptionCallback '{}' threw an exception", ignore);
             // where is your god now?
         }
     }

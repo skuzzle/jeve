@@ -22,7 +22,8 @@ public class AbortionException extends RuntimeException {
     /**
      * Creates a new AbortionException
      */
-    public AbortionException() {}
+    public AbortionException() {
+    }
 
     /**
      * Creates a new AbortionException with a message.

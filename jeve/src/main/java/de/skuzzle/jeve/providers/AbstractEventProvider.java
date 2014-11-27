@@ -10,6 +10,7 @@ import de.skuzzle.jeve.AbortionException;
 import de.skuzzle.jeve.DoubleDispatchedEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
+import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;

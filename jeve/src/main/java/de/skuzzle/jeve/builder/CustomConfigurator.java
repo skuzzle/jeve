@@ -7,7 +7,7 @@ import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderChooser;
 
 /**
- * Hook in point for custom fluent buidler API to use with
+ * Hook in point for custom fluent builder API to use with
  * {@link EventProvider#configure()}. Default usage pattern is:
  *
  * <pre>
@@ -33,9 +33,9 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderChooser;
  *
  * <pre>
  * EventProvier&lt;?&gt; provider = EventProvider.configure()
- *     .defaultStore()
- *     .useCustomProvider(new MyCustomConfigurator)
- *     .create(); // or .createSupplier()
+ *         .defaultStore()
+ *         .useCustomProvider(new MyCustomConfigurator())
+ *         .create(); // or .createSupplier()
  * </pre>
  *
  * @author Simon Taddiken

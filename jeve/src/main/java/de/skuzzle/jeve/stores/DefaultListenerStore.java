@@ -48,12 +48,8 @@ public final class DefaultListenerStore implements ListenerStore {
             throw new IllegalArgumentException("listener is null");
         }
         synchronized (this.listeners) {
-            List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners == null) {
-                listeners = new LinkedList<>();
-                this.listeners.put(listenerClass, listeners);
-            }
-            listeners.add(listener);
+            this.listeners.computeIfAbsent(listenerClass, key -> new LinkedList<>())
+                    .add(listener);
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
         listener.onRegister(e);

@@ -3,6 +3,7 @@ package de.skuzzle.jeve.util;
 import java.util.function.Supplier;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 
 import de.skuzzle.jeve.EventProvider;
@@ -79,6 +80,7 @@ public class AbstractEventProviderTest<S extends ListenerStore> {
      * @since 1.1.0
      */
     protected boolean checkSkipNonSequential() {
+        Assume.assumeTrue(this.subject.isSequential());
         if (!this.subject.isSequential()) {
             System.err.println("Skipping test case because '" +
                     this.subject.getClass().getSimpleName() + "' is not sequential");

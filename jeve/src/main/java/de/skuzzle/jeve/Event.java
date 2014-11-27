@@ -1,7 +1,6 @@
 package de.skuzzle.jeve;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -123,7 +122,9 @@ public class Event<T, L extends Listener> {
      * @see #preventCascade()
      */
     public <E extends Listener> void preventCascade(Class<E> listenerClass) {
-        if (this.prevent == null) {
+        if (listenerClass == null) {
+            throw new IllegalArgumentException("listenerClass is null");
+        } else if (this.prevent == null) {
             this.prevent = new HashSet<>();
         }
         this.prevent.add(listenerClass);
@@ -148,7 +149,7 @@ public class Event<T, L extends Listener> {
      * @see #preventCascade(Class)
      * @since 2.1.0
      */
-    public Collection<Class<?>> getPrevented() {
+    public Set<Class<?>> getPrevented() {
         if (this.prevent == null) {
             return Collections.emptySet();
         }

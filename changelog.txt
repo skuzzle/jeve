@@ -5,6 +5,7 @@ Version 2.1.0 [Released: TODO]
     * Event#getListenerStore() throws an Exception when called if the event is not 
       dispatched.
     * Add functions to control cascading events.
+    * [FIXED] PriorityListenerStore.close() would not call 'onUnregister'
 Version 2.0.0 [Released: 20.10.2014]
     * New package layout
     * Remove 'listenerClass' parameter from EventProvider#dispatch. Each Event 

@@ -1,11 +1,9 @@
-package de.skuzzle.jeve.providers;
+package de.skuzzle.jeve;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
-
-import de.skuzzle.jeve.Event;
-import de.skuzzle.jeve.Listener;
 
 /**
  * Stack class which is used to keep track of currently dispatched {@link Event
@@ -106,9 +104,14 @@ public class EventStack {
 
     public Optional<Event<?, ?>> preventDispatch(Class<? extends Listener> listenerClass) {
         synchronized (this.eventStack) {
-            return this.eventStack.stream()
-                    .filter(event -> event.getPrevented().contains(listenerClass))
-                    .findFirst();
+            final Iterator<Event<?, ?>> it = this.eventStack.descendingIterator();
+            while (it.hasNext()) {
+                final Event<?, ?> event = it.next();
+                if (event.getPrevented().contains(listenerClass)) {
+                    return Optional.of(event);
+                }
+            }
+            return Optional.empty();
         }
     }
 }

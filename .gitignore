@@ -20,3 +20,4 @@ target
 *.bak
 *.versionBackup
 *.versionsBackup
+.settings

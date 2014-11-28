@@ -35,11 +35,6 @@
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
-            
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0.1</version>
-            </plugin>
 
             <!-- Add Integration Test source folder -->
             <plugin>

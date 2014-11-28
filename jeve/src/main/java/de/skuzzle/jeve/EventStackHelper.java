@@ -9,7 +9,11 @@ import java.util.function.BiConsumer;
  * @author Simon Taddiken
  * @since 2.1.0
  */
-public class EventStackHelper {
+public final class EventStackHelper {
+
+    private EventStackHelper() {
+        // hidden constructor
+    }
 
     /**
      * Checks whether the given Event should be prevented according to the given

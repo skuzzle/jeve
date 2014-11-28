@@ -82,7 +82,7 @@ public class EventStack {
      * off the stack again.
      *
      * @param <L> Type of the listener.
-     * @param event the event which will be dispatched.
+     * @param event The event which will be dispatched.
      * @see #popEvent(Event)
      */
     public <L extends Listener> void pushEvent(Event<?, L> event) {

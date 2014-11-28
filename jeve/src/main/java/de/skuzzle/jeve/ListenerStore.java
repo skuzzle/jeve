@@ -97,10 +97,7 @@ public interface ListenerStore extends Closeable {
 
     /**
      * Gets all listeners that have been registered using
-     * {@link #add(Class, Listener)} for the given listener class. The returned
-     * collection contains the listeners in the order in which they have been
-     * registered. Modifying the returned collection has no effects on this
-     * EventProvider.
+     * {@link #add(Class, Listener)} for the given listener class.
      *
      * @param <L> Type of the listeners to return.
      * @param listenerClass The class representing the event for which the

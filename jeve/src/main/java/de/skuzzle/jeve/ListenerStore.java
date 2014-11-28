@@ -3,6 +3,8 @@ package de.skuzzle.jeve;
 import java.io.Closeable;
 import java.util.stream.Stream;
 
+import de.skuzzle.jeve.annotation.ListenerKind;
+
 /**
  * Allows to register and unregister {@link Listener Listeners} for certain
  * listener classes and supplies {@code Listeners} to an {@link EventProvider}.
@@ -65,6 +67,49 @@ public interface ListenerStore extends Closeable {
      *             argument is <code>null</code>.
      */
     public <L extends Listener> void add(Class<L> listenerClass, L listener);
+
+    /**
+     * Adds the given object for all listener classes it implements. This
+     * recursively traverses super classes and super interfaces of the given
+     * listener's class. When encountering a super interface X which
+     * <ol>
+     * <li>is not {@code Listener.class} but</li>
+     * <li>can be assigned to {@code Listener.class} and</li>
+     * <li>is not annotated with {@link ListenerKind#TAGGING}</li>
+     * </ol>
+     * then the given listener will be registered for X. Otherwise, all super
+     * interfaces of X are processed in the same way. When all super interfaces
+     * have been processed, the same process is recursively applied to the super
+     * class of the given listener if it has one.
+     *
+     * <p>
+     * Note that for each class the listener is being added its
+     * {@link Listener#onRegister(RegistrationEvent) onRegister} method is
+     * called.
+     * </p>
+     *
+     * @param <L> Type of the listener.
+     * @param listener The listener to add.
+     * @since 2.1.0
+     */
+    public <L extends Listener> void add(L listener);
+
+    /**
+     * Removes the given object for all listener classes it implements. See
+     * {@link #add(Listener)} to learn how these classes are collected from the
+     * given listener.
+     *
+     * <p>
+     * Note that for each class the listener is being removed its
+     * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method is
+     * called.
+     * </p>
+     *
+     * @param <L> Type of the listener.
+     * @param listener The listener to remove.
+     * @since 2.1.0
+     */
+    public <L extends Listener> void remove(L listener);
 
     /**
      * Removes a listener. It will only be removed for the specified listener

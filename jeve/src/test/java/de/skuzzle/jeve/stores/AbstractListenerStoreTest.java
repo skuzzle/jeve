@@ -21,7 +21,15 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
 
     }
 
-    protected interface OtherListener extends Listener {
+    protected interface OtherListener extends NestedListener {
+
+    }
+
+    protected interface NestedListener extends Listener {
+
+    }
+    
+    private class MultiListenerImpl implements SampleListener, OtherListener {
 
     }
 
@@ -135,5 +143,14 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
         Mockito.verify(listener2).onUnregister(Mockito.any());
         Assert.assertFalse(this.subject.get(SampleListener.class).iterator().hasNext());
         Assert.assertFalse(this.subject.get(OtherListener.class).iterator().hasNext());
+    }
+
+    @Test
+    public void testAddMulti() throws Exception {
+        final MultiListenerImpl listener = Mockito.mock(MultiListenerImpl.class);
+        this.subject.add(listener);
+        Assert.assertSame(listener, this.subject.get(SampleListener.class).iterator().next());
+        Assert.assertSame(listener, this.subject.get(OtherListener.class).iterator().next());
+        Assert.assertFalse(this.subject.get(NestedListener.class).iterator().hasNext());
     }
 }

@@ -28,7 +28,7 @@ import de.skuzzle.jeve.RegistrationEvent;
  * @author Simon Taddiken
  * @since 2.0.0
  */
-public final class DefaultListenerStore implements ListenerStore {
+public final class DefaultListenerStore extends AbstractListenerStore implements ListenerStore {
 
     /** Holds the listener classes mapped to listener instances */
     protected final Map<Class<? extends Listener>, List<Object>> listeners;

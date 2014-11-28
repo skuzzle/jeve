@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * @see ListenerKind
  * @see de.skuzzle.jeve.Listener
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ListenerInterface {
     /**

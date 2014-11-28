@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -79,6 +80,12 @@ public class Event<T, L extends Listener> {
     private boolean prevented;
 
     /**
+     * The cause of this event if it was dispatched from within a listening
+     * method.
+     */
+    private Event<?, ?> cause;
+
+    /**
      * Creates a new event with a given source.
      *
      * @param source The source of this event.
@@ -102,6 +109,17 @@ public class Event<T, L extends Listener> {
      */
     public T getSource() {
         return this.source;
+    }
+
+    /**
+     * Gets the cause of this event. An event has a cause if it was dispatched
+     * from within a listening method.
+     *
+     * @return The cause of this event if it exists.
+     * @since 2.1.0
+     */
+    public Optional<Event<?, ?>> getCause() {
+        return Optional.ofNullable(this.cause);
     }
 
     /**
@@ -142,7 +160,8 @@ public class Event<T, L extends Listener> {
 
     /**
      * Prevents to dispatch events to the given listener class while this event
-     * is being dispatched.
+     * is being dispatched. This is only supported when dispatching this event
+     * with an EventProvider which supports the {@link EventStack}.
      *
      * @param <E> Type of the listener class.
      * @param listenerClass The listener class to prevent being notified.
@@ -160,7 +179,9 @@ public class Event<T, L extends Listener> {
 
     /**
      * Prevents to dispatch events with the same listener class as this one as
-     * long as this event is being dispatched.
+     * long as this event is being dispatched. This is only supported when
+     * dispatching this event with an EventProvider which supports the
+     * {@link EventStack}.
      *
      * @since 2.1.0
      * @see #preventCascade(Class)

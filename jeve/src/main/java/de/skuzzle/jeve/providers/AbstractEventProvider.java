@@ -2,7 +2,6 @@ package de.skuzzle.jeve.providers;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
@@ -13,7 +12,6 @@ import de.skuzzle.jeve.AbortionException;
 import de.skuzzle.jeve.DoubleDispatchedEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
@@ -37,9 +35,6 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
 
     /** The logger associated with this event provider */
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    /** The event stack to use */
-    protected final EventStack eventStack;
 
     /** The listener store associated with this provider */
     private final S store;
@@ -79,7 +74,6 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         }
 
         this.store = store;
-        this.eventStack = new EventStack();
         this.exceptionHandler = this.defaultHandler;
     }
 
@@ -180,35 +174,18 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
 
-        // check if any of the currently dispatched events marked the target
-        // listener class to be prevented.
-        final Optional<Event<?, ?>> preCascade = this.eventStack.preventDispatch(
-                event.getListenerClass());
-        if (preCascade.isPresent()) {
-            this.logger.debug("Dispatch prevented for '{}' by '{}'",
-                    event, preCascade.get());
-            preCascade.get().addSuppressedEvent(
-                    new SuppressedEventImpl<L, E>(event, ec, bc));
-            return false;
-        }
-
         // HINT: getListeners is thread safe
         final Stream<L> listeners = listeners().get(event.getListenerClass());
         boolean result = true;
 
-        try {
-            event.setListenerStore(this.store);
-            this.eventStack.pushEvent(event);
-            final Iterator<L> it = listeners.iterator();
-            while (it.hasNext()) {
-                final L listener = it.next();
-                if (event.isHandled()) {
-                    return result;
-                }
-                result &= notifySingle(listener, event, bc, ec);
+        event.setListenerStore(this.store);
+        final Iterator<L> it = listeners.iterator();
+        while (it.hasNext()) {
+            final L listener = it.next();
+            if (event.isHandled()) {
+                return result;
             }
-        } finally {
-            this.eventStack.popEvent(event);
+            result &= notifySingle(listener, event, bc, ec);
         }
         return result;
     }

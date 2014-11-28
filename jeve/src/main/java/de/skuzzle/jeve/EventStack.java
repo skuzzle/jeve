@@ -1,9 +1,14 @@
 package de.skuzzle.jeve;
 
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.Consumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Stack class which is used to keep track of currently dispatched {@link Event
@@ -20,6 +25,8 @@ import java.util.Optional;
  */
 public class EventStack {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventStack.class);
+
     /**
      * Contains the listener classes for which a dispatch action is currently
      * active.
@@ -31,6 +38,41 @@ public class EventStack {
      */
     public EventStack() {
         this.stack = new LinkedList<>();
+    }
+
+    /**
+     * Prints the current event stack to the log using SLF4j log level
+     * <em>debug</em>.
+     */
+    public void dumpStack() {
+        dumpInternal(e -> LOGGER.debug("\t{}:{}:{}", e.getSource(),
+                e.getListenerClass().getSimpleName(), e));
+    }
+
+    /**
+     * Prints the current event stack to the provided {@link PrintStream}.
+     *
+     * @param out The stream to print the log to.
+     */
+    public void dumpStack(PrintStream out) {
+        if (out == null) {
+            throw new IllegalArgumentException("out is null");
+        }
+
+        dumpInternal(e -> out.printf("%s:%s:%s%n", e.getSource(),
+                e.getListenerClass().getSimpleName(), e));
+    }
+
+    private void dumpInternal(Consumer<Event<?, ?>> c) {
+        synchronized (this.stack) {
+            LOGGER.debug("jeve event stack:");
+            if (this.stack.isEmpty()) {
+                LOGGER.debug("\t<empty>");
+                return;
+            }
+            final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
+            it.forEachRemaining(c);
+        }
     }
 
     /**

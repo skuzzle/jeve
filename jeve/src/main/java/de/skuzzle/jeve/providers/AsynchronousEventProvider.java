@@ -68,7 +68,6 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
         if (canDispatch()) {
             this.executor.execute(() -> notifyListeners(event, bc, ec));
         }
-
     }
 
     @Override

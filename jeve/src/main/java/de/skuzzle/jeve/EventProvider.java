@@ -96,51 +96,12 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <p>
  * If a listener has only one listening method, it is obsolete to specify the
- * method reference for every dispatch action. For this case jeve provides the
- * class {@link DoubleDispatchedEvent} and an overload of
- * {@link #dispatch(DoubleDispatchedEvent)} which allows to specify the method
- * reference within the Event implementation.
+ * method reference for every dispatch action. For this case, jeve Events
+ * provide the {@link Event#defaultDispatch(EventProvider, ExceptionCallback)
+ * defaultDispatch} method and an overload of {@link #dispatch(Event)} which
+ * allows to dispatch an event without specifying the method reference again.
  * </p>
- *
- * <h2>Cascading Events</h2>
- * <p>
- * Sometimes, during dispatching an Event of type X, it might happen that a
- * cascaded dispatch action for the same type, or for another type Y is
- * triggered. If you want to prevent cascaded events, you may register listener
- * classes to be prevented on the event to dispatch:
- * </p>
- *
- * <pre>
- * UserEvent e = new UserEvent(this, user);
- *
- * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
- * e.preventCascade(UIRefreshEvent.class);
- * eventProvider.dispatch(e, UserListener::userAdded);
- * </pre>
- *
- * <p>
- * With {@link Event#preventCascade()} comes a convenience method to prevent
- * cascaded events of the same type. During dispatch, all events which have been
- * suppressed using the prevention mechanism, are collected and can be retrieved
- * with {@link Event#getSuppressedEvents()}. This allows you to re-dispatch them
- * afterwards:
- * </p>
- *
- * <pre>
- * UserEvent e = new UserEvent(this, user);
- *
- * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
- * e.preventCascade(UIRefreshEvent.class);
- * eventProvider.dispatch(e, UserListener::userAdded);
- *
- * for (final SuppressedEventImpl&lt;?, ?&gt; suppressed : e.getSuppressedEvents()) {
- *     if (suppressed.getEvent().getListenerClass() == UIRefreshEvent.class) {
- *         // redeliver all UIRefreshEvents
- *         suppressed.redispatch(eventProvider);
- *     }
- * }
- * </pre>
- *
+ * 
  * <h2>Error handling</h2>
  * <p>
  * The main goal of jeve is, that event delegation must never be interrupted
@@ -264,7 +225,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * The default {@link ExceptionCallback} which prints some information about
      * the occurred error to the standard output. The exact format is not
      * specified.
-     * 
+     *
      * @deprecated Since 2.1.0 - The default call back is now an internal
      *             property of the specific provider implementation.
      */
@@ -404,10 +365,10 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec);
 
-    public <L extends Listener, E extends DoubleDispatchedEvent<?, L>> void dispatch(
+    public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event);
 
-    public default <L extends Listener, E extends DoubleDispatchedEvent<?, L>> void dispatch(
+    public default <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, ExceptionCallback ec) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
@@ -415,7 +376,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
             throw new IllegalArgumentException("ec is null");
         }
 
-        event.dispatch(this, ec);
+        event.defaultDispatch(this, ec);
     }
 
     /**
@@ -427,8 +388,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * @param event The occurred event which shall be passed to each listener.
      * @throws IllegalArgumentException If the event is <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
-     * @deprecated Since 2.1.0 - Use {@link #dispatch(DoubleDispatchedEvent)}
-     *             instead.
+     * @deprecated Since 2.1.0 - Use {@link #dispatch(Event)} instead.
      */
     @Deprecated
     public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
@@ -452,8 +412,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * @throws IllegalArgumentException If any of the passed arguments is
      *             <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
-     * @deprecated Since 2.1.0 - Use
-     *             {@link #dispatch(DoubleDispatchedEvent, ExceptionCallback)}
+     * @deprecated Since 2.1.0 - Use {@link #dispatch(Event, ExceptionCallback)}
      *             instead.
      */
     @Deprecated

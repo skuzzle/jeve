@@ -1,25 +1,73 @@
 package de.skuzzle.jeve.providers;
 
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.EventStack;
+import de.skuzzle.jeve.EventStackHelper;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.SuppressedEvent;
+import de.skuzzle.jeve.SynchronousEvent;
 
 /**
  * {@link EventProvider} implementation which is always ready for dispatching
  * and simply runs all listeners within the current thread.
  *
+ * <h2>Cascading Events</h2>
+ * <p>
+ * Sometimes, during dispatching an Event of type X, it might happen that a
+ * cascaded dispatch action for the same type, or for another type Y is
+ * triggered. If you want to prevent cascaded events, you may register listener
+ * classes to be prevented on the event to dispatch. For this purpose, instead
+ * of extending {@link Event}, your events must extend {@link SynchronousEvent}
+ * instead. For example: {@code public class UserEvent extends
+ * SynchronousEvent<UserManager, UserListener.class> ...}
+ * </p>
+ *
+ * <pre>
+ * UserEvent e = new UserEvent(this, user);
+ *
+ * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
+ * e.preventCascade(UIRefreshEvent.class);
+ * eventProvider.dispatch(e, UserListener::userAdded);
+ * </pre>
+ *
+ * <p>
+ * With {@link SynchronousEvent#preventCascade()} comes a convenience method to
+ * prevent cascaded events of the same type. During dispatch, all events which
+ * have been suppressed using the prevention mechanism, are collected and can be
+ * retrieved with {@link SynchronousEvent#getSuppressedEvents()}. This allows
+ * you to re-dispatch them afterwards:
+ * </p>
+ *
+ * <pre>
+ * UserEvent e = new UserEvent(this, user);
+ *
+ * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
+ * e.preventCascade(UIRefreshEvent.class);
+ * eventProvider.dispatch(e, UserListener::userAdded);
+ *
+ * // Dispatch all suppressed UIRefreshEvents
+ * for (final SuppressedEvent suppressed : e.getSuppressedEvents()) {
+ *     if (suppressed.getListenerClass() == UIRefreshEvent.class) {
+ *         // redeliver all UIRefreshEvents
+ *         suppressed.redispatch(eventProvider);
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>
+ *
+ * </p>
+ *
  * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
+ * @see SynchronousEvent
  */
 public class SynchronousEventProvider<S extends ListenerStore> extends
         AbstractEventProvider<S> {
@@ -37,40 +85,10 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
         this.eventStack = new EventStack();
     }
 
-    /**
-     * Checks whether the given Event should be prevented according to the
-     * current event stack. If so, the event's {@link Event#isPrevented()
-     * isPrevented} property is set to <code>true</code> and a new
-     * {@link SuppressedEvent} is added to the <em>preventing</em> event.
-     *
-     * @param event The Event to check whether it is prevented.
-     * @param bc Function to delegate the event to the specific callback method
-     *            of the listener.
-     * @param ec Callback to be notified when any of the listeners throws an
-     *            exception.
-     * @return Whether the event should be prevented.
-     */
-    protected <L extends Listener, E extends Event<?, L>> boolean checkPrevent(
-            E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        // check if any of the currently dispatched events marked the target
-        // listener class to be prevented.
-        final Optional<Event<?, ?>> preCascade = this.eventStack.preventDispatch(
-                event.getListenerClass());
-        if (preCascade.isPresent()) {
-            this.logger.debug("Dispatch prevented for '{}' by '{}'",
-                    event, preCascade.get());
-            event.setPrevented(true);
-            preCascade.get().addSuppressedEvent(
-                    new SuppressedEventImpl<L, E>(event, ec, bc));
-            return true;
-        }
-        return false;
-    }
-
     @Override
     protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        if (checkPrevent(event, bc, ec)) {
+        if (EventStackHelper.checkPrevent(this.eventStack, event, bc, ec)) {
             return false;
         }
 
@@ -80,6 +98,9 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
 
         try {
             event.setListenerStore(listeners());
+            if (event instanceof SynchronousEvent<?, ?>) {
+                ((SynchronousEvent<?, ?>) event).setEventStack(this.eventStack);
+            }
             this.eventStack.pushEvent(event);
             final Iterator<L> it = listeners.iterator();
             while (it.hasNext()) {

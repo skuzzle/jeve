@@ -1,5 +1,6 @@
 package de.skuzzle.jeve;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -14,6 +15,11 @@ public class EventStackTest {
 
     @ListenerInterface
     private interface SampleListener extends Listener {
+
+    }
+
+    @ListenerInterface
+    private interface OtherListener extends Listener {
 
     }
 
@@ -50,8 +56,8 @@ public class EventStackTest {
 
     @Test
     public void testPrevented() {
-        final Event<?, SampleListener> first = new Event<>(null, SampleListener.class);
-        final Event<?, SampleListener> second = new Event<>(null, SampleListener.class);
+        final SynchronousEvent<?, SampleListener> first = new SynchronousEvent<>(null, SampleListener.class);
+        final SynchronousEvent<?, SampleListener> second = new SynchronousEvent<>(null, SampleListener.class);
 
         this.subject.pushEvent(first);
         this.subject.pushEvent(second);
@@ -59,7 +65,33 @@ public class EventStackTest {
         first.preventCascade(SampleListener.class);
         second.preventCascade(SampleListener.class);
 
-        final Optional<Event<?, ?>> opt = this.subject.preventDispatch(first);
+        final Optional<SynchronousEvent<?, ?>> opt = this.subject.preventDispatch(first);
         Assert.assertSame(first, opt.get());
+    }
+
+    @Test
+    public void testIsActive() {
+        final Event<?, SampleListener> event1 = Mockito.mock(Event.class);
+        final Event<?, SampleListener> event2 = Mockito.mock(Event.class);
+        Mockito.when(event1.getListenerClass()).thenReturn(SampleListener.class);
+        Mockito.when(event2.getListenerClass()).thenReturn(SampleListener.class);
+
+        this.subject.pushEvent(event1);
+
+        Assert.assertTrue(this.subject.isActive(event1));
+        Assert.assertTrue(this.subject.isActive(event2));
+    }
+
+    @Test
+    public void testIsAnyActive() throws Exception {
+        final Event<?, SampleListener> event1 = Mockito.mock(Event.class);
+        final Event<?, OtherListener> event2 = Mockito.mock(Event.class);
+        Mockito.when(event1.getListenerClass()).thenReturn(SampleListener.class);
+        Mockito.when(event2.getListenerClass()).thenReturn(OtherListener.class);
+
+        this.subject.pushEvent(event2);
+
+        Assert.assertTrue(this.subject.isAnyActive(Arrays.asList(SampleListener.class, OtherListener.class)));
+        Assert.assertFalse(this.subject.isAnyActive(Arrays.asList(SampleListener.class)));
     }
 }

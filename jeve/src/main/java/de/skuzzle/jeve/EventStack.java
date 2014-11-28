@@ -134,7 +134,7 @@ public class EventStack {
     public boolean isAnyActive(Collection<? extends Class<? extends Listener>> c) {
         synchronized (this.stack) {
             return this.stack.stream()
-                    .anyMatch(cls -> c.contains(cls));
+                    .anyMatch(event -> c.contains(event.getListenerClass()));
         }
     }
 
@@ -146,17 +146,21 @@ public class EventStack {
     }
 
 
-    public Optional<Event<?, ?>> preventDispatch(Event<?, ?> event) {
+    public Optional<SynchronousEvent<?, ?>> preventDispatch(Event<?, ?> event) {
         return preventDispatch(event.getListenerClass());
     }
 
-    public Optional<Event<?, ?>> preventDispatch(Class<? extends Listener> listenerClass) {
+    public Optional<SynchronousEvent<?, ?>> preventDispatch(
+            Class<? extends Listener> listenerClass) {
         synchronized (this.stack) {
             final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
             while (it.hasNext()) {
                 final Event<?, ?> event = it.next();
-                if (event.getPrevented().contains(listenerClass)) {
-                    return Optional.of(event);
+                if (event instanceof SynchronousEvent<?, ?>) {
+                    SynchronousEvent<?, ?> synchEvent = (SynchronousEvent<?, ?>) event;
+                    if (synchEvent.getPrevented().contains(listenerClass)) {
+                        return Optional.of(synchEvent);
+                    }
                 }
             }
             return Optional.empty();

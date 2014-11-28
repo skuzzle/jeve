@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import de.skuzzle.jeve.DoubleDispatchedEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
@@ -94,8 +93,7 @@ public class StatisticsEventProvider<S extends ListenerStore, P extends EventPro
     }
 
     @Override
-    public <L extends Listener, E extends DoubleDispatchedEvent<?, L>> void dispatch(
-            E event) {
+    public <L extends Listener, E extends Event<?, L>> void dispatch(E event) {
         this.wrapped.dispatch(event);
     }
 

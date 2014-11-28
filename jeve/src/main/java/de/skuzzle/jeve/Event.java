@@ -1,9 +1,6 @@
 package de.skuzzle.jeve;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 
 /**
@@ -21,7 +18,12 @@ import java.util.Set;
  * Events explicitly belong to one kind of {@link Listener} implementation which
  * is able to handle it. The class of this listener is passed to the constructor
  * and queried by the {@link EventProvider} when collecting a list of targeted
- * listeners for a dispatch action.
+ * listeners for a dispatch action. Furthermore, events can have a default
+ * target within a notified listener. This allows to use the
+ * {@link EventProvider#dispatch(Event) dispatch overload} which only takes an
+ * Event as parameter. Events have to override
+ * {@link #defaultDispatch(EventProvider, ExceptionCallback)} to use this
+ * functionality.
  * </p>
  *
  * <p>
@@ -58,30 +60,22 @@ public class Event<T, L extends Listener> {
     /** The class of the listener which can handle this event */
     private final Class<L> listenerClass;
 
-    /**
-     * Collects listener classes for which cascade should be prevented. Will be
-     * lazily initialized.
-     */
-    private Set<Class<?>> prevent;
-
-    /**
-     * Stores all events which were prevented due to the registered listener
-     * classes. Will be lazily initialized.
-     */
-    private Set<SuppressedEvent> suppressedEvents;
-
     /** The store from which this listener is currently being notified. */
     private ListenerStore store;
 
     /**
      * Whether this event was prevented the last time it was passed to any
      * dispatch method.
+     *
+     * @since 2.1.0
      */
     private boolean prevented;
 
     /**
      * The cause of this event if it was dispatched from within a listening
      * method.
+     *
+     * @since 2.1.0
      */
     private Event<?, ?> cause;
 
@@ -100,6 +94,20 @@ public class Event<T, L extends Listener> {
         this.source = source;
         this.listenerClass = listenerClass;
         this.isHandled = false;
+    }
+
+    /**
+     * Creates a new Event with a given source and cause. This constructor might
+     * be used when dispatching a new Event from within a listening method.
+     *
+     * @param source The source of this event.
+     * @param listenerClass The type of the listener which can handle this
+     *            event. This value must not be <code>null</code>.
+     * @param cause The cause of this event.
+     */
+    public Event(T source, Class<L> listenerClass, Event<?, ?> cause) {
+        this(source, listenerClass);
+        this.cause = cause;
     }
 
     /**
@@ -142,69 +150,6 @@ public class Event<T, L extends Listener> {
         this.prevented = prevented;
     }
 
-    public void addSuppressedEvent(SuppressedEvent e) {
-        if (e == null) {
-            throw new IllegalArgumentException("e is null");
-        } else if (this.suppressedEvents == null) {
-            this.suppressedEvents = new HashSet<>();
-        }
-        this.suppressedEvents.add(e);
-    }
-
-    public Set<SuppressedEvent> getSuppressedEvents() {
-        if (this.suppressedEvents == null) {
-            return Collections.emptySet();
-        }
-        return this.suppressedEvents;
-    }
-
-    /**
-     * Prevents to dispatch events to the given listener class while this event
-     * is being dispatched. This is only supported when dispatching this event
-     * with an EventProvider which supports the {@link EventStack}.
-     *
-     * @param <E> Type of the listener class.
-     * @param listenerClass The listener class to prevent being notified.
-     * @since 2.1.0
-     * @see #preventCascade()
-     */
-    public <E extends Listener> void preventCascade(Class<E> listenerClass) {
-        if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass is null");
-        } else if (this.prevent == null) {
-            this.prevent = new HashSet<>();
-        }
-        this.prevent.add(listenerClass);
-    }
-
-    /**
-     * Prevents to dispatch events with the same listener class as this one as
-     * long as this event is being dispatched. This is only supported when
-     * dispatching this event with an EventProvider which supports the
-     * {@link EventStack}.
-     *
-     * @since 2.1.0
-     * @see #preventCascade(Class)
-     */
-    public void preventCascade() {
-        preventCascade(this.listenerClass);
-    }
-
-    /**
-     * Gets the listener classes to which dispatching should be prevented while
-     * this event is being dispatched.
-     *
-     * @return The listener classes marked to prevent.
-     * @see #preventCascade(Class)
-     * @since 2.1.0
-     */
-    public Set<Class<?>> getPrevented() {
-        if (this.prevent == null) {
-            return Collections.emptySet();
-        }
-        return this.prevent;
-    }
-
     /**
      * Gets the type of the listener which can handle this event.
      *
@@ -213,20 +158,6 @@ public class Event<T, L extends Listener> {
      */
     public Class<L> getListenerClass() {
         return this.listenerClass;
-    }
-
-    /**
-     * Gets the {@link ListenerStore} from which the currently notified listener
-     * has been retrieved. If this Event is not currently dispatched, an
-     * exception will be thrown.
-     *
-     * @return The ListenerStore
-     */
-    protected ListenerStore getListenerStore() {
-        if (this.store == null) {
-            throw new IllegalStateException("Event is not currently dispatched");
-        }
-        return this.store;
     }
 
     /**
@@ -263,6 +194,56 @@ public class Event<T, L extends Listener> {
      */
     public void stopNotifying(L listener) {
         this.getListenerStore().remove(this.getListenerClass(), listener);
+    }
+
+    /**
+     * <p>
+     * Dispatches this event with the given EventProvider using the listener's
+     * default listening method. For example, if {@code userAdded} is the only
+     * listening method (or the default one among others), this method should be
+     * implemented as follows:
+     * </p>
+     *
+     * <pre>
+     * public void defaultDispatch(EventProvider&lt;?&gt; eventProvider, ExceptionCallback ec) {
+     *     eventProvider.dispatch(this, UserListener::userAdded, ec);
+     * }
+     * </pre>
+     *
+     * <p>
+     * This method should not be called directly on an Event object. Instead,
+     * pass the event to {@link EventProvider#dispatch(Event)} or
+     * {@link EventProvider#dispatch(Event, ExceptionCallback)}.
+     * </p>
+     *
+     * <p>
+     * The default implementation throws an
+     * {@link UnsupportedOperationException}
+     * </p>
+     *
+     * @param eventProvider The EventProvider to use for dispatching.
+     * @param ec The exception call back to use for this dispatch action.
+     * @throws UnsupportedOperationException If this event does not support
+     *             default dispatch.
+     * @since 2.1.0
+     */
+    public void defaultDispatch(EventProvider<?> eventProvider, ExceptionCallback ec) {
+        throw new UnsupportedOperationException(String.format(
+                "Event %s does not specify a default dispatch target", this));
+    }
+
+    /**
+     * Gets the {@link ListenerStore} from which the currently notified listener
+     * has been retrieved. If this Event is not currently dispatched, an
+     * exception will be thrown.
+     *
+     * @return The ListenerStore
+     */
+    protected ListenerStore getListenerStore() {
+        if (this.store == null) {
+            throw new IllegalStateException("Event is not currently dispatched");
+        }
+        return this.store;
     }
 
     /**

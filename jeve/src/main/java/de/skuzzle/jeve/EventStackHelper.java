@@ -17,6 +17,8 @@ public class EventStackHelper {
      * property is set to <code>true</code> and a new {@link SuppressedEvent} is
      * added to the <em>preventing</em> event.
      *
+     * @param <L> Type of the listener.
+     * @param <E> Type of the event.
      * @param eventStack The event stack.
      * @param event The Event to check whether it is prevented.
      * @param bc Function to delegate the event to the specific callback method

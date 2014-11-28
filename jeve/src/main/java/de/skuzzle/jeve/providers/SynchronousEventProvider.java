@@ -60,10 +60,6 @@ import de.skuzzle.jeve.SynchronousEvent;
  * }
  * </pre>
  *
- * <p>
- *
- * </p>
- *
  * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0

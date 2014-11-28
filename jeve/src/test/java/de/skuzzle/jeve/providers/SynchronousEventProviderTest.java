@@ -9,15 +9,15 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import de.skuzzle.jeve.Event;
-import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.SynchronousEvent;
 
-public class SynchronousEventProviderTest extends AbstractEventProviderTest {
+public class SynchronousEventProviderTest extends
+        AbstractEventProviderTest<SynchronousEventProvider<ListenerStore>> {
 
     @Override
-    protected AbstractEventProvider<ListenerStore> createSubject(ListenerStore store) {
+    protected SynchronousEventProvider<ListenerStore> createSubject(ListenerStore store) {
         return new SynchronousEventProvider<ListenerStore>(store);
     }
 
@@ -35,12 +35,10 @@ public class SynchronousEventProviderTest extends AbstractEventProviderTest {
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
                 Arrays.asList(listener1, listener2).stream());
 
-        final EventStack stack = ((SynchronousEventProvider) this.subject).getEventStack();
-
         spy.notifyListeners(e, SampleListener::onEvent, ec);
         InOrder inOrder = Mockito.inOrder(e, listener1, listener2);
         inOrder.verify(e).setListenerStore(this.store);
-        inOrder.verify(e).setEventStack(stack);
+        inOrder.verify(e).setEventStack(this.subject.getEventStack());
         inOrder.verify(listener1).onEvent(e);
         inOrder.verify(listener2).onEvent(e);
     }

@@ -21,6 +21,8 @@ import de.skuzzle.jeve.ListenerStore;
 public class AsynchronousEventProvider<S extends ListenerStore> extends
         AbstractEventProvider<S> implements ExecutorAware {
 
+    private static final long TERMINATION_TIMEOUT = 2000;
+
     /** Service which serves for creating and reusing threads. */
     protected ExecutorService executor;
 
@@ -80,9 +82,9 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
         super.close();
         this.executor.shutdownNow();
         try {
-            this.executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+            this.executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            this.logger.error("Error while waiting for termination of executor", e);
         }
     }
 

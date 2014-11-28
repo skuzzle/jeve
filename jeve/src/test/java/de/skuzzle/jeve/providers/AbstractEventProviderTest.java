@@ -19,7 +19,7 @@ import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 
 @RunWith(MockitoJUnitRunner.class)
-public abstract class AbstractEventProviderTest {
+public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<ListenerStore>> {
 
     protected interface SampleListener extends Listener {
         public void onEvent(Event<?, SampleListener> e);
@@ -28,10 +28,9 @@ public abstract class AbstractEventProviderTest {
     @Mock
     protected ListenerStore store;
 
-    protected AbstractEventProvider<ListenerStore> subject;
+    protected T subject;
 
-    protected abstract AbstractEventProvider<ListenerStore> createSubject(
-            ListenerStore store);
+    protected abstract T createSubject(ListenerStore store);
 
     @Before
     public void setUp() throws Exception {

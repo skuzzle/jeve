@@ -88,7 +88,8 @@ public final class DefaultListenerStore implements ListenerStore {
             if (listeners == null) {
                 return Collections.<T> emptyList().stream();
             }
-            return listeners.stream().map(obj -> listenerClass.cast(obj));
+            return new ArrayList<>(listeners).stream()
+                    .map(obj -> listenerClass.cast(obj));
         }
     }
 

@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.stores;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,7 +103,7 @@ public class PriorityListenerStore implements ListenerStore {
             if (listeners == null) {
                 return Collections.<T> emptyList().stream();
             }
-            return listeners.stream()
+            return new ArrayList<>(listeners).stream()
                     .map(wrapper -> wrapper.listener)
                     .map(obj -> listenerClass.cast(obj));
         }

@@ -1,6 +1,5 @@
 package de.skuzzle.jeve.stores;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -99,12 +98,13 @@ public class PriorityListenerStore extends AbstractListenerStore implements List
 
         synchronized (this.listenerMap) {
             final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
-            if (listeners == null) {
-                return Collections.<T> emptyList().stream();
-            }
-            return listeners.stream()
-                    .map(wrapper -> wrapper.listener)
-                    .map(obj -> listenerClass.cast(obj));
+            final int sizeHint = listeners == null
+                    ? 0
+                    : listeners.size();
+
+            return copyList(listenerClass,
+                    nullSafeStream(listeners).map(w -> w.listener),
+                    sizeHint).stream();
         }
     }
 

@@ -1,7 +1,12 @@
 package de.skuzzle.jeve.stores;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
@@ -17,6 +22,30 @@ public abstract class AbstractListenerStore implements ListenerStore {
 
     public AbstractListenerStore() {
         super();
+    }
+
+    /**
+     * Creates a collection from the given stream, casting each object to the
+     * provided listener class.
+     *
+     * @param <T> Type of the listeners in the given list.
+     * @param listenerClass The class of the objects in the provided list.
+     * @param listeners The stream to obtain the listeners for the resulting
+     *            collection from.
+     * @param sizeHint Expected size of the input stream.
+     * @return A typed copy of the list.
+     */
+    protected <T extends Listener> Collection<T> copyList(Class<T> listenerClass,
+            Stream<Object> listeners, int sizeHint) {
+        return listeners.map(obj -> listenerClass.cast(obj)).collect(
+                Collectors.toCollection(() -> new ArrayList<>(sizeHint)));
+    }
+
+    protected <T> Stream<T> nullSafeStream(Collection<T> c) {
+        if (c == null) {
+            return Collections.<T> emptyList().stream();
+        }
+        return c.stream();
     }
 
     @SuppressWarnings("unchecked")

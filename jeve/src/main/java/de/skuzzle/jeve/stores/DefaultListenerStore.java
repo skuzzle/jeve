@@ -1,7 +1,6 @@
 package de.skuzzle.jeve.stores;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,13 +30,13 @@ import de.skuzzle.jeve.RegistrationEvent;
 public final class DefaultListenerStore extends AbstractListenerStore implements ListenerStore {
 
     /** Holds the listener classes mapped to listener instances */
-    protected final Map<Class<? extends Listener>, List<Object>> listeners;
+    protected final Map<Class<? extends Listener>, List<Object>> listenerMap;
 
     /**
      * Creates a new DefaultListenerStore.
      */
     public DefaultListenerStore() {
-        this.listeners = new HashMap<>();
+        this.listenerMap = new HashMap<>();
     }
 
     @Override
@@ -47,8 +46,8 @@ public final class DefaultListenerStore extends AbstractListenerStore implements
         } else if (listener == null) {
             throw new IllegalArgumentException("listener is null");
         }
-        synchronized (this.listeners) {
-            this.listeners.computeIfAbsent(listenerClass, key -> new LinkedList<>())
+        synchronized (this.listenerMap) {
+            this.listenerMap.computeIfAbsent(listenerClass, key -> new LinkedList<>())
                     .add(listener);
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
@@ -60,14 +59,14 @@ public final class DefaultListenerStore extends AbstractListenerStore implements
         if (listenerClass == null || listener == null) {
             return;
         }
-        synchronized (this.listeners) {
-            final List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners == null) {
+        synchronized (this.listenerMap) {
+            final List<Object> targets = this.listenerMap.get(listenerClass);
+            if (targets == null) {
                 return;
             }
-            listeners.remove(listener);
-            if (listeners.isEmpty()) {
-                this.listeners.remove(listenerClass);
+            targets.remove(listener);
+            if (targets.isEmpty()) {
+                this.listenerMap.remove(listenerClass);
             }
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
@@ -79,39 +78,37 @@ public final class DefaultListenerStore extends AbstractListenerStore implements
         if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass");
         }
-        synchronized (this.listeners) {
-            final List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners == null) {
-                return Collections.<T> emptyList().stream();
-            }
-            return listeners.stream().map(obj -> listenerClass.cast(obj));
+        synchronized (this.listenerMap) {
+            final List<Object> targets = this.listenerMap.get(listenerClass);
+            final int sizeHint = targets == null ? 0 : targets.size();
+            return copyList(listenerClass, nullSafeStream(targets), sizeHint).stream();
         }
     }
 
     @Override
     public <T extends Listener> void clearAll(Class<T> listenerClass) {
-        synchronized (this.listeners) {
-            final List<Object> listeners = this.listeners.get(listenerClass);
-            if (listeners != null) {
-                final Iterator<Object> it = listeners.iterator();
+        synchronized (this.listenerMap) {
+            final List<Object> targets = this.listenerMap.get(listenerClass);
+            if (targets != null) {
+                final Iterator<Object> it = targets.iterator();
                 while (it.hasNext()) {
                     this.removeInternal(listenerClass, it);
                 }
-                this.listeners.remove(listenerClass);
+                this.listenerMap.remove(listenerClass);
             }
         }
     }
 
     @Override
     public void clearAll() {
-        synchronized (this.listeners) {
-            this.listeners.forEach((k, v) -> {
+        synchronized (this.listenerMap) {
+            this.listenerMap.forEach((k, v) -> {
                 final Iterator<Object> it = v.iterator();
                 while (it.hasNext()) {
                     removeInternal(k, it);
                 }
             });
-            this.listeners.clear();
+            this.listenerMap.clear();
         }
     }
 
@@ -140,7 +137,7 @@ public final class DefaultListenerStore extends AbstractListenerStore implements
 
     @Override
     public String toString() {
-        return this.listeners.toString();
+        return this.listenerMap.toString();
     }
 
     @Override

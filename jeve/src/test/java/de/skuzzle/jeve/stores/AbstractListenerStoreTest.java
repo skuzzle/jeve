@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -28,7 +29,7 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
     protected interface NestedListener extends Listener {
 
     }
-    
+
     private class MultiListenerImpl implements SampleListener, OtherListener {
 
     }
@@ -143,6 +144,21 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
         Mockito.verify(listener2).onUnregister(Mockito.any());
         Assert.assertFalse(this.subject.get(SampleListener.class).iterator().hasNext());
         Assert.assertFalse(this.subject.get(OtherListener.class).iterator().hasNext());
+    }
+
+    @Test
+    public void testGetConcurrency() throws Exception {
+        final SampleListener listener1 = Mockito.mock(SampleListener.class);
+        final SampleListener listener2 = Mockito.mock(SampleListener.class);
+        final SampleListener listener3 = Mockito.mock(SampleListener.class);
+        this.subject.add(SampleListener.class, listener1);
+        this.subject.add(SampleListener.class, listener2);
+
+        final Stream<SampleListener> stream1 = this.subject.get(SampleListener.class);
+        final Iterator<SampleListener> it1 = stream1.iterator();
+        it1.next();
+        this.subject.add(SampleListener.class, listener3);
+        it1.next();
     }
 
     @Test

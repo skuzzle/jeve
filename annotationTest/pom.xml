@@ -5,25 +5,30 @@
     <parent>
         <groupId>de.skuzzle</groupId>
         <artifactId>jeve-parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
     </parent>
 
     <artifactId>jeve-annotation-test</artifactId>
     <packaging>jar</packaging>
     <name>jeve-annotation-test</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>de.skuzzle</groupId>
             <artifactId>jeve</artifactId>
-            <version>2.0.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.truth0</groupId>
+            <artifactId>truth</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.google.testing.compile</groupId>
             <artifactId>compile-testing</artifactId>
-            <version>0.5</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>

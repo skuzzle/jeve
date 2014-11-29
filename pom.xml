@@ -3,9 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <groupId>de.skuzzle</groupId>
+        <artifactId>skuzzle-parent</artifactId>
+        <version>1.1.0</version>
+        <relativePath>../skuzzle-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>de.skuzzle</groupId>
@@ -14,7 +15,6 @@
     <packaging>pom</packaging>
 
     <name>jeve</name>
-    <url>http://www.jeve.skuzzle.de/doc</url>
     <description>jeve is a lightweight java 8 event delegation framework</description>
 
     <licenses>
@@ -25,95 +25,83 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <id>simon</id>
-            <name>Simon Taddiken</name>
-            <email>jeve@skuzzle.de</email>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:https://github.com/skuzzle/jeve</connection>
-        <developerConnection>scm:git:git://github.com/skuzzle/jeve</developerConnection>
-        <url>https://github.com/skuzzle/jeve</url>
-        <tag>HEAD</tag>
-    </scm>
-
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.jacoco.itReportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.itReportPath>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
+        <site.name>jeve</site.name>
+        <github.name>jeve</github.name>
+        
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.itReportPath>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>de.skuzzle</groupId>
+                <artifactId>jeve</artifactId>
+                <version>2.0.1</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.truth0</groupId>
+                <artifactId>truth</artifactId>
+                <version>0.15</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.testing.compile</groupId>
+                <artifactId>compile-testing</artifactId>
+                <version>0.5</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>jeve</module>
-        <module>annotationTest</module>
     </modules>
-
-
+    
     <build>
         <plugins>
+            <!-- Run Integration Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
-
-            <!-- package release files -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-                </configuration>
-            </plugin>
-
-            <!-- Code Coverage -->
+            <!-- Configure jacoco for integration tests -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.1.201405082137</version>
-                <configuration>
-                    <destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</destfile>
-                    <datafile>${basedir}/target/coverage-reports/jacoco-unit.exec</datafile>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>default-prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
+                        <id>prepare-code-coverage-integration-tests</id>
+                        <configuration>
+                            <destFile>${sonar.jacoco.itReportPath}</destFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- Enable signing and sonatype deploy -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

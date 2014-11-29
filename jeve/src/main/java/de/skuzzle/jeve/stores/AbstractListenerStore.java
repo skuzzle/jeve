@@ -20,10 +20,6 @@ import de.skuzzle.jeve.annotation.ListenerKind;
  */
 public abstract class AbstractListenerStore implements ListenerStore {
 
-    public AbstractListenerStore() {
-        super();
-    }
-
     /**
      * Creates a collection from the given stream, casting each object to the
      * provided listener class.
@@ -37,10 +33,18 @@ public abstract class AbstractListenerStore implements ListenerStore {
      */
     protected <T extends Listener> Collection<T> copyList(Class<T> listenerClass,
             Stream<Object> listeners, int sizeHint) {
-        return listeners.map(obj -> listenerClass.cast(obj)).collect(
-                Collectors.toCollection(() -> new ArrayList<>(sizeHint)));
+        return listeners
+                .map(obj -> listenerClass.cast(obj))
+                .collect(Collectors.toCollection(() -> new ArrayList<>(sizeHint)));
     }
 
+    /**
+     * Creates a {@link Stream} from the given collection. Returns an empty
+     * Stream if the collection is <code>null</code>.
+     *
+     * @param c The collection to create a Stream from.
+     * @return The stream.
+     */
     protected <T> Stream<T> nullSafeStream(Collection<T> c) {
         if (c == null) {
             return Collections.<T> emptyList().stream();
@@ -87,7 +91,5 @@ public abstract class AbstractListenerStore implements ListenerStore {
             }
         }
         return cls != Listener.class && Listener.class.isAssignableFrom(cls);
-
     }
-
 }

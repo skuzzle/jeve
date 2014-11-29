@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/skuzzle/jeve.svg?branch=develop)](https://travis-ci.org/skuzzle/jeve)
+[SonarQube](https://www.serverd.de/sonar/dashboard/index/364)
 
 jeve
 ====

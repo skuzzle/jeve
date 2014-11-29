@@ -7,6 +7,11 @@ Version 2.1.0 [Released: TODO]
     * Add functions to control cascading events.
     * [FIXED] PriorityListenerStore.close() would not call 'onUnregister'
 
+Version 2.0.1 [Released: 29.11.2014]
+
+    * [DEPRECATED] EventProvider.DEFAULT_HANDLER
+    * [FIXED] ConcurrentModificationException when modifying ListenerStores during dispatch.
+
 Version 2.0.0 [Released: 20.10.2014]
     * New package layout
     * Remove 'listenerClass' parameter from EventProvider#dispatch. Each Event 

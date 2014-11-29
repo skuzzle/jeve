@@ -101,7 +101,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * defaultDispatch} method and an overload of {@link #dispatch(Event)} which
  * allows to dispatch an event without specifying the method reference again.
  * </p>
- * 
+ *
  * <h2>Error handling</h2>
  * <p>
  * The main goal of jeve is, that event delegation must never be interrupted
@@ -226,7 +226,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * the occurred error to the standard output. The exact format is not
      * specified.
      *
-     * @deprecated Since 2.1.0 - The default call back is now an internal
+     * @deprecated Since 2.0.1 - The default call back is now an internal
      *             property of the specific provider implementation.
      */
     @Deprecated

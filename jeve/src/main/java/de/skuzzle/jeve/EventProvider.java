@@ -226,7 +226,11 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * The default {@link ExceptionCallback} which prints some information about
      * the occurred error to the standard output. The exact format is not
      * specified.
+     *
+     * @deprecated Since 2.0.1 - The default handler will be an internal
+     *             property of an EventProvider implementation in the future.
      */
+    @Deprecated
     public static final ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
         System.err.printf(
                 "Listener threw an exception while being notified%n" +

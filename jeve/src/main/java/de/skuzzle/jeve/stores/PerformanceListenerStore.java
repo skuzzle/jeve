@@ -13,7 +13,8 @@ import de.skuzzle.jeve.ListenerStore;
  * Extension to the {@link DefaultListenerStore} which offers to enable higher
  * {@link #get(Class)} performance. The higher performance is achieved at the
  * cost of lowering the performance of {@link #remove(Class, Listener)} and
- * {@link #add(Class, Listener)}.
+ * {@link #add(Class, Listener)}. The public interface to this store is thread
+ * safe.
  *
  * <p>
  * Most applications have something like a setup phase in which listeners are
@@ -30,7 +31,7 @@ import de.skuzzle.jeve.ListenerStore;
  * This will replace all regular Lists which are used to store different
  * listeners with {@link CopyOnWriteArrayList CopyOnWriteArrayLists}. This
  * reduces the need to copy the list of retrieved Listeners upon
- * {@link #get(Class)}. The cost of copying is then moved to the
+ * {@link #get(Class)}. The cost of copying is thereby moved to the
  * {@link #add(Class, Listener)} and {@link #remove(Class, Listener)} methods.
  * </p>
  *
@@ -44,6 +45,27 @@ public class PerformanceListenerStore extends DefaultListenerStore {
 
     /** Whether {@link #optimizeGet()} has already been called. */
     protected boolean optimized;
+
+    /** Auto {@link #optimizeGet()} on first call to {@link #get(Class)} */
+    protected final boolean autoOptimize;
+
+    /**
+     * Creates a new PerformanceListenerStore.
+     */
+    public PerformanceListenerStore() {
+        this(false);
+    }
+
+    /**
+     * Creates a PerformanceListenerStore with optionally enabling auto
+     * optimize. When auto optimize is enabled, {@link #optimizeGet()} will
+     * automatically be called the first time {@link #get(Class)} is called.
+     *
+     * @param pAutoOptimize Whether to enable auto optimize.
+     */
+    public PerformanceListenerStore(boolean pAutoOptimize) {
+        this.autoOptimize = pAutoOptimize;
+    }
 
     /**
      * Interchanges the performance characteristics of {@link #get(Class)} with
@@ -63,7 +85,10 @@ public class PerformanceListenerStore extends DefaultListenerStore {
      * {@code O(n²)}.</li>
      * <li>{@code get} performs in O(1).
      * </ul>
-     *
+     * <p>
+     * Where {@code n} is the number of listeners registered for a listener
+     * class.
+     * </p>
      *
      * <p>
      * This method may only be called once. Subsequent calls will have no
@@ -118,6 +143,9 @@ public class PerformanceListenerStore extends DefaultListenerStore {
     public <T extends Listener> Stream<T> get(Class<T> listenerClass) {
         if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass");
+        }
+        if (this.autoOptimize) {
+            optimizeGet();
         }
         synchronized (this.listenerMap) {
             final List<Object> targets = this.listenerMap.getOrDefault(listenerClass,

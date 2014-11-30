@@ -63,6 +63,17 @@ public class EventStack {
                 e.getListenerClass().getSimpleName(), e));
     }
 
+    /**
+     * Returns the head element of the current stack if there is any.
+     *
+     * @return The top of the event stack.
+     */
+    public Optional<Event<?, ?>> peek() {
+        return this.stack.isEmpty()
+                ? Optional.empty()
+                : Optional.of(this.stack.peek());
+    }
+
     private void dumpInternal(Consumer<Event<?, ?>> c) {
         synchronized (this.stack) {
             LOGGER.debug("jeve event stack:");
@@ -138,6 +149,14 @@ public class EventStack {
         }
     }
 
+    /**
+     * Determines whether an Event is being dispatched for the given listener
+     * class.
+     *
+     * @param listenerClass The listener class to check for.
+     * @return Whether an Event for the given listener class is already being
+     *         dispatched.
+     */
     public boolean isActive(Class<? extends Listener> listenerClass) {
         synchronized (this.stack) {
             return this.stack.stream()
@@ -145,11 +164,37 @@ public class EventStack {
         }
     }
 
-
+    /**
+     * Checks whether dispatch of the given event should be prevented. This is
+     * the case if there is at least one {@link SynchronousEvent} currently
+     * being dispatched, on which {@link SynchronousEvent#preventCascade(Class)}
+     * has been called with the given event's listener class.
+     *
+     * @param event The event to check whether it should be prevented.
+     * @return If present, the optional holds the SynchronousEvent which
+     *         prevented the given one. If not present, the given event should
+     *         not be prevented.
+     * @see EventStackHelper#checkPrevent(EventStack, Event,
+     *      java.util.function.BiConsumer, ExceptionCallback)
+     */
     public Optional<SynchronousEvent<?, ?>> preventDispatch(Event<?, ?> event) {
         return preventDispatch(event.getListenerClass());
     }
 
+    /**
+     * Checks whether dispatch for events with the given event should be
+     * prevented. This is the case if there is at least one
+     * {@link SynchronousEvent} currently being dispatched, on which
+     * {@link SynchronousEvent#preventCascade(Class)} has been called with the
+     * given listener class.
+     *
+     * @param listenerClass The listener class to check for.
+     * @return If present, the optional holds the SynchronousEvent which
+     *         prevents dispatch of the given listener class. If not present,
+     *         events should not be prevented for the given class.
+     * @see EventStackHelper#checkPrevent(EventStack, Event,
+     *      java.util.function.BiConsumer, ExceptionCallback)
+     */
     public Optional<SynchronousEvent<?, ?>> preventDispatch(
             Class<? extends Listener> listenerClass) {
         synchronized (this.stack) {

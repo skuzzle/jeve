@@ -43,21 +43,37 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testdispatchEventIsNull() throws Exception {
+    public void testDispatchEventIsNull() throws Exception {
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc = SampleListener::onEvent;
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         this.subject.dispatch(null, bc, ec);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testdispatchBCIsNull() throws Exception {
+    public void testDispatchEventIsNull2() throws Exception {
+        this.subject.dispatch((Event<?, ?>) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatchEventIsNull3() throws Exception {
+        this.subject.dispatch((Event<?, SampleListener>) null, SampleListener::onEvent);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatchBCIsNull() throws Exception {
         final Event<?, SampleListener> event = Mockito.mock(Event.class);
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         this.subject.dispatch(event, null, ec);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testdispatchECIsNull() throws Exception {
+    public void testDispatchBCisNull2() throws Exception {
+        final Event<?, SampleListener> event = Mockito.mock(Event.class);
+        this.subject.dispatch(event, (BiConsumer<SampleListener, Event<?, SampleListener>>) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDispatchECIsNull() throws Exception {
         final Event<?, SampleListener> event = Mockito.mock(Event.class);
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc = SampleListener::onEvent;
         this.subject.dispatch(event, bc, null);

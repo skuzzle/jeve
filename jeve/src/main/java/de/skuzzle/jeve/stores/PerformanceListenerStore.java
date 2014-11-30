@@ -81,7 +81,7 @@ public class PerformanceListenerStore extends DefaultListenerStore {
      * Interchanges the performance characteristics of {@link #get(Class)} with
      * {@link #add(Class, Listener)} resp. {@link #remove(Class, Listener)}.
      * <p>
-     * This will store all all currently registered listeners into
+     * This will store all currently registered listeners into
      * {@link CopyOnWriteArrayList CopyOnWriteArrayLists}. Thus, after calling
      * this method, the {@code add} and {@code remove} methods will always copy
      * the internal array of the respective listener list. In return, the

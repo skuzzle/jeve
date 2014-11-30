@@ -2,13 +2,19 @@ This is the jeve version history.
 Author: Simon Taddiken
 
 Version 2.1.0 [Released: TODO]
-    * Event#getListenerStore() throws an Exception when called if the event is not 
-      dispatched.
-    * Add functions to control cascading events.
     * [FIXED] PriorityListenerStore.close() would not call 'onUnregister'
+    * [ADD] PerformanceListenerStore implementation
+    * [ADD] SynchronousEvent and EventStack to control cascading events when using 
+            DefaultEventProvider.
+    * [CHANGE] Event#getListenerStore() throws an Exception when called if the event is 
+               not dispatched.
+    * [CHANGE] Remove 'final' modifier from DefaultListenerStore 
+    * [DEPRECATED] DefaultTargetEvent (use Event.dispatchDefault instead)
+    * [DEPRECATED] EventProvider.dispatch(DefaultTargetEvent) (use 
+                   EventProvider.dispatch(Event) instead)
+    * [DEPRECATED] DefaultListenerStore.removeInternal
 
 Version 2.0.1 [Released: 29.11.2014]
-
     * [DEPRECATED] EventProvider.DEFAULT_HANDLER
     * [FIXED] ConcurrentModificationException when modifying ListenerStores during dispatch.
 

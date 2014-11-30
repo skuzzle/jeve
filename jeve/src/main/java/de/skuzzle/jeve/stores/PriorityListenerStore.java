@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.stores;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,8 +29,10 @@ import de.skuzzle.jeve.RegistrationEvent;
  * LinkedLists} to manage the Listeners and inserts Listeners sorted by priority
  * upon registering. Thus, adding a Listener as well as removing one performs in
  * {@code O(n)}, where {@code n} is the number of Listeners registered for the
- * class for which the Listener should be added/removed. {@link #get(Class)}
- * performs in {@code O(1)}.
+ * class for which the Listener should be added/removed. The {@link #get(Class)
+ * get} method retrieves the stored listeners from a map in {@code O(1)} but
+ * then needs to create a copy of this list in order to avoid concurrency
+ * problems. It therefore performs in {@code O(n)}.
  * </p>
  *
  * @author Simon Taddiken
@@ -91,19 +94,23 @@ public class PriorityListenerStore extends AbstractListenerStore implements List
     }
 
     @Override
+    protected <T> List<T> createListenerList(int sizeHint) {
+        return new LinkedList<>();
+    }
+
+    @Override
     public <T extends Listener> Stream<T> get(Class<T> listenerClass) {
         if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass is null");
         }
 
         synchronized (this.listenerMap) {
-            final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
-            final int sizeHint = listeners == null
-                    ? 0
-                    : listeners.size();
+            final List<ListenerWrapper> listeners = this.listenerMap.getOrDefault(
+                    listenerClass, Collections.emptyList());
 
+            final int sizeHint = listeners.size();
             return copyList(listenerClass,
-                    nullSafeStream(listeners).map(w -> w.listener),
+                    listeners.stream().map(w -> w.listener),
                     sizeHint).stream();
         }
     }
@@ -167,7 +174,7 @@ public class PriorityListenerStore extends AbstractListenerStore implements List
 
         synchronized (this.listenerMap) {
             final List<ListenerWrapper> listeners = this.listenerMap.computeIfAbsent(
-                    listenerClass, key -> new LinkedList<>());
+                    listenerClass, key -> createListenerList());
             addSorted(listeners, listener, priority);
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);

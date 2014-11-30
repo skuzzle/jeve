@@ -2,8 +2,8 @@ package de.skuzzle.jeve.stores;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,6 +19,26 @@ import de.skuzzle.jeve.annotation.ListenerKind;
  * @since 2.1.0
  */
 public abstract class AbstractListenerStore implements ListenerStore {
+
+    /** The default size hint for {@link #createListenerList()} */
+    protected static final int DEFAULT_SIZE_HINT = 8;
+
+    /**
+     * Returns the List object to store listeners in.
+     *
+     * @param sizeHint The expected initial size of the list to create.
+     * @return A new List instance.
+     */
+    protected abstract <T> List<T> createListenerList(int sizeHint);
+
+    /**
+     * Returns the List object to store listeners in
+     *
+     * @return A new List instance.
+     */
+    protected final <T> List<T> createListenerList() {
+        return createListenerList(DEFAULT_SIZE_HINT);
+    }
 
     /**
      * Creates a collection from the given stream, casting each object to the
@@ -36,20 +56,6 @@ public abstract class AbstractListenerStore implements ListenerStore {
         return listeners
                 .map(obj -> listenerClass.cast(obj))
                 .collect(Collectors.toCollection(() -> new ArrayList<>(sizeHint)));
-    }
-
-    /**
-     * Creates a {@link Stream} from the given collection. Returns an empty
-     * Stream if the collection is <code>null</code>.
-     *
-     * @param c The collection to create a Stream from.
-     * @return The stream.
-     */
-    protected <T> Stream<T> nullSafeStream(Collection<T> c) {
-        if (c == null) {
-            return Collections.<T> emptyList().stream();
-        }
-        return c.stream();
     }
 
     @SuppressWarnings("unchecked")

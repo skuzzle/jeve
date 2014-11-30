@@ -18,8 +18,14 @@ public class PerformanceListenerStoreTest extends
     @Test
     public void testAutoOptimize() throws Exception {
         final PerformanceListenerStore store = new PerformanceListenerStore(true);
+        Assert.assertTrue(store.isAutoOptimize());
         store.get(SampleListener.class);
         Assert.assertTrue(store.isOptimized());
+    }
+
+    @Test
+    public void testNoAutoOptimize() throws Exception {
+        Assert.assertFalse(this.subject.isAutoOptimize());
     }
 
     @Test

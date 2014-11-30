@@ -68,6 +68,16 @@ public class PerformanceListenerStore extends DefaultListenerStore {
     }
 
     /**
+     * Whether auto optimization upon first call to {@link #get(Class)} has been
+     * enabled in the constructor.
+     *
+     * @return Whether auto optimize is enabled.
+     */
+    public boolean isAutoOptimize() {
+        return this.autoOptimize;
+    }
+
+    /**
      * Interchanges the performance characteristics of {@link #get(Class)} with
      * {@link #add(Class, Listener)} resp. {@link #remove(Class, Listener)}.
      * <p>

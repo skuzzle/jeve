@@ -163,6 +163,7 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
 
     @Test
     public void testAddMulti() throws Exception {
+        @SuppressWarnings("unchecked")
         final MultiListenerImpl listener = Mockito.mock(MultiListenerImpl.class);
         this.subject.add(listener);
         Assert.assertSame(listener, this.subject.get(SampleListener.class).iterator().next());

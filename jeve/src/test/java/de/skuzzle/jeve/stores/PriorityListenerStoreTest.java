@@ -1,6 +1,8 @@
 package de.skuzzle.jeve.stores;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +19,12 @@ public class PriorityListenerStoreTest extends
     @Test
     public void testIsNotSequential() {
         Assert.assertFalse(this.subject.isSequential());
+    }
+
+    @Test
+    public void testCreateListenerList() throws Exception {
+        final List<String> list = this.subject.createListenerList();
+        Assert.assertTrue(list instanceof LinkedList<?>);
     }
 
     @Test

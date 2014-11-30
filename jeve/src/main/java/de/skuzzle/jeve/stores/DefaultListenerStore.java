@@ -14,7 +14,8 @@ import de.skuzzle.jeve.RegistrationEvent;
 
 /**
  * Sequential {@link ListenerStore} implementation. This class implements the
- * default semantics of a ListenerStore with no additional features.
+ * default semantics of a ListenerStore with no additional features. The public
+ * interface to this store is thread safe.
  *
  * <p>
  * Performance notes: This store uses a {@link HashMap} of {@link ArrayList

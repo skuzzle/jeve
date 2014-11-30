@@ -22,7 +22,7 @@ import de.skuzzle.jeve.RegistrationEvent;
  * the Listener will be notified when an Event is dispatched for its listener
  * class. When using the normal {@link #add(Class, Listener) add} method, the
  * Listener is assigned a default priority which may be specified in the
- * constructor.
+ * constructor. The public interface to this store is thread safe.
  *
  * <p>
  * Performance notes: This store uses a {@link HashMap} of {@link LinkedList

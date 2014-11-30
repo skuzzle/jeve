@@ -10,6 +10,7 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * Default implementation of jeve's fluent builder API.
  *
  * @author Simon Taddiken
+ * @since 2.0.0
  */
 public class ConfiguratorImpl implements EventProviderConfigurator {
 

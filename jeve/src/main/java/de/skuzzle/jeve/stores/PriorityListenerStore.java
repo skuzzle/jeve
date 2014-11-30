@@ -38,7 +38,7 @@ import de.skuzzle.jeve.RegistrationEvent;
  * @author Simon Taddiken
  * @since 2.0.0
  */
-public class PriorityListenerStore extends AbstractListenerStore implements ListenerStore {
+public class PriorityListenerStore extends AbstractListenerStore {
 
     private static class ListenerWrapper {
         private final Object listener;

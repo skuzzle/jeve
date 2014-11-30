@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.Optional;
 
+import de.skuzzle.jeve.providers.SynchronousEventProvider;
 
 /**
  * <p>
@@ -77,7 +78,7 @@ public class Event<T, L extends Listener> {
      *
      * @since 2.1.0
      */
-    private Event<?, ?> cause;
+    private Optional<Event<?, ?>> cause;
 
     /**
      * Creates a new event with a given source.
@@ -107,6 +108,44 @@ public class Event<T, L extends Listener> {
      */
     public Event(T source, Class<L> listenerClass, Event<?, ?> cause) {
         this(source, listenerClass);
+        this.cause = Optional.ofNullable(cause);
+    }
+
+    /**
+     * Creates a new Event with a given source and cause. When this Event will
+     * be dispatched with a {@link SynchronousEventProvider}, the cause of this
+     * event can be determined by obtaining the peek of the provider's
+     * {@link SynchronousEventProvider#getEventStack() event stack} even if this
+     * event is not directly fired from within a listening method. Consider the
+     * following event implementation:
+     *
+     * <pre>
+     * public class WhatEverEvent extends Event&lt;Source, WhatEverListener&gt; {
+     *     public WhatEverEvent(Source source, Optional&lt;Event&lt;?, ?&gt;&gt; cause) {
+     *         super(source, WhatEverListener.class, cause);
+     *     }
+     * }
+     * </pre>
+     *
+     * The event can then be instantiated like this:
+     *
+     * <pre>
+     * EventStack stack = provider.getEventStack();
+     * WhatEverEvent e = new WhatEverEvent(source, stack.peek());
+     * </pre>
+     *
+     * @param source The source of this event.
+     * @param listenerClass The type of the listener which can handle this
+     *            event. This value must not be <code>null</code>.
+     * @param cause The cause of this event.
+     * @since 2.1.0
+     */
+    public Event(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
+        this(source, listenerClass);
+        if (cause == null) {
+            throw new IllegalArgumentException("cause is null");
+        }
+
         this.cause = cause;
     }
 
@@ -127,7 +166,7 @@ public class Event<T, L extends Listener> {
      * @since 2.1.0
      */
     public Optional<Event<?, ?>> getCause() {
-        return Optional.ofNullable(this.cause);
+        return this.cause;
     }
 
     /**

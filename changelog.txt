@@ -1,6 +1,9 @@
 This is the jeve version history.
 Author: Simon Taddiken
 
+Version 2.0.2 [Released: 01.12.2014]
+    * [FIXED] #4: PriorityListenerStore.close() does not call 'onUnregister'
+
 Version 2.0.1 [Released: 29.11.2014]
     * [DEPRECATED] EventProvider.DEFAULT_HANDLER
     * [FIXED] ConcurrentModificationException when modifying ListenerStores during 

@@ -16,7 +16,7 @@ jeve is distributed under the MIT License. See `LICENSE.md` in this directory
 for detailed information.
 
 ## Documentation
-JavaDoc is available at www.jeve.skuzzle.de/2.0.1/doc
+JavaDoc is available at www.jeve.skuzzle.de/2.0.x/doc
 
 Scroll down in this readme for a quick start guide and some advanced topics.
 
@@ -30,7 +30,7 @@ Jeve is available as dependency for your projects through Maven's Central Reposi
     <dependency>
         <groupId>de.skuzzle</groupId>
         <artifactId>jeve</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
     </dependency>
 ```
 

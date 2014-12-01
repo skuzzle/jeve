@@ -2,7 +2,6 @@ This is the jeve version history.
 Author: Simon Taddiken
 
 Version 2.1.0 [Released: TODO]
-    * [FIXED] PriorityListenerStore.close() would not call 'onUnregister'
     * [ADD] PerformanceListenerStore implementation
     * [ADD] SynchronousEvent and EventStack to control cascading events when using 
             DefaultEventProvider.
@@ -13,6 +12,9 @@ Version 2.1.0 [Released: TODO]
     * [DEPRECATED] EventProvider.dispatch(DefaultTargetEvent) (use 
                    EventProvider.dispatch(Event) instead)
     * [DEPRECATED] DefaultListenerStore.removeInternal
+
+Version 2.0.2 [Released: 01.12.2014]
+    * [FIXED] #4: PriorityListenerStore.close() does not call 'onUnregister'
 
 Version 2.0.1 [Released: 29.11.2014]
     * [DEPRECATED] EventProvider.DEFAULT_HANDLER

@@ -263,7 +263,7 @@ public class PriorityListenerStore implements ListenerStore {
     @Override
     public void close() {
         synchronized (this.listenerMap) {
-            this.listenerMap.clear();
+            this.clearAll();
         }
     }
 

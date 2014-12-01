@@ -2,6 +2,7 @@ package de.skuzzle.jeve.stores;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +54,9 @@ public abstract class AbstractListenerStore implements ListenerStore {
      */
     protected <T extends Listener> Collection<T> copyList(Class<T> listenerClass,
             Stream<Object> listeners, int sizeHint) {
+        if (sizeHint == 0) {
+            return Collections.emptyList();
+        }
         return listeners
                 .map(obj -> listenerClass.cast(obj))
                 .collect(Collectors.toCollection(() -> new ArrayList<>(sizeHint)));

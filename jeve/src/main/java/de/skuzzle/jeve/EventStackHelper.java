@@ -54,7 +54,7 @@ public final class EventStackHelper {
         private final BiConsumer<L, E> consumer;
         private boolean dispatched;
 
-        public SuppressedEventImpl(E event, ExceptionCallback ec,
+        SuppressedEventImpl(E event, ExceptionCallback ec,
                 BiConsumer<L, E> consumer) {
             this.event = event;
             this.ec = ec;

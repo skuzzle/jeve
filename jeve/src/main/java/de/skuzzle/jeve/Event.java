@@ -104,7 +104,7 @@ public class Event<T, L extends Listener> {
      * @param source The source of this event.
      * @param listenerClass The type of the listener which can handle this
      *            event. This value must not be <code>null</code>.
-     * @param cause The cause of this event.
+     * @param cause The cause of this event. Can be <code>null</code>.
      */
     public Event(T source, Class<L> listenerClass, Event<?, ?> cause) {
         this(source, listenerClass);

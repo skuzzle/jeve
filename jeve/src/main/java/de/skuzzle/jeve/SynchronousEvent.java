@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
@@ -31,25 +32,71 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
     private Set<SuppressedEvent> suppressedEvents;
 
     /**
-     * The EventStack of the Eventprovider which is currently dispatching this
+     * The EventStack of the EventProvider which is currently dispatching this
      * event.
      */
     private EventStack eventStack;
 
+    /**
+     * Creates a new Event with a given source and cause. This constructor might
+     * be used when dispatching a new Event from within a listening method.
+     *
+     * @param source The source of this event.
+     * @param listenerClass The type of the listener which can handle this
+     *            event. This value must not be <code>null</code>.
+     * @param cause The cause of this event. Can be <code>null</code>.
+     */
     public SynchronousEvent(T source, Class<L> listenerClass, Event<?, ?> cause) {
         super(source, listenerClass, cause);
     }
 
+    /**
+     * Creates a new Event with a given source and cause. Delegates to the
+     * respective super constructor.
+     *
+     * @param source The source of this event.
+     * @param listenerClass The type of the listener which can handle this
+     *            event. This value must not be <code>null</code>.
+     * @param cause The cause of this event.
+     */
+    public SynchronousEvent(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
+        super(source, listenerClass, cause);
+    }
+
+    /**
+     * Creates a new event with a given source.
+     *
+     * @param source The source of this event.
+     * @param listenerClass The type of the listener which can handle this
+     *            event. This value must not be <code>null</code>.
+     */
     public SynchronousEvent(T source, Class<L> listenerClass) {
         super(source, listenerClass);
     }
 
+    /**
+     * Sets the EventStack which is used while this event is dispatched. This
+     * method will be called by the {@link SynchronousEventProvider} right
+     * before dispatching this event. The stack is only set once, subsequent
+     * calls will have no effect.
+     *
+     * @param eventStack The current event stack.
+     */
     public void setEventStack(EventStack eventStack) {
         if (eventStack == null) {
             this.eventStack = eventStack;
         }
     }
 
+    /**
+     * Gets the current event stack. This method can only be called while this
+     * event is being dispatched by a provider which calls
+     * {@link #setEventStack(EventStack)} before dispatching. If the stack has
+     * not been set, this method will throw an exception.
+     *
+     * @return The current event stack.
+     * @throws IllegalStateException If no stack has been set.
+     */
     public EventStack getEventStack() {
         if (this.eventStack == null) {
             throw new IllegalStateException("Event is not currently dispatched");
@@ -57,6 +104,16 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
         return this.eventStack;
     }
 
+    /**
+     * Adds a {@linkplain SuppressedEvent} to the set of suppressed events of
+     * this Event. If a capable EventProvider determines that a certain event
+     * has been prevented because its listener class has been registered on this
+     * event using {@link #preventCascade(Class)}, then the prevented event is
+     * registered here using this method.
+     *
+     * @param e The event to add.
+     * @throws IllegalArgumentException If the event is <code>null</code>.
+     */
     public void addSuppressedEvent(SuppressedEvent e) {
         if (e == null) {
             throw new IllegalArgumentException("e is null");
@@ -66,11 +123,17 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
         this.suppressedEvents.add(e);
     }
 
+    /**
+     * Gets a read-only set of the suppressed events that have been registered
+     * at this event using {@link #addSuppressedEvent(SuppressedEvent)}.
+     *
+     * @return The suppressed events.
+     */
     public Set<SuppressedEvent> getSuppressedEvents() {
         if (this.suppressedEvents == null) {
             return Collections.emptySet();
         }
-        return this.suppressedEvents;
+        return Collections.unmodifiableSet(this.suppressedEvents);
     }
 
     /**

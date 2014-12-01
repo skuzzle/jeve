@@ -365,9 +365,56 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec);
 
+    /**
+     * Dispatches the given event by calling its
+     * {@link Event#defaultDispatch(EventProvider, ExceptionCallback)} method,
+     * passing {@code this} as first argument and the currently set
+     * ExceptionCallback as second argument. The {@code defaultDispatch} method
+     * will in return call
+     * {@link #dispatch(Event, BiConsumer, ExceptionCallback)} on this provider.
+     *
+     * <p>
+     * In order to use this method to dispatch, the provided event must properly
+     * override the
+     * {@linkplain Event#defaultDispatch(EventProvider, ExceptionCallback)
+     * default dispatch} method.
+     * </p>
+     *
+     * @param event The event to dispatch using its default dispatch method.
+     * @throws IllegalArgumentException If the passed event is <code>null</code>
+     * @throws AbortionException If a listener threw an AbortionException.
+     * @throws UnsupportedOperationException If the given event does not support
+     *             default dispatching.
+     * @see Event#defaultDispatch(EventProvider, ExceptionCallback)
+     * @since 2.1.0
+     */
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event);
 
+    /**
+     * Dispatches the given event by calling its
+     * {@link Event#defaultDispatch(EventProvider, ExceptionCallback)} method,
+     * passing {@code this} as first argument and the given ExceptionCallback as
+     * second argument. The {@code defaultDispatch} method will in return call
+     * {@link #dispatch(Event, BiConsumer, ExceptionCallback)} on this provider.
+     *
+     * <p>
+     * In order to use this method to dispatch, the provided event must properly
+     * override the
+     * {@linkplain Event#defaultDispatch(EventProvider, ExceptionCallback)
+     * default dispatch} method.
+     * </p>
+     *
+     * @param event The event to dispatch using its default dispatch method.
+     * @param ec The ExceptionCallback to use for this dispatch action.
+     * @throws IllegalArgumentException If any of the passed arguments is
+     *             <code>null</code>.
+     * @throws AbortionException If a listener threw an AbortionException.
+     * @throws UnsupportedOperationException If the given event does not support
+     *             default dispatching.
+     * @see Event#defaultDispatch(EventProvider, ExceptionCallback)
+     * @since 2.1.0
+     */
     public default <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, ExceptionCallback ec) {
         if (event == null) {

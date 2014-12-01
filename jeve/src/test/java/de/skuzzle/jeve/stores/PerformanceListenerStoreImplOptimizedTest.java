@@ -9,12 +9,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 
-public class PerformanceListenerStoreOptimizedTest extends
-        AbstractListenerStoreTest<PerformanceListenerStore> {
+public class PerformanceListenerStoreImplOptimizedTest extends
+        AbstractListenerStoreTest<PerformanceListenerStoreImpl> {
 
     @Override
-    protected PerformanceListenerStore createStore() {
-        final PerformanceListenerStore result = new PerformanceListenerStore();
+    protected PerformanceListenerStoreImpl createStore() {
+        final PerformanceListenerStoreImpl result = new PerformanceListenerStoreImpl();
         result.optimizeGet();
         return result;
     }
@@ -26,7 +26,7 @@ public class PerformanceListenerStoreOptimizedTest extends
 
     @Test
     public void testOptimizeOnFilledStore() throws Exception {
-        final PerformanceListenerStore store = new PerformanceListenerStore();
+        final PerformanceListenerStoreImpl store = new PerformanceListenerStoreImpl();
         store.add(SampleListener.class, Mockito.mock(SampleListener.class));
         store.add(OtherListener.class, Mockito.mock(OtherListener.class));
 

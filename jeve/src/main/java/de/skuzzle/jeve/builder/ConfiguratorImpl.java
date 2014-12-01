@@ -17,12 +17,12 @@ public class ConfiguratorImpl implements EventProviderConfigurator {
     @Override
     public SynchronousEventProvider<DefaultListenerStore> createInstantly() {
         return new SynchronousEventProvider<DefaultListenerStore>(
-                new DefaultListenerStore());
+                DefaultListenerStore.create());
     }
 
     @Override
     public ProviderChooser<DefaultListenerStore> defaultStore() {
-        final Supplier<DefaultListenerStore> supplier = DefaultListenerStore::new;
+        final Supplier<DefaultListenerStore> supplier = DefaultListenerStore::create;
         return new ProviderChooserImpl<DefaultListenerStore>(supplier);
     }
 

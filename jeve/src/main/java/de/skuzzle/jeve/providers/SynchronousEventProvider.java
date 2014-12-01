@@ -23,14 +23,14 @@ import de.skuzzle.jeve.SynchronousEvent;
  * cascaded dispatch action for the same type, or for another type Y is
  * triggered. If you want to prevent cascaded events, you may register listener
  * classes to be prevented on the event to dispatch. For this purpose, instead
- * of extending {@link Event}, your events must extend {@link SynchronousEvent}
- * instead. For example: {@code public class UserEvent extends
+ * of extending {@link Event}, your events must extend {@link SynchronousEvent}.
+ * For example: {@code public class UserEvent extends
  * SynchronousEvent<UserManager, UserListener.class> ...}
  * </p>
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
@@ -46,11 +46,11 @@ import de.skuzzle.jeve.SynchronousEvent;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- *
+ * 
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
- *
+ * 
  * // Dispatch all suppressed UIRefreshEvents
  * for (final SuppressedEvent suppressed : e.getSuppressedEvents()) {
  *     if (suppressed.getListenerClass() == UIRefreshEvent.class) {

@@ -4,6 +4,8 @@ import java.io.Closeable;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.annotation.ListenerKind;
+import de.skuzzle.jeve.stores.PriorityListenerStore;
+import de.skuzzle.jeve.stores.SynchronizedListenerStore;
 
 /**
  * Allows to register and unregister {@link Listener Listeners} for certain
@@ -24,13 +26,35 @@ import de.skuzzle.jeve.annotation.ListenerKind;
  * with that provider immediately turns non-sequential too.
  * </p>
  *
+ * <h2>Concurrency Safety</h2>
+ * <p>
+ * In contrast to the aspect of thread safety, <em>concurrency safety</em> also
+ * kicks in on single threaded event dispatching scenarios. In the context of
+ * listener stores, this means that the Stream returned by {@link #get(Class)}
+ * must <b>not</b> be backed by the internal collection which is also modified
+ * through {@link #add(Class, Listener) add} and
+ * {@link #remove(Class, Listener) remove}. This guarantees a graceful and
+ * deterministic behavior of synchronous event dispatching. While an event is
+ * dispatched, the following conditions <b>must</b> always hold:
+ * </p>
+ * <ul>
+ * <li>new listeners can be registered to this store, but they will first be
+ * notified during the next dispatch action</li>
+ * <li>existing listeners can be removed from this store, but they will
+ * nevertheless be notified during the current dispatch action</li>
+ * </ul>
+ *
  * <h2>Thread Safety</h2>
  * <p>
  * For general purpose use with different kinds of EventProviders, the
- * ListenerStore implementation <em>must</em> be thread-safe. For example, an
+ * ListenerStore implementation <b>must</b> be thread-safe. For example, an
  * asynchronous EventProvider could dispatch two Events concurrently, where
  * Listeners for both access the ListenerStore while being notified (E.g. they
- * remove themselves from the store for not being notified again).
+ * remove themselves from the store for not being notified again). For
+ * performance reasons, stores should always be implemented without
+ * synchronization and instead return a synchronized view of themselves with
+ * {@link #synchronizedView()}. See {@link SynchronizedListenerStore} for
+ * information on how to properly implement this.
  * </p>
  *
  * <h2>Closing</h2>
@@ -40,10 +64,73 @@ import de.skuzzle.jeve.annotation.ListenerKind;
  * automatically closed when an EventProvider which uses the store is closed.
  * </p>
  *
+ * <h2>General Implementation Note</h2>
+ * <p>
+ * jeve makes excessive use of java's generics to provide as much compile time
+ * type checks as possible. When creating an EventProvider, it will always be
+ * parameterized with the type of the store it uses. This is to make API
+ * extensions to the {@link ListenerStore} interface (like for example the
+ * {@link PriorityListenerStore} does) accessible to the caller of
+ * {@link EventProvider#listeners()}.
+ * </p>
+ * <p>
+ * In order to be able to create an EventProvider with a certain ListenerStore
+ * implementation but also with that implementation's
+ * {@linkplain #synchronizedView()}, the {@code synchronizedView's} return type
+ * must be adjusted to be compatible with the actual implementation. For
+ * example, if the {@code synchronizedView} method on a
+ * {@linkplain PriorityListenerStore} would be declared to return the type
+ * {@code ListenerStore}, then
+ * </p>
+ *
+ * <pre>
+ * EventProvider.configure().store(new PriorityListenerStore()).create();
+ * </pre>
+ *
+ * and
+ *
+ * <pre>
+ * EventProvider.configure().store(new PriorityListenerStore().synchronizedView()).create();
+ * </pre>
+ * <p>
+ * would yield two incompatible EventProvider types (the first is of type
+ * {@code EventProvider<PriorityListenerStore>} and the second of type
+ * {@code EventProvider<ListenerStore>}.
+ * </p>
+ *
  * @author Simon Taddiken
  * @since 2.0.0
  */
 public interface ListenerStore extends Closeable {
+
+    /**
+     * <p>
+     * Returns a thread safe view of this store. The returned store will be
+     * backed by this one, thus changes on the one object are automatically
+     * reflected to the other. This also implies that unsynchronized access is
+     * still possible through the original object.
+     * </p>
+     * <p>
+     * Subsequent calls to this method must return a cached instance of the
+     * synchronized view. Store implementations that are natively thread safe
+     * may simply return {@code this}.
+     * </p>
+     *
+     * <p>
+     * <b>Note:</b> The actual returned object must be assignment compatible
+     * with this store, thus for the implementation 'MyListenerStore' the
+     * following statement must compile:
+     * </p>
+     *
+     * <pre>
+     * MyListenerStore store = new MyListenerStore().synchronizedView();
+     * </pre>
+     *
+     *
+     * @return A thread safe view of this store.
+     * @since 2.1.0
+     */
+    public ListenerStore synchronizedView();
 
     /**
      * Adds a listener which will be notified for every event represented by the
@@ -55,9 +142,10 @@ public interface ListenerStore extends Closeable {
      * thread.
      *
      * <p>
-     * <b>Note on concurrency:</b> This method can safely be called from within
-     * a listening method during event handling to add a listener. This will
-     * have no impact on the current event delegation process.
+     * <b>Note on concurrency:</b>
+     * This method can safely be called from within a listening method during
+     * event handling to add a listener. This will have no impact on the current
+     * event delegation process.
      * </p>
      *
      * @param <L> Type of the listener to add.
@@ -143,6 +231,13 @@ public interface ListenerStore extends Closeable {
     /**
      * Gets all listeners that have been registered using
      * {@link #add(Class, Listener)} for the given listener class.
+     *
+     * <p>
+     * <b>Note on concurrency:</b> The returned Stream will not be backed by the
+     * internal list which is also modified via {@link #add(Class, Listener)} or
+     * {@link #remove(Class, Listener)}. This allows to add or remove listeners
+     * to this store while the Stream is being iterated.
+     * </p>
      *
      * @param <L> Type of the listeners to return.
      * @param listenerClass The class representing the event for which the

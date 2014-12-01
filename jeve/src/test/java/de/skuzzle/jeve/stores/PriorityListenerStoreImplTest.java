@@ -8,12 +8,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class PriorityListenerStoreTest extends
-        AbstractListenerStoreTest<PriorityListenerStore> {
+public class PriorityListenerStoreImplTest extends
+        AbstractListenerStoreTest<PriorityListenerStoreImpl> {
 
     @Override
-    protected PriorityListenerStore createStore() {
-        return new PriorityListenerStore();
+    protected PriorityListenerStoreImpl createStore() {
+        return new PriorityListenerStoreImpl();
     }
 
     @Test

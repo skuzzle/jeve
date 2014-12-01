@@ -11,7 +11,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -29,8 +28,8 @@ public class PriorityEventProviderIT extends
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().store(new PriorityListenerStore()).useSynchronousProvider().createSupplier() },
-                new Object[] { EventProvider.configure().store(new PriorityListenerStore(0)).useSynchronousProvider().createSupplier() }
+                new Object[] { EventProvider.configure().store(PriorityListenerStore.create()).useSynchronousProvider().createSupplier() },
+                new Object[] { EventProvider.configure().store(PriorityListenerStore.create(0)).useSynchronousProvider().createSupplier() }
                 );
     }
 

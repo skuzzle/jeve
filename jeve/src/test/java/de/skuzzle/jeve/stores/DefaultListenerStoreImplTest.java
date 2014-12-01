@@ -6,12 +6,12 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DefaultListenerStoreTest extends
-        AbstractListenerStoreTest<DefaultListenerStore> {
+public class DefaultListenerStoreImplTest extends
+        AbstractListenerStoreTest<DefaultListenerStoreImpl> {
 
     @Override
-    protected DefaultListenerStore createStore() {
-        return new DefaultListenerStore();
+    protected DefaultListenerStoreImpl createStore() {
+        return new DefaultListenerStoreImpl();
     }
 
     @Test

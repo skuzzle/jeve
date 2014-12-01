@@ -1,10 +1,6 @@
 package de.skuzzle.jeve.stores;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Stream;
 
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
@@ -38,33 +34,14 @@ import de.skuzzle.jeve.ListenerStore;
  * @author Simon Taddiken
  * @since 2.1.0
  */
-public class PerformanceListenerStore extends DefaultListenerStore {
+public interface PerformanceListenerStore extends DefaultListenerStore {
 
-    /** Locks access to {@link #optimized}. */
-    protected final Object optimizeMutex = new Object();
-
-    /** Whether {@link #optimizeGet()} has already been called. */
-    protected boolean optimized;
-
-    /** Auto {@link #optimizeGet()} on first call to {@link #get(Class)} */
-    protected final boolean autoOptimize;
-
-    /**
-     * Creates a new PerformanceListenerStore.
-     */
-    public PerformanceListenerStore() {
-        this(false);
+    public static PerformanceListenerStore create() {
+        return new PerformanceListenerStoreImpl();
     }
 
-    /**
-     * Creates a PerformanceListenerStore with optionally enabling auto
-     * optimize. When auto optimize is enabled, {@link #optimizeGet()} will
-     * automatically be called the first time {@link #get(Class)} is called.
-     *
-     * @param pAutoOptimize Whether to enable auto optimize.
-     */
-    public PerformanceListenerStore(boolean pAutoOptimize) {
-        this.autoOptimize = pAutoOptimize;
+    public static PerformanceListenerStore withAutoOptimize() {
+        return new PerformanceListenerStoreImpl(true);
     }
 
     /**
@@ -73,9 +50,14 @@ public class PerformanceListenerStore extends DefaultListenerStore {
      *
      * @return Whether auto optimize is enabled.
      */
-    public boolean isAutoOptimize() {
-        return this.autoOptimize;
-    }
+    public boolean isAutoOptimize();
+
+    /**
+     * Whether {@link #optimizeGet()} has been called on this store.
+     *
+     * @return Whether {@link #optimizeGet()} has been called on this store.
+     */
+    public boolean isOptimized();
 
     /**
      * Interchanges the performance characteristics of {@link #get(Class)} with
@@ -107,68 +89,5 @@ public class PerformanceListenerStore extends DefaultListenerStore {
      * {@link #isOptimized()}.
      * </p>
      */
-    public void optimizeGet() {
-        synchronized (this.optimizeMutex) {
-            if (this.optimized) {
-                return;
-            }
-            this.optimized = true;
-            synchronized (this.listenerMap) {
-                for (final Entry<Class<? extends Listener>, List<Object>> e : this.listenerMap.entrySet()) {
-                    final List<Object> cpy = new CopyOnWriteArrayList<>(e.getValue());
-                    e.setValue(cpy);
-                }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>
-     * After {@link #optimizeGet()} has been called, this method will return
-     * instances of {@link CopyOnWriteArrayList}.
-     * </p>
-     */
-    @Override
-    protected <T> List<T> createListenerList(int sizeHint) {
-        if (this.optimized) {
-            return new CopyOnWriteArrayList<>();
-        }
-        return super.createListenerList(sizeHint);
-    }
-
-    /**
-     * Whether {@link #optimizeGet()} has been called on this store.
-     *
-     * @return Whether {@link #optimizeGet()} has been called on this store.
-     */
-    public boolean isOptimized() {
-        synchronized (this.optimizeMutex) {
-            return this.optimized;
-        }
-    }
-
-    @Override
-    public <T extends Listener> Stream<T> get(Class<T> listenerClass) {
-        if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass");
-        }
-        if (this.autoOptimize) {
-            optimizeGet();
-        }
-        synchronized (this.listenerMap) {
-            final List<Object> targets = this.listenerMap.getOrDefault(listenerClass,
-                    Collections.emptyList());
-
-            synchronized (this.optimizeMutex) {
-                if (this.optimized) {
-                    return targets.stream().map(listener -> listenerClass.cast(listener));
-                } else {
-                    final int sizeHint = targets.size();
-                    return copyList(listenerClass, targets.stream(), sizeHint).stream();
-                }
-            }
-        }
-    }
+    public void optimizeGet();
 }

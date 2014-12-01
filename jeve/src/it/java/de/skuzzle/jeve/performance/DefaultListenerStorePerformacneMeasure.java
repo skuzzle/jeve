@@ -8,7 +8,7 @@ public class DefaultListenerStorePerformacneMeasure extends
 
     @Override
     protected ListenerStore createSubject() {
-        PerformanceListenerStore tresult = new PerformanceListenerStore();
+        PerformanceListenerStore tresult = PerformanceListenerStore.create();
         // tresult.optimizeGet();
         return tresult;
     }

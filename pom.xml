@@ -105,33 +105,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0.1</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.semver</groupId>
-                        <artifactId>enforcer-rule</artifactId>
-                        <version>0.9.34-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>check</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireBackwardCompatibility implementation="org.semver.enforcer.RequireBackwardCompatibility">
-                                    <compatibilityType>BACKWARD_COMPATIBLE_IMPLEMENTER</compatibilityType>
-                                </requireBackwardCompatibility>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     

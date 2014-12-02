@@ -108,8 +108,7 @@ public class Event<T, L extends Listener> {
      * @param cause The cause of this event. Can be <code>null</code>.
      */
     public Event(T source, Class<L> listenerClass, Event<?, ?> cause) {
-        this(source, listenerClass);
-        this.cause = Optional.ofNullable(cause);
+        this(source, listenerClass, Optional.ofNullable(cause));
     }
 
     /**

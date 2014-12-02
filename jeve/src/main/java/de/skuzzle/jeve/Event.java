@@ -95,6 +95,7 @@ public class Event<T, L extends Listener> {
         this.source = source;
         this.listenerClass = listenerClass;
         this.isHandled = false;
+        this.cause = Optional.empty();
     }
 
     /**

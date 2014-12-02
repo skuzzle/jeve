@@ -43,7 +43,7 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
     }
 
     private static class SynchronizedStore extends
-            SynchronizedListenerStore<PriorityListenerStore> implements
+            AbstractSynchronizedListenerStore<PriorityListenerStore> implements
             PriorityListenerStore {
 
         public SynchronizedStore(PriorityListenerStore wrapped) {
@@ -58,13 +58,7 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
         @Override
         public <T extends Listener> void add(Class<T> listenerClass, T listener,
                 int priority) {
-            try {
-                this.lock.writeLock().lock();
-                this.wrapped.add(listenerClass, listener, priority);
-            } finally {
-                this.lock.writeLock().unlock();
-            }
-
+            modify(() -> this.wrapped.add(listenerClass, listener, priority));
         }
     }
 

@@ -12,7 +12,7 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
         PerformanceListenerStore {
 
     private static class SynchronizedStore extends
-            SynchronizedListenerStore<PerformanceListenerStore> implements
+            AbstractSynchronizedListenerStore<PerformanceListenerStore> implements
             PerformanceListenerStore {
 
         public SynchronizedStore(PerformanceListenerStore wrapped) {
@@ -31,22 +31,12 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
 
         @Override
         public boolean isOptimized() {
-            try {
-                this.lock.readLock().lock();
-                return this.wrapped.isAutoOptimize();
-            } finally {
-                this.lock.readLock().unlock();
-            }
+            return read(() -> this.wrapped.isAutoOptimize());
         }
 
         @Override
         public void optimizeGet() {
-            try {
-                this.lock.writeLock().lock();
-                this.wrapped.optimizeGet();
-            } finally {
-                this.lock.writeLock().unlock();
-            }
+            modify(() -> this.wrapped.optimizeGet());
         }
 
     }

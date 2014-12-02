@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import de.skuzzle.jeve.annotation.ListenerKind;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
-import de.skuzzle.jeve.stores.SynchronizedListenerStore;
+import de.skuzzle.jeve.stores.AbstractSynchronizedListenerStore;
 
 /**
  * Allows to register and unregister {@link Listener Listeners} for certain
@@ -53,7 +53,7 @@ import de.skuzzle.jeve.stores.SynchronizedListenerStore;
  * remove themselves from the store for not being notified again). For
  * performance reasons, stores should always be implemented without
  * synchronization and instead return a synchronized view of themselves with
- * {@link #synchronizedView()}. See {@link SynchronizedListenerStore} for
+ * {@link #synchronizedView()}. See {@link AbstractSynchronizedListenerStore} for
  * information on how to properly implement this.
  * </p>
  *

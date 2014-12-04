@@ -1,7 +1,7 @@
 This is the jeve version history.
 Author: Simon Taddiken
 
-Version 2.1.0 [Released: TODO]
+Version 3.0.0 [Released: TODO]
     * [ADD] PerformanceListenerStore implementation
     * [ADD] SynchronousEvent and EventStack to control cascading events when using 
             DefaultEventProvider.

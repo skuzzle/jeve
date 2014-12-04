@@ -60,7 +60,7 @@ public interface ExceptionCallback {
      *             be notified and the caller of
      *             {@link EventProvider#dispatch(Event, java.util.function.BiConsumer)
      *             dispatch} will receive this exception.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public default void exception(EventProvider<?> provider, Exception e,
             Listener source, Event<?, ?> cause) {

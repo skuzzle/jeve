@@ -386,7 +386,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * @throws UnsupportedOperationException If the given event does not support
      *             default dispatching.
      * @see Event#defaultDispatch(EventProvider, ExceptionCallback)
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event);
@@ -413,7 +413,7 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * @throws UnsupportedOperationException If the given event does not support
      *             default dispatching.
      * @see Event#defaultDispatch(EventProvider, ExceptionCallback)
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public default <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, ExceptionCallback ec) {

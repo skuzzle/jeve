@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
  * Provides utility methods for working with the {@link EventStack}.
  *
  * @author Simon Taddiken
- * @since 2.1.0
+ * @since 3.0.0
  */
 public final class EventStackHelper {
 

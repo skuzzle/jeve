@@ -127,7 +127,7 @@ public interface ListenerStore extends Closeable {
      * </pre>
      *
      * @return A thread safe view of this store.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public ListenerStore synchronizedView();
 
@@ -180,7 +180,7 @@ public interface ListenerStore extends Closeable {
      *
      * @param <L> Type of the listener.
      * @param listener The listener to add.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public <L extends Listener> void add(L listener);
 
@@ -197,7 +197,7 @@ public interface ListenerStore extends Closeable {
      *
      * @param <L> Type of the listener.
      * @param listener The listener to remove.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public <L extends Listener> void remove(L listener);
 

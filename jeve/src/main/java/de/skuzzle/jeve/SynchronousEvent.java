@@ -15,7 +15,7 @@ import de.skuzzle.jeve.providers.SynchronousEventProvider;
  * @author Simon Taddiken
  * @param <T> Type of the source of this event.
  * @param <L> Type of the listener which can handle this event.
- * @since 2.1.0
+ * @since 3.0.0
  */
 public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
 
@@ -143,7 +143,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      *
      * @param <E> Type of the listener class.
      * @param listenerClass The listener class to prevent being notified.
-     * @since 2.1.0
+     * @since 3.0.0
      * @see #preventCascade()
      */
     public <E extends Listener> void preventCascade(Class<E> listenerClass) {
@@ -161,7 +161,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      * dispatching this event with an EventProvider which supports the
      * {@link EventStack}.
      *
-     * @since 2.1.0
+     * @since 3.0.0
      * @see #preventCascade(Class)
      */
     public void preventCascade() {
@@ -174,7 +174,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      *
      * @return The listener classes marked to prevent.
      * @see #preventCascade(Class)
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public Set<Class<?>> getPrevented() {
         if (this.prevent == null) {

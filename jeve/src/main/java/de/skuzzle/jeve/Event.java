@@ -68,7 +68,7 @@ public class Event<T, L extends Listener> {
      * Whether this event was prevented the last time it was passed to any
      * dispatch method.
      *
-     * @since 2.1.0
+     * @since 3.0.0
      */
     private boolean prevented;
 
@@ -76,7 +76,7 @@ public class Event<T, L extends Listener> {
      * The cause of this event if it was dispatched from within a listening
      * method.
      *
-     * @since 2.1.0
+     * @since 3.0.0
      */
     private final Optional<Event<?, ?>> cause;
 
@@ -131,7 +131,7 @@ public class Event<T, L extends Listener> {
      * @param listenerClass The type of the listener which can handle this
      *            event. This value must not be <code>null</code>.
      * @param cause The cause of this event.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public Event(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
         if (listenerClass == null) {
@@ -160,7 +160,7 @@ public class Event<T, L extends Listener> {
      * from within a listening method.
      *
      * @return The cause of this event if it exists.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public Optional<Event<?, ?>> getCause() {
         return this.cause;
@@ -261,7 +261,7 @@ public class Event<T, L extends Listener> {
      * @param ec The exception call back to use for this dispatch action.
      * @throws UnsupportedOperationException If this event does not support
      *             default dispatch.
-     * @since 2.1.0
+     * @since 3.0.0
      */
     public void defaultDispatch(EventProvider<?> eventProvider, ExceptionCallback ec) {
         throw new UnsupportedOperationException(String.format(

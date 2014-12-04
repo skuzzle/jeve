@@ -27,6 +27,7 @@ public abstract class AbstractListenerStore implements ListenerStore {
     /**
      * Returns the List object to store listeners in.
      *
+     * @param <T> Type of the resulting List.
      * @param sizeHint The expected initial size of the list to create.
      * @return A new List instance.
      */
@@ -35,6 +36,7 @@ public abstract class AbstractListenerStore implements ListenerStore {
     /**
      * Returns the List object to store listeners in
      *
+     * @param <T> Type of the resulting List.
      * @return A new List instance.
      */
     protected final <T> List<T> createListenerList() {

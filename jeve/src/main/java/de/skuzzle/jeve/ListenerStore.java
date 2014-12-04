@@ -160,11 +160,13 @@ public interface ListenerStore extends Closeable {
      * Adds the given object for all listener classes it implements. This
      * recursively traverses super classes and super interfaces of the given
      * listener's class. When encountering a super interface X which
+     * </p>
      * <ol>
      * <li>is not {@code Listener.class} but</li>
      * <li>can be assigned to {@code Listener.class} and</li>
      * <li>is not annotated with {@link ListenerKind#TAGGING}</li>
      * </ol>
+     * <p>
      * then the given listener will be registered for X. Otherwise, all super
      * interfaces of X are processed in the same way. When all super interfaces
      * have been processed, the same process is recursively applied to the super

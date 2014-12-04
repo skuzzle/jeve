@@ -124,7 +124,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.doThrow(ex).when(listener).onEvent(e);
 
         this.subject.notifySingle(listener, e, bc, ec);
-        Mockito.verify(ec).exception(ex, listener, e);
+        Mockito.verify(ec).exception(this.subject, ex, listener, e);
     }
 
     @Test
@@ -137,7 +137,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         final SampleListener listener = Mockito.mock(SampleListener.class);
 
         this.subject.handleException(ec, ex, listener, e);
-        Mockito.verify(ec).exception(ex, listener, e);
+        Mockito.verify(ec).exception(this.subject, ex, listener, e);
     }
 
     @Test
@@ -148,10 +148,10 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
         final SampleListener listener = Mockito.mock(SampleListener.class);
-        Mockito.doThrow(new RuntimeException()).when(ec).exception(ex, listener, e);
+        Mockito.doThrow(new RuntimeException()).when(ec).exception(this.subject, ex, listener, e);
 
         this.subject.handleException(ec, ex, listener, e);
-        Mockito.verify(ec).exception(ex, listener, e);
+        Mockito.verify(ec).exception(this.subject, ex, listener, e);
     }
 
     @Test
@@ -162,13 +162,13 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
         final SampleListener listener = Mockito.mock(SampleListener.class);
-        Mockito.doThrow(new AbortionException()).when(ec).exception(ex, listener, e);
+        Mockito.doThrow(new AbortionException()).when(ec).exception(this.subject, ex, listener, e);
 
         try {
             this.subject.handleException(ec, ex, listener, e);
             Assert.fail("Expected AbortionException");
         } catch (AbortionException ex2) {
-            Mockito.verify(ec).exception(ex, listener, e);
+            Mockito.verify(ec).exception(this.subject, ex, listener, e);
         }
     }
 

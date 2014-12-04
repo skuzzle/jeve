@@ -219,7 +219,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     protected void handleException(ExceptionCallback ec, Exception e, Listener listener,
             Event<?, ?> ev) {
         try {
-            ec.exception(e, listener, ev);
+            ec.exception(this, e, listener, ev);
         } catch (AbortionException abort) {
             throw abort;
         } catch (Exception ignore) {

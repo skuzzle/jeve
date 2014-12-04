@@ -4,8 +4,8 @@ import java.io.Closeable;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.annotation.ListenerKind;
-import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.stores.AbstractSynchronizedListenerStore;
+import de.skuzzle.jeve.stores.PriorityListenerStore;
 
 /**
  * Allows to register and unregister {@link Listener Listeners} for certain
@@ -126,7 +126,6 @@ public interface ListenerStore extends Closeable {
      * MyListenerStore store = new MyListenerStore().synchronizedView();
      * </pre>
      *
-     *
      * @return A thread safe view of this store.
      * @since 2.1.0
      */
@@ -157,6 +156,7 @@ public interface ListenerStore extends Closeable {
     public <L extends Listener> void add(Class<L> listenerClass, L listener);
 
     /**
+     * <p>
      * Adds the given object for all listener classes it implements. This
      * recursively traverses super classes and super interfaces of the given
      * listener's class. When encountering a super interface X which
@@ -168,8 +168,10 @@ public interface ListenerStore extends Closeable {
      * then the given listener will be registered for X. Otherwise, all super
      * interfaces of X are processed in the same way. When all super interfaces
      * have been processed, the same process is recursively applied to the super
-     * class of the given listener if it has one.
-     *
+     * class of the given listener if it has one. The <em>"otherwise"</em>
+     * implies, that the inheritance hierarchy of classes which have already
+     * been recognized as target listener class will not be traversed.
+     * </p>
      * <p>
      * Note that for each class the listener is being added its
      * {@link Listener#onRegister(RegistrationEvent) onRegister} method is

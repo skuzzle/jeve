@@ -78,7 +78,7 @@ public class Event<T, L extends Listener> {
      *
      * @since 2.1.0
      */
-    private Optional<Event<?, ?>> cause;
+    private final Optional<Event<?, ?>> cause;
 
     /**
      * Creates a new event with a given source.
@@ -88,14 +88,7 @@ public class Event<T, L extends Listener> {
      *            event. This value must not be <code>null</code>.
      */
     public Event(T source, Class<L> listenerClass) {
-        if (listenerClass == null) {
-            throw new IllegalArgumentException("listenerClass is null");
-        }
-
-        this.source = source;
-        this.listenerClass = listenerClass;
-        this.isHandled = false;
-        this.cause = Optional.empty();
+        this(source, listenerClass, Optional.empty());
     }
 
     /**
@@ -141,11 +134,15 @@ public class Event<T, L extends Listener> {
      * @since 2.1.0
      */
     public Event(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
-        this(source, listenerClass);
-        if (cause == null) {
+        if (listenerClass == null) {
+            throw new IllegalArgumentException("listenerClass is null");
+        } else if (cause == null) {
             throw new IllegalArgumentException("cause is null");
         }
 
+        this.source = source;
+        this.listenerClass = listenerClass;
+        this.isHandled = false;
         this.cause = cause;
     }
 

@@ -8,7 +8,10 @@ Version 3.0.0 [Released: TODO]
     * [CHANGE] Event#getListenerStore() throws an Exception when called if the event is 
                not dispatched.
     * [CHANGE] Remove 'final' modifier from DefaultListenerStore 
+    * [CHANGE] Remove EventProvider.DEFAULT_HANDLER (deprecated since 2.0.2)
     * [DEPRECATED] DefaultTargetEvent (use Event.dispatchDefault instead)
+    * [DEPRECATED] ExceptionCallback.exception(Exception, Listener, Event) (use
+                   ExceptionCallback.exception(EventProvider, Listener, Event) instead)
     * [DEPRECATED] EventProvider.dispatch(DefaultTargetEvent) (use 
                    EventProvider.dispatch(Event) instead)
     * [DEPRECATED] DefaultListenerStore.removeInternal

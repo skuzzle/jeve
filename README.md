@@ -4,13 +4,14 @@
 jeve
 ====
 
-jeve is a lightweight Java 8 event dispatching framework which takes advantage
-of lambda expressions and internal iteration. It makes it really simple to
-implement the observer pattern without much overhead in code while granting some
+jeve (pronounced "_jieve_") is a lightweight Java 8 event dispatching framework which 
+takes advantage of lambda expressions and internal iteration. It makes it really simple 
+to implement the observer pattern without much overhead in code while granting some
 great additional features. jeve explained in one Java statement:
 ```java
 eventProvider.dispatch(new UserEvent(this, user), UserListener::userAdded);
 ```
+
 ## License
 jeve is distributed under the MIT License. See `LICENSE.md` in this directory
 for detailed information.

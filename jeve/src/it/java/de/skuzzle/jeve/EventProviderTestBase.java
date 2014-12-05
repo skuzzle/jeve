@@ -10,12 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.AbortionException;
-import de.skuzzle.jeve.Event;
-import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.ExceptionCallback;
-import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.util.AbstractEventProviderTest;
 import de.skuzzle.jeve.util.BothListener;
 import de.skuzzle.jeve.util.DifferentStringEvent;
@@ -64,8 +58,8 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
     }
 
     /**
-     * Setting exception callback to null, should set it back to
-     * {@link EventProvider#DEFAULT_HANDLER}
+     * Setting exception callback to null, should set it back to the default
+     * handler.
      */
     @Test
     public void testSetExceptionCallbackNull() {
@@ -305,7 +299,7 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
         sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(second).onStringEvent(Mockito.eq(e));
-        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.eq(e));
+        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.eq(e));
     }
 
     /**
@@ -333,8 +327,8 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
         sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(globalEc, Mockito.never())
-                .exception(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(localEc).exception(Mockito.any(), Mockito.any(), Mockito.any());
+                .exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(localEc).exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     /**

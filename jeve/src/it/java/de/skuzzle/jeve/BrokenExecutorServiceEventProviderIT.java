@@ -14,8 +14,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.AbstractEventProviderTest;
 import de.skuzzle.jeve.util.StringEvent;
@@ -95,6 +93,6 @@ public class BrokenExecutorServiceEventProviderIT extends
         this.subject.dispatch(e, StringListener::onStringEvent);
 
         sleep(); // HACK: give async providers some time to execute
-        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 }

@@ -33,7 +33,7 @@ public interface ExceptionCallback {
      * @deprecated Since 2.1.0 - use
      *             {@link #exception(EventProvider, Exception, Listener, Event)}
      *             instead. This method will not be notified anymore when resp.
-     *             method's default implemenation has been overridden.
+     *             method's default implementation has been overridden.
      */
     @Deprecated
     public void exception(Exception e, Listener source, Event<?, ?> event);

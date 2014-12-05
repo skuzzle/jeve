@@ -8,14 +8,13 @@ import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.skuzzle.jeve.AbortionException;
-import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -84,23 +83,20 @@ public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerSto
      */
     @Test
     public void testInvokeFromEventThread() throws InvocationTargetException, InterruptedException {
-        if (this.subject instanceof AWTEventProvider) {
-            final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
-            if (!eventProvider.isInvokeNow()) {
-                System.out.println("Skipping test for AWTEventProvider because its not set to 'invokeNow'");
-            }
+        Assume.assumeTrue(this.subject instanceof AWTEventProvider);
+        final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
+        Assume.assumeTrue(eventProvider.isInvokeNow());
 
-            final boolean[] isEventThread = new boolean[1];
-            final StringListener listener = se -> isEventThread[0] = SwingUtilities.isEventDispatchThread();
-            this.subject.listeners().add(StringListener.class, listener);
-            final StringEvent event = new StringEvent(this.subject, "");
+        final boolean[] isEventThread = new boolean[1];
+        final StringListener listener = se -> isEventThread[0] = SwingUtilities.isEventDispatchThread();
+        this.subject.listeners().add(StringListener.class, listener);
+        final StringEvent event = new StringEvent(this.subject, "");
 
-            // dispatch from the awt thread
-            SwingUtilities.invokeAndWait(() -> this.subject.dispatch(event, StringListener::onStringEvent));
+        // dispatch from the awt thread
+        SwingUtilities.invokeAndWait(() -> this.subject.dispatch(event, StringListener::onStringEvent));
 
-            sleep(); // HACK: give async providers some time to execute
-            Assert.assertTrue(getFailString("Listener has not been notified from the AWT event thread"), isEventThread[0]);
-        }
+        sleep(); // HACK: give async providers some time to execute
+        Assert.assertTrue(getFailString("Listener has not been notified from the AWT event thread"), isEventThread[0]);
     }
 
     /**
@@ -109,20 +105,16 @@ public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerSto
     @Test(expected = AbortionException.class)
     @Ignore
     public void testInterrupt() {
-        if (this.subject instanceof AWTEventProvider) {
-            final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
-            if (!eventProvider.isInvokeNow()) {
-                System.out.println("Skipping test for AWTEventProvider because its not set to 'invokeNow'");
-            }
-
-            final Thread mainThread = Thread.currentThread();
-            final StringListener listener = se -> mainThread.interrupt();
-            this.subject.listeners().add(StringListener.class, listener);
-            final StringEvent event = new StringEvent(this.subject, "");
-            this.subject.dispatch(event, StringListener::onStringEvent);
-        } else {
-            // make the test happy
-            throw new AbortionException();
+        Assume.assumeTrue(this.subject instanceof AWTEventProvider);
+        final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
+        if (!eventProvider.isInvokeNow()) {
+            System.out.println("Skipping test for AWTEventProvider because its not set to 'invokeNow'");
         }
+
+        final Thread mainThread = Thread.currentThread();
+        final StringListener listener = se -> mainThread.interrupt();
+        this.subject.listeners().add(StringListener.class, listener);
+        final StringEvent event = new StringEvent(this.subject, "");
+        this.subject.dispatch(event, StringListener::onStringEvent);
     }
 }

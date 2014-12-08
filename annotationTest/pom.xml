@@ -12,6 +12,11 @@
     <packaging>jar</packaging>
     <name>jeve-annotation-test</name>
     
+    <properties>
+        <!-- Activate Coveralls here -->
+        <coveralls.skip>false</skip>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>de.skuzzle</groupId>

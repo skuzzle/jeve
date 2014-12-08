@@ -10,6 +10,11 @@
     <artifactId>jeve</artifactId>
     <packaging>jar</packaging>
     <name>jeve</name>
+    
+    <properties>
+        <!-- Activate Coveralls here -->
+        <coveralls.skip>false</skip>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -33,6 +38,7 @@
 
     <build>
         <plugins>
+            <!-- Deactivate Annotation Processor -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -40,7 +46,6 @@
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
-
             <!-- Add Integration Test source folder -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

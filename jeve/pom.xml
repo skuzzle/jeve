@@ -13,7 +13,7 @@
     
     <properties>
         <!-- Activate Coveralls here -->
-        <coveralls.skip>false</skip>
+        <coveralls.skip>false</coveralls.skip>
     </properties>
 
     <dependencies>

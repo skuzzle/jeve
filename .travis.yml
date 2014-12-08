@@ -4,4 +4,4 @@ jdk:
 language: java
 
 after_success:
-  - mvn clean verify jacoco:report coveralls:report
+  - mvn -e verify jacoco:report coveralls:report

@@ -88,6 +88,12 @@
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>3.0.1</version>
+                    <configuration>
+                        <jacocoReports>
+                            <jacocoReport>${sonar.jacoco.utReportPath}</jacocoReport>
+                            <jacocoReport>${sonar.jacoco.itReportPath}</jacocoReport>
+                        </jacocoReports>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

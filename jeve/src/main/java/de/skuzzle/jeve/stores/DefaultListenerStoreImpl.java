@@ -71,15 +71,13 @@ class DefaultListenerStoreImpl extends AbstractListenerStore implements
         if (listenerClass == null || listener == null) {
             return;
         }
-        synchronized (this.listenerMap) {
-            final List<Object> targets = this.listenerMap.get(listenerClass);
-            if (targets == null) {
-                return;
-            }
-            targets.remove(listener);
-            if (targets.isEmpty()) {
-                this.listenerMap.remove(listenerClass);
-            }
+        final List<Object> targets = this.listenerMap.get(listenerClass);
+        if (targets == null) {
+            return;
+        }
+        targets.remove(listener);
+        if (targets.isEmpty()) {
+            this.listenerMap.remove(listenerClass);
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
         listener.onUnregister(e);

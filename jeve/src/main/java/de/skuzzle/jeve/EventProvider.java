@@ -367,43 +367,30 @@ public interface EventProvider<S extends ListenerStore> {
 
     /**
      * Dispatches the given event by calling its
-     * {@link Event#defaultDispatch(EventProvider, ExceptionCallback)} method,
-     * passing {@code this} as first argument and the currently set
+     * {@link DefaultDispatchEvent#defaultDispatch(EventProvider, ExceptionCallback)}
+     * method, passing {@code this} as first argument and the currently set
      * ExceptionCallback as second argument. The {@code defaultDispatch} method
      * will in return call
      * {@link #dispatch(Event, BiConsumer, ExceptionCallback)} on this provider.
-     *
-     * <p>
-     * In order to use this method to dispatch, the provided event must properly
-     * override the
-     * {@linkplain Event#defaultDispatch(EventProvider, ExceptionCallback)
-     * default dispatch} method.
-     * </p>
      *
      * @param event The event to dispatch using its default dispatch method.
      * @throws IllegalArgumentException If the passed event is <code>null</code>
      * @throws AbortionException If a listener threw an AbortionException.
      * @throws UnsupportedOperationException If the given event does not support
      *             default dispatching.
-     * @see Event#defaultDispatch(EventProvider, ExceptionCallback)
+     * @see DefaultDispatchEvent
      * @since 3.0.0
      */
-    public <L extends Listener, E extends Event<?, L>> void dispatch(
+    public <L extends Listener, E extends DefaultDispatchEvent<?, L>> void dispatch(
             E event);
 
     /**
      * Dispatches the given event by calling its
-     * {@link Event#defaultDispatch(EventProvider, ExceptionCallback)} method,
-     * passing {@code this} as first argument and the given ExceptionCallback as
-     * second argument. The {@code defaultDispatch} method will in return call
+     * {@link DefaultDispatchEvent#defaultDispatch(EventProvider, ExceptionCallback)}
+     * method, passing {@code this} as first argument and the given
+     * ExceptionCallback as second argument. The {@code defaultDispatch} method
+     * will in return call
      * {@link #dispatch(Event, BiConsumer, ExceptionCallback)} on this provider.
-     *
-     * <p>
-     * In order to use this method to dispatch, the provided event must properly
-     * override the
-     * {@linkplain Event#defaultDispatch(EventProvider, ExceptionCallback)
-     * default dispatch} method.
-     * </p>
      *
      * @param event The event to dispatch using its default dispatch method.
      * @param ec The ExceptionCallback to use for this dispatch action.
@@ -412,10 +399,10 @@ public interface EventProvider<S extends ListenerStore> {
      * @throws AbortionException If a listener threw an AbortionException.
      * @throws UnsupportedOperationException If the given event does not support
      *             default dispatching.
-     * @see Event#defaultDispatch(EventProvider, ExceptionCallback)
+     * @see DefaultDispatchEvent
      * @since 3.0.0
      */
-    public default <L extends Listener, E extends Event<?, L>> void dispatch(
+    public default <L extends Listener, E extends DefaultDispatchEvent<?, L>> void dispatch(
             E event, ExceptionCallback ec) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
@@ -435,7 +422,8 @@ public interface EventProvider<S extends ListenerStore> {
      * @param event The occurred event which shall be passed to each listener.
      * @throws IllegalArgumentException If the event is <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
-     * @deprecated Since 2.1.0 - Use {@link #dispatch(Event)} instead.
+     * @deprecated Since 3.0.0 - Use {@link #dispatch(DefaultDispatchEvent)}
+     *             instead.
      */
     @Deprecated
     public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
@@ -459,7 +447,8 @@ public interface EventProvider<S extends ListenerStore> {
      * @throws IllegalArgumentException If any of the passed arguments is
      *             <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
-     * @deprecated Since 2.1.0 - Use {@link #dispatch(Event, ExceptionCallback)}
+     * @deprecated Since 3.0.0 - Use
+     *             {@link #dispatch(DefaultDispatchEvent, ExceptionCallback)}
      *             instead.
      */
     @Deprecated

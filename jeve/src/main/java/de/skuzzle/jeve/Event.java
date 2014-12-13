@@ -19,12 +19,7 @@ import de.skuzzle.jeve.providers.SynchronousEventProvider;
  * Events explicitly belong to one kind of {@link Listener} implementation which
  * is able to handle it. The class of this listener is passed to the constructor
  * and queried by the {@link EventProvider} when collecting a list of targeted
- * listeners for a dispatch action. Furthermore, events can have a default
- * target within a notified listener. This allows to use the
- * {@link EventProvider#dispatch(Event) dispatch overload} which only takes an
- * Event as parameter. Events have to override
- * {@link #defaultDispatch(EventProvider, ExceptionCallback)} to use this
- * functionality.
+ * listeners for a dispatch action.
  * </p>
  *
  * <p>
@@ -232,42 +227,6 @@ public class Event<T, L extends Listener> {
      */
     public void stopNotifying(L listener) {
         this.getListenerStore().remove(this.getListenerClass(), listener);
-    }
-
-    /**
-     * <p>
-     * Dispatches this event with the given EventProvider using the listener's
-     * default listening method. For example, if {@code userAdded} is the only
-     * listening method (or the default one among others), this method should be
-     * implemented as follows:
-     * </p>
-     *
-     * <pre>
-     * public void defaultDispatch(EventProvider&lt;?&gt; eventProvider, ExceptionCallback ec) {
-     *     eventProvider.dispatch(this, UserListener::userAdded, ec);
-     * }
-     * </pre>
-     *
-     * <p>
-     * This method should not be called directly on an Event object. Instead,
-     * pass the event to {@link EventProvider#dispatch(Event)} or
-     * {@link EventProvider#dispatch(Event, ExceptionCallback)}.
-     * </p>
-     *
-     * <p>
-     * The default implementation throws an
-     * {@link UnsupportedOperationException}
-     * </p>
-     *
-     * @param eventProvider The EventProvider to use for dispatching.
-     * @param ec The exception call back to use for this dispatch action.
-     * @throws UnsupportedOperationException If this event does not support
-     *             default dispatch.
-     * @since 3.0.0
-     */
-    public void defaultDispatch(EventProvider<?> eventProvider, ExceptionCallback ec) {
-        throw new UnsupportedOperationException(String.format(
-                "Event %s does not specify a default dispatch target", this));
     }
 
     /**

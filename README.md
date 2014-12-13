@@ -198,22 +198,23 @@ because it has a lower priority value.
 
 ## Default Target Events
 A common case in real life applications is, that listener interfaces only 
-contain a single listening method. If so, always specifying the method 
+contain a single listening method. If this is the case, always specifying the method 
 reference when dispatching an event is verbose and inconvenient. Instead, you 
-may use `DefaultTargetEvent` which is fully compatible with normal events. It
-allows to statically provide the method reference of its targeted listener and 
-can be used with a overload of `EventProvider.dispatch`:
+may use `DefaultDispatchEvent` which is fully compatible with normal events. It
+allows to statically provide a default dispatch method and can be used with an overload 
+of `EventProvider.dispatch`:
 
 ```java
-public class UserEvent extends DefaultTargetEvent<UserManager, UserEvent, UserListener> {
+public class UserEvent extends DefaultDispatchEvent<UserManager, UserListener> {
 
     public UserEvent(UserManager source) {
         super(source, UserListener.class);
     }
     
     @Override
-    public BiConsumer<UserListener, UserEvent> getTarget() {
-        return UserListener::userAdded;
+    public void defaultDispatch(EventProvider<?> provider, ExceptionCallback ec) {
+        // Use double-dispatch approach to dispatch this event with the given provider
+        provider.dispatch(this, UserListener::userAdded, ec);
     }
 }
 ```
@@ -223,14 +224,7 @@ Dispatching this event is as easy as:
     UserEvent e = new UserEvent(userManager);
     eventProvider.dispatch(e);
 ```
-As default target events are compatible with normal events, the above code is 
-identical to:
-```java
-    UserEvent e = new UserEvent(userManager);
-    eventProvider.dispatch(e, e.getTarget());
-    // or
-    eventProvider.dispatch(e, UserListener::userAdded);
-```
+
 
 ## Stopping event delegation
 Listeners are notified in order they have been registered with the
@@ -324,7 +318,7 @@ except AbortionExceptions. Those will be passed to the caller.
 
 ## Asynchronous event delegation
 One key feature of jeve is that it hides the event delegation strategy
-from the actual source of the event. So if you decide that all of your
+from the actual source of the event. If you decide that all of your
 `UserEvents` should be fired within a dedicated event thread, you simply need
 to modify the creation of the `EventProvider`:
 

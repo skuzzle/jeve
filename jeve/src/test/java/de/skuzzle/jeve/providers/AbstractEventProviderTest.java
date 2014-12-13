@@ -60,6 +60,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         this.subject.dispatch((Event<?, SampleListener>) null, SampleListener::onEvent);
     }
 
+    @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchBCIsNull() throws Exception {
         final Event<?, SampleListener> event = Mockito.mock(Event.class);
@@ -67,12 +68,14 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         this.subject.dispatch(event, null, ec);
     }
 
+    @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchBCisNull2() throws Exception {
         final Event<?, SampleListener> event = Mockito.mock(Event.class);
         this.subject.dispatch(event, (BiConsumer<SampleListener, Event<?, SampleListener>>) null);
     }
 
+    @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchECIsNull() throws Exception {
         final Event<?, SampleListener> event = Mockito.mock(Event.class);
@@ -85,6 +88,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Assert.assertSame(this.store, this.subject.listeners());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleSuccess() throws Exception {
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
@@ -97,6 +101,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.verifyZeroInteractions(ec);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleDelegateAbortionException() {
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
@@ -114,6 +119,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleHandleException() {
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
@@ -128,11 +134,10 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.verify(ec).exception(this.subject, ex, listener, e);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testHandleExceptionSuccess() throws Exception {
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
-                SampleListener::onEvent;
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
         final SampleListener listener = Mockito.mock(SampleListener.class);
@@ -141,11 +146,10 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.verify(ec).exception(this.subject, ex, listener, e);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testHandleExceptionSwallow() throws Exception {
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
-                SampleListener::onEvent;
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
         final SampleListener listener = Mockito.mock(SampleListener.class);
@@ -155,11 +159,10 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.verify(ec).exception(this.subject, ex, listener, e);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testHandleExceptionDelegateAbortionException() throws Exception {
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
-                SampleListener::onEvent;
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
         final SampleListener listener = Mockito.mock(SampleListener.class);
@@ -173,6 +176,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNotifyListeners() throws Exception {
         final AbstractEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
@@ -180,9 +184,6 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
-                SampleListener::onEvent;
-
         Mockito.when(e.getListenerClass()).thenReturn(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
                 Arrays.asList(listener1, listener2).stream());
@@ -194,6 +195,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         inOrder.verify(listener2).onEvent(e);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNotifyListenersHandledEvent() throws Exception {
         final AbstractEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
@@ -201,9 +203,6 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
-                SampleListener::onEvent;
-
         Mockito.when(e.getListenerClass()).thenReturn(SampleListener.class);
         Mockito.when(e.isHandled()).thenReturn(true);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(

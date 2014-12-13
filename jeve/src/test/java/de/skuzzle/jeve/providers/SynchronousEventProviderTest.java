@@ -1,14 +1,12 @@
 package de.skuzzle.jeve.providers;
 
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.SynchronousEvent;
@@ -21,6 +19,7 @@ public class SynchronousEventProviderTest extends
         return new SynchronousEventProvider<ListenerStore>(store);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNotifyListenersSynchronousEvent() throws Exception {
         final AbstractEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
@@ -28,9 +27,6 @@ public class SynchronousEventProviderTest extends
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
         final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final SynchronousEvent<?, SampleListener> e = Mockito.mock(SynchronousEvent.class);
-        final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
-                SampleListener::onEvent;
-
         Mockito.when(e.getListenerClass()).thenReturn(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
                 Arrays.asList(listener1, listener2).stream());

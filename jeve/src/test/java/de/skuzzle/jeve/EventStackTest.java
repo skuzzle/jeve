@@ -69,6 +69,7 @@ public class EventStackTest {
         Assert.assertSame(first, opt.get());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testIsActive() {
         final Event<?, SampleListener> event1 = Mockito.mock(Event.class);
@@ -82,6 +83,7 @@ public class EventStackTest {
         Assert.assertTrue(this.subject.isActive(event2));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testIsAnyActive() throws Exception {
         final Event<?, SampleListener> event1 = Mockito.mock(Event.class);

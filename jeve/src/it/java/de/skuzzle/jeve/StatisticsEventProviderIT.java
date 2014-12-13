@@ -7,8 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -41,7 +39,7 @@ public class StatisticsEventProviderIT {
     public void testCountDispatches() {
         this.subject.dispatch(new StringEvent(this.subject, ""),
                 StringListener::onStringEvent);
-        Assert.assertEquals(new Integer(1),
+        Assert.assertEquals(Integer.valueOf(1),
                 this.subject.getNotificationStatistics().get(StringListener.class));
     }
 

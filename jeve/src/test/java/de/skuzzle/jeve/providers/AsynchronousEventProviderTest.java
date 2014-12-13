@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,8 +28,8 @@ public class AsynchronousEventProviderTest extends
     private ExecutorService executor;
 
     @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         Mockito.when(this.executor.isShutdown()).thenReturn(false);
         Mockito.when(this.executor.isTerminated()).thenReturn(false);
     }
@@ -78,6 +79,7 @@ public class AsynchronousEventProviderTest extends
         Mockito.verify(this.executor, Mockito.never()).execute(Mockito.any());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDispatch() {
         final AsynchronousEventProvider<ListenerStore> spy = Mockito.spy(this.subject);

@@ -9,9 +9,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.skuzzle.jeve.AbortionException;
-import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -45,8 +42,12 @@ public class SynchronousEventProviderIT extends
      */
     @Test(expected = AbortionException.class)
     public void testAbortionExceptionInCallback() {
-        final ExceptionCallback ec = (e, l, event) -> {
-            throw new AbortionException(e);
+        final ExceptionCallback ec = new ExceptionCallback() {
+            @Override
+            public void exception(EventProvider<?> provider, Exception e,
+                    Listener source, Event<?, ?> cause) {
+                throw new AbortionException();
+            }
         };
         final StringListener l = event -> {
             throw new RuntimeException();

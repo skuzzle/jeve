@@ -266,8 +266,7 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
         this.subject.listeners().add(StringListener.class, second);
         final StringEvent e = new StringEvent(this.subject, SUBJECT);
         this.subject.dispatch(e, StringListener::onStringEvent,
-                (ex, l, ev) -> {
-                }); // swallow exception
+                new ExceptionCallback() {}); // swallow exception
 
         sleep(); // HACK: give async providers some time to execute
 

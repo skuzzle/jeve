@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.DefaultDispatchEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
@@ -51,7 +52,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
 
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchEventIsNull2() throws Exception {
-        this.subject.dispatch((Event<?, ?>) null);
+        this.subject.dispatch((DefaultDispatchEvent<?, ?>) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -242,7 +243,8 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
 
     @Test
     public void testDefaultDispatch() throws Exception {
-        final Event<?, SampleListener> event = Mockito.mock(Event.class);
+        final DefaultDispatchEvent<?, SampleListener> event =
+                Mockito.mock(DefaultDispatchEvent.class);
         this.subject.dispatch(event);
         Mockito.verify(event).defaultDispatch(this.subject, this.subject.exceptionHandler);
     }

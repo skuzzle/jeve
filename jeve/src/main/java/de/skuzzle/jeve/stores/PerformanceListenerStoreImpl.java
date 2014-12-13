@@ -41,9 +41,6 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
 
     }
 
-    /** Locks access to {@link #optimized}. */
-    protected final Object optimizeMutex = new Object();
-
     /** Whether {@link #optimizeGet()} has already been called. */
     protected boolean optimized;
 
@@ -124,18 +121,14 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
         if (this.autoOptimize) {
             optimizeGet();
         }
-        synchronized (this.listenerMap) {
-            final List<Object> targets = this.listenerMap.getOrDefault(listenerClass,
-                    Collections.emptyList());
+        final List<Object> targets = this.listenerMap.getOrDefault(listenerClass,
+                Collections.emptyList());
 
-            synchronized (this.optimizeMutex) {
-                if (this.optimized) {
-                    return targets.stream().map(listener -> listenerClass.cast(listener));
-                } else {
-                    final int sizeHint = targets.size();
-                    return copyList(listenerClass, targets.stream(), sizeHint).stream();
-                }
-            }
+        if (this.optimized) {
+            return targets.stream().map(listener -> listenerClass.cast(listener));
+        } else {
+            final int sizeHint = targets.size();
+            return copyList(listenerClass, targets.stream(), sizeHint).stream();
         }
     }
 }

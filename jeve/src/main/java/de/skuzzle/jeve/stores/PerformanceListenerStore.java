@@ -9,8 +9,7 @@ import de.skuzzle.jeve.ListenerStore;
  * Extension to the {@link DefaultListenerStore} which offers to enable higher
  * {@link #get(Class)} performance. The higher performance is achieved at the
  * cost of lowering the performance of {@link #remove(Class, Listener)} and
- * {@link #add(Class, Listener)}. The public interface to this store is thread
- * safe.
+ * {@link #add(Class, Listener)}.
  *
  * <p>
  * Most applications have something like a setup phase in which listeners are

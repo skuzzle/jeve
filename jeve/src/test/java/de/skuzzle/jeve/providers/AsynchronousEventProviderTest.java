@@ -14,7 +14,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import de.skuzzle.jeve.DefaultDispatchEvent;
+import de.skuzzle.jeve.DefaultDispatchable;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.ListenerStore;
@@ -73,7 +73,7 @@ public class AsynchronousEventProviderTest extends
     @Test
     public void testCanNotDispatch() throws Exception {
         Mockito.when(this.executor.isShutdown()).thenReturn(true);
-        final DefaultDispatchEvent<?, SampleListener> event = Mockito.mock(DefaultDispatchEvent.class);
+        final DefaultDispatchable event = Mockito.mock(DefaultDispatchable.class);
         this.subject.dispatch(event);
         Mockito.verify(this.executor, Mockito.never()).execute(Mockito.any());
     }

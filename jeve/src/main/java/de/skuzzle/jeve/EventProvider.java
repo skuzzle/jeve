@@ -97,8 +97,8 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * <p>
  * If a listener has only one listening method, it is obsolete to specify the
  * method reference for every dispatch action. For this case, jeve provides the
- * {@link DefaultDispatchEvent} and an overload of
- * {@link #dispatch(DefaultDispatchEvent)} which allows to dispatch an event
+ * {@link DefaultDispatchable} and an overload of
+ * {@link #dispatch(DefaultDispatchable)} which allows to dispatch an event
  * without specifying the method reference again.
  * </p>
  *
@@ -345,7 +345,7 @@ public interface EventProvider<S extends ListenerStore> {
 
     /**
      * Dispatches the given event by calling its
-     * {@link DefaultDispatchEvent#defaultDispatch(EventProvider, ExceptionCallback)}
+     * {@link DefaultDispatchable#defaultDispatch(EventProvider, ExceptionCallback)}
      * method, passing {@code this} as first argument and the currently set
      * ExceptionCallback as second argument. The {@code defaultDispatch} method
      * will in return call
@@ -356,15 +356,15 @@ public interface EventProvider<S extends ListenerStore> {
      * @throws AbortionException If a listener threw an AbortionException.
      * @throws UnsupportedOperationException If the given event does not support
      *             default dispatching.
-     * @see DefaultDispatchEvent
+     * @see DefaultDispatchable
      * @since 3.0.0
      */
-    public <L extends Listener, E extends DefaultDispatchEvent<?, L>> void dispatch(
-            E event);
+    public <L extends Listener, E extends DefaultDispatchable> void dispatch(
+            DefaultDispatchable event);
 
     /**
      * Dispatches the given event by calling its
-     * {@link DefaultDispatchEvent#defaultDispatch(EventProvider, ExceptionCallback)}
+     * {@link DefaultDispatchable#defaultDispatch(EventProvider, ExceptionCallback)}
      * method, passing {@code this} as first argument and the given
      * ExceptionCallback as second argument. The {@code defaultDispatch} method
      * will in return call
@@ -377,11 +377,10 @@ public interface EventProvider<S extends ListenerStore> {
      * @throws AbortionException If a listener threw an AbortionException.
      * @throws UnsupportedOperationException If the given event does not support
      *             default dispatching.
-     * @see DefaultDispatchEvent
+     * @see DefaultDispatchable
      * @since 3.0.0
      */
-    public default <L extends Listener, E extends DefaultDispatchEvent<?, L>> void dispatch(
-            E event, ExceptionCallback ec) {
+    public default void dispatch(DefaultDispatchable event, ExceptionCallback ec) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
         } else if (ec == null) {
@@ -400,7 +399,7 @@ public interface EventProvider<S extends ListenerStore> {
      * @param event The occurred event which shall be passed to each listener.
      * @throws IllegalArgumentException If the event is <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
-     * @deprecated Since 3.0.0 - Use {@link #dispatch(DefaultDispatchEvent)}
+     * @deprecated Since 3.0.0 - Use {@link #dispatch(DefaultDispatchable)}
      *             instead.
      */
     @Deprecated
@@ -426,7 +425,7 @@ public interface EventProvider<S extends ListenerStore> {
      *             <code>null</code>.
      * @throws AbortionException If a listener threw an AbortionException.
      * @deprecated Since 3.0.0 - Use
-     *             {@link #dispatch(DefaultDispatchEvent, ExceptionCallback)}
+     *             {@link #dispatch(DefaultDispatchable, ExceptionCallback)}
      *             instead.
      */
     @Deprecated

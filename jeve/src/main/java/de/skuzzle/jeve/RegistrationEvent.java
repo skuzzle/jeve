@@ -2,7 +2,7 @@ package de.skuzzle.jeve;
 
 /**
  * RegistrationEvents are created when adding or removing a {@link Listener}
- * from an {@link EventProvider}.
+ * from a {@link ListenerStore}.
  *
  * @author Simon Taddiken
  * @since 1.0.0

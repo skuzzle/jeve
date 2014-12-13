@@ -108,15 +108,13 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
             throw new IllegalArgumentException("listenerClass is null");
         }
 
-        synchronized (this.listenerMap) {
-            final List<ListenerWrapper> listeners = this.listenerMap.getOrDefault(
-                    listenerClass, Collections.emptyList());
+        final List<ListenerWrapper> listeners = this.listenerMap.getOrDefault(
+                listenerClass, Collections.emptyList());
 
-            final int sizeHint = listeners.size();
-            return copyList(listenerClass,
-                    listeners.stream().map(w -> w.listener),
-                    sizeHint).stream();
-        }
+        final int sizeHint = listeners.size();
+        return copyList(listenerClass,
+                listeners.stream().map(w -> w.listener),
+                sizeHint).stream();
     }
 
     @Override
@@ -133,11 +131,9 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
             throw new IllegalArgumentException("listener is null");
         }
 
-        synchronized (this.listenerMap) {
-            final List<ListenerWrapper> listeners = this.listenerMap.computeIfAbsent(
-                    listenerClass, key -> createListenerList());
-            addSorted(listeners, listener, priority);
-        }
+        final List<ListenerWrapper> listeners = this.listenerMap.computeIfAbsent(
+                listenerClass, key -> createListenerList());
+        addSorted(listeners, listener, priority);
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
         listener.onRegister(e);
     }
@@ -164,18 +160,16 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
             return;
         }
 
-        synchronized (this.listenerMap) {
-            final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
-            if (listeners == null) {
-                return;
-            }
-            // HINT: priority irrelevant here
-            final ListenerWrapper key = new ListenerWrapper(listener, 0);
+        final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
+        if (listeners == null) {
+            return;
+        }
+        // HINT: priority irrelevant here
+        final ListenerWrapper key = new ListenerWrapper(listener, 0);
 
-            listeners.remove(key);
-            if (listeners.isEmpty()) {
-                this.listenerMap.remove(listenerClass);
-            }
+        listeners.remove(key);
+        if (listeners.isEmpty()) {
+            this.listenerMap.remove(listenerClass);
         }
         final RegistrationEvent e = new RegistrationEvent(this, listenerClass);
         listener.onUnregister(e);
@@ -183,25 +177,21 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
 
     @Override
     public void clearAll() {
-        synchronized (this.listenerMap) {
-            this.listenerMap.forEach((k, v) -> {
-                final Iterator<ListenerWrapper> it = v.iterator();
-                while (it.hasNext()) {
-                    removeInternal(k, it, it.next());
-                }
-            });
-        }
+        this.listenerMap.forEach((k, v) -> {
+            final Iterator<ListenerWrapper> it = v.iterator();
+            while (it.hasNext()) {
+                removeInternal(k, it, it.next());
+            }
+        });
     }
 
     @Override
     public <T extends Listener> void clearAll(Class<T> listenerClass) {
-        synchronized (this.listenerMap) {
-            final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
-            if (listeners != null) {
-                final Iterator<ListenerWrapper> it = listeners.iterator();
-                while (it.hasNext()) {
-                    removeInternal(listenerClass, it, it.next());
-                }
+        final List<ListenerWrapper> listeners = this.listenerMap.get(listenerClass);
+        if (listeners != null) {
+            final Iterator<ListenerWrapper> it = listeners.iterator();
+            while (it.hasNext()) {
+                removeInternal(listenerClass, it, it.next());
             }
         }
     }

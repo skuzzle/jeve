@@ -1,28 +1,12 @@
 package de.skuzzle.jeve;
 
-import java.util.Optional;
 
 /**
  *
- * @param <T> Type of the source of this event.
- * @param <L> Type of the listener which can handle this event.
  * @author Simon Taddiken
  * @since 3.0.0
  */
-public abstract class DefaultDispatchEvent<T, L extends Listener> extends Event<T, L> {
-
-    public DefaultDispatchEvent(T source, Class<L> listenerClass, Event<?, ?> cause) {
-        super(source, listenerClass, cause);
-    }
-
-    public DefaultDispatchEvent(T source, Class<L> listenerClass,
-            Optional<Event<?, ?>> cause) {
-        super(source, listenerClass, cause);
-    }
-
-    public DefaultDispatchEvent(T source, Class<L> listenerClass) {
-        super(source, listenerClass);
-    }
+public interface DefaultDispatchable {
 
     /**
      * <p>
@@ -40,8 +24,8 @@ public abstract class DefaultDispatchEvent<T, L extends Listener> extends Event<
      *
      * <p>
      * This method should not be called directly on an Event object. Instead,
-     * pass the event to {@link EventProvider#dispatch(DefaultDispatchEvent)} or
-     * {@link EventProvider#dispatch(DefaultDispatchEvent, ExceptionCallback)}.
+     * pass the event to {@link EventProvider#dispatch(DefaultDispatchable)} or
+     * {@link EventProvider#dispatch(DefaultDispatchable, ExceptionCallback)}.
      * </p>
      *
      * <p>
@@ -51,7 +35,6 @@ public abstract class DefaultDispatchEvent<T, L extends Listener> extends Event<
      *
      * @param eventProvider The EventProvider to use for dispatching.
      * @param ec The exception call back to use for this dispatch action.
-     * @since 3.0.0
      */
     public abstract void defaultDispatch(EventProvider<?> eventProvider,
             ExceptionCallback ec);

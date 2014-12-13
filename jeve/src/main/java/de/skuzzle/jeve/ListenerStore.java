@@ -1,6 +1,5 @@
 package de.skuzzle.jeve;
 
-import java.io.Closeable;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.annotation.ListenerKind;
@@ -101,7 +100,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * @author Simon Taddiken
  * @since 2.0.0
  */
-public interface ListenerStore extends Closeable {
+public interface ListenerStore {
 
     /**
      * <p>
@@ -308,6 +307,5 @@ public interface ListenerStore extends Closeable {
      * {@link EventProvider} which uses this store.
      * </p>
      */
-    @Override
     public void close();
 }

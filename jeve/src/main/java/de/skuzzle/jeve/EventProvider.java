@@ -158,7 +158,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * @since 1.0.0
  * @version 2.0.0
  */
-public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
+public interface EventProvider<S extends ListenerStore> {
 
     /**
      * Provides a fluent builder API to construct several kinds of
@@ -521,6 +521,5 @@ public interface EventProvider<S extends ListenerStore> extends AutoCloseable {
      * events after closing. On some implementations closing might have no
      * additional effect.
      */
-    @Override
     public void close();
 }

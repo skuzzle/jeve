@@ -138,7 +138,7 @@ class DefaultListenerStoreImpl extends AbstractListenerStore implements
      * @param <T> Type of the listener to remove
      * @param listenerClass The class of the listener to remove.
      * @param it Iterator which provides the next listener to remove.
-     * @deprecated Since 2.1.0 - Method not used anymore. Replaced by
+     * @deprecated Since 3.0.0 - Method not used anymore. Replaced by
      *             {@link #clearAll(Class, List, boolean)}.
      */
     @Deprecated

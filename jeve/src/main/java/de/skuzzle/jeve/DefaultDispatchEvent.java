@@ -40,8 +40,8 @@ public abstract class DefaultDispatchEvent<T, L extends Listener> extends Event<
      *
      * <p>
      * This method should not be called directly on an Event object. Instead,
-     * pass the event to {@link EventProvider#dispatch(Event)} or
-     * {@link EventProvider#dispatch(Event, ExceptionCallback)}.
+     * pass the event to {@link EventProvider#dispatch(DefaultDispatchEvent)} or
+     * {@link EventProvider#dispatch(DefaultDispatchEvent, ExceptionCallback)}.
      * </p>
      *
      * <p>

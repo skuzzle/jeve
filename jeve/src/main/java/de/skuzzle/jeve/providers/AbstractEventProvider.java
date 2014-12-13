@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.skuzzle.jeve.AbortionException;
+import de.skuzzle.jeve.DefaultDispatchEvent;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
@@ -95,7 +96,8 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     }
 
     @Override
-    public <L extends Listener, E extends Event<?, L>> void dispatch(E event) {
+    public <L extends Listener, E extends DefaultDispatchEvent<?, L>> void dispatch(
+            E event) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
         }

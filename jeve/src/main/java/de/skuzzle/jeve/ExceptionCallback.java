@@ -30,7 +30,7 @@ public interface ExceptionCallback {
      *             be notified and the caller of
      *             {@link EventProvider#dispatch(Event, java.util.function.BiConsumer)
      *             dispatch} will receive this exception.
-     * @deprecated Since 2.1.0 - use
+     * @deprecated Since 3.0.0 - use
      *             {@link #exception(EventProvider, Exception, Listener, Event)}
      *             instead. This method will not be notified anymore when resp.
      *             method's default implementation has been overridden.

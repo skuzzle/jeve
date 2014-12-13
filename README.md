@@ -350,17 +350,3 @@ public class UserManager {
 
 jeve also supports the creation of GUI events by providing EventProvider
 implementations which run all listeners within the AWT Event Thread.
-
-## Implementing own dispatching strategies
-If you want to customize the process of event dispatching, you can create your
-own `EventProvider` by extending `AbstractEventProvider` and overriding the
-`dispatch(Class, Event, BiConsumer, ExceptionCallback)` method. Within that
-method you can use `EventProvider.listeners()` to get a stream of all
-registered listeners for a specified class.
-
-# Tests
-jeve comes with a set of blackboard test for the EventProvider interface. If
-you create your own EventProvider class and want it to be tested against the
-default interface specification, you can extend the existing class
-`EventProviderTestBase`. Please see the existing test cases in
-`src/test/java/de/skuzzle/jeve`

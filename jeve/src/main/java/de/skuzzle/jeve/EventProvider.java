@@ -222,28 +222,6 @@ public interface EventProvider<S extends ListenerStore> {
     }
 
     /**
-     * The default {@link ExceptionCallback} which prints some information about
-     * the occurred error to the standard output. The exact format is not
-     * specified.
-     *
-     * @deprecated Since 2.0.1 - The default call back is now an internal
-     *             property of the specific provider implementation.
-     */
-    @Deprecated
-    public static final ExceptionCallback DEFAULT_HANDLER = (e, l, ev) -> {
-        System.err.printf(
-                "Listener threw an exception while being notified%n" +
-                        "Details%n" +
-                        "    Listener: %s%n" +
-                        "    Event: %s%n" +
-                        "    Message: %s%n" +
-                        "    Current Thread: %s%n" +
-                        "    Stacktrace:%n",
-                l, ev, e.getMessage(), Thread.currentThread().getName());
-        e.printStackTrace();
-    };
-
-    /**
      * Retrieves the {@link ListenerStore} which supplies {@link Listener
      * Listeners} to this EventProvider.
      *

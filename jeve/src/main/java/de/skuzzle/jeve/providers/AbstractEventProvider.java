@@ -31,7 +31,7 @@ import de.skuzzle.jeve.ListenerStore;
 public abstract class AbstractEventProvider<S extends ListenerStore> implements
         EventProvider<S> {
 
-    /** The logger associated with this event provider */
+    /** The logger associated with this event provider. */
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The listener store associated with this provider */
@@ -47,11 +47,13 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     protected final ExceptionCallback defaultHandler = new ExceptionCallback() {
 
         @Override
-        public void exception(Exception e, Listener source, Event<?, ?> event) {
+        public void exception(EventProvider<?> provider, Exception e, Listener source,
+                Event<?, ?> event) {
             AbstractEventProvider.this.logger.error(
                     "Listener threw an exception while being notified\n" +
                     "Details\n" +
-                    "    Listener:{}\n" +
+                            "    Provider: {}\n" +
+                    "    Listener: {}\n" +
                     "    Event: {}\n" +
                     "    Message: {}\n" +
                     "    Current Thread: {}\n" +

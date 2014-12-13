@@ -34,7 +34,7 @@ public abstract class AbstractListenerStore implements ListenerStore {
     protected abstract <T> List<T> createListenerList(int sizeHint);
 
     /**
-     * Returns the List object to store listeners in
+     * Returns the List object to store listeners in.
      *
      * @param <T> Type of the resulting List.
      * @return A new List instance.
@@ -45,7 +45,8 @@ public abstract class AbstractListenerStore implements ListenerStore {
 
     /**
      * Creates a collection from the given stream, casting each object to the
-     * provided listener class.
+     * provided listener class. The returned collection must not necessarily be
+     * mutable.
      *
      * @param <T> Type of the listeners in the given list.
      * @param listenerClass The class of the objects in the provided list.

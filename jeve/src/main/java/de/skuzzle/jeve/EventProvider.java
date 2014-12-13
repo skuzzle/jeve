@@ -96,10 +96,10 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <p>
  * If a listener has only one listening method, it is obsolete to specify the
- * method reference for every dispatch action. For this case, jeve Events
- * provide the {@link Event#defaultDispatch(EventProvider, ExceptionCallback)
- * defaultDispatch} method and an overload of {@link #dispatch(Event)} which
- * allows to dispatch an event without specifying the method reference again.
+ * method reference for every dispatch action. For this case, jeve provides the
+ * {@link DefaultDispatchEvent} and an overload of
+ * {@link #dispatch(DefaultDispatchEvent)} which allows to dispatch an event
+ * without specifying the method reference again.
  * </p>
  *
  * <h2>Error handling</h2>

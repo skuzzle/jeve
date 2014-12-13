@@ -22,6 +22,12 @@ public interface ExceptionCallback {
      * during error handling.
      * </p>
      *
+     * <p>
+     * The default implementation calls
+     * {@link #exception(EventProvider, Exception, Listener, Event)}, passing
+     * <code>null</code> for the EventProvider parameter.
+     * </p>
+     *
      * @param e The exception which occurred during event dispatching.
      * @param source The event listener which caused the exception.
      * @param event The event which is currently being processed.
@@ -32,11 +38,12 @@ public interface ExceptionCallback {
      *             dispatch} will receive this exception.
      * @deprecated Since 3.0.0 - use
      *             {@link #exception(EventProvider, Exception, Listener, Event)}
-     *             instead. This method will not be notified anymore when resp.
-     *             method's default implementation has been overridden.
+     *             instead.
      */
     @Deprecated
-    public void exception(Exception e, Listener source, Event<?, ?> event);
+    public default void exception(Exception e, Listener source, Event<?, ?> event) {
+        exception(null, e, source, event);
+    }
 
     /**
      * Callback method which gets passed an exception. This method will be
@@ -64,6 +71,6 @@ public interface ExceptionCallback {
      */
     public default void exception(EventProvider<?> provider, Exception e,
             Listener source, Event<?, ?> cause) {
-        exception(e, source, cause);
+        // default: do nothing
     }
 }

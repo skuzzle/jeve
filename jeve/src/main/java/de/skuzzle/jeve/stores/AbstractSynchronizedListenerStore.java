@@ -11,6 +11,11 @@ import de.skuzzle.jeve.ListenerStore;
 public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore> implements
         ListenerStore {
 
+    @FunctionalInterface
+    protected static interface Transaction {
+        public void perform();
+    }
+
     protected final ReadWriteLock lock;
     protected final T wrapped;
 
@@ -22,10 +27,10 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
         this.lock = new ReentrantReadWriteLock();
     }
 
-    protected void modify(Runnable r) {
+    protected void modify(Transaction t) {
         try {
             this.lock.writeLock().lock();
-            r.run();
+            t.perform();
         } finally {
             this.lock.writeLock().unlock();
         }

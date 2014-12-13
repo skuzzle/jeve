@@ -134,7 +134,9 @@ public class Event<T, L extends Listener> {
      * @since 3.0.0
      */
     public Event(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
-        if (listenerClass == null) {
+        if (source == null) {
+            throw new IllegalArgumentException("source is null");
+        } else if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass is null");
         } else if (cause == null) {
             throw new IllegalArgumentException("cause is null");

@@ -18,10 +18,9 @@ public class EventTest {
         this.subject = new Event<>(new Object(), SampleListener.class);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testSourceNull() throws Exception {
-        final Event<Object, SampleListener> event = new Event<>(null, SampleListener.class);
-        Assert.assertNull(event.getSource());
+        new Event<>(null, SampleListener.class);
     }
 
     @Test(expected = IllegalArgumentException.class)

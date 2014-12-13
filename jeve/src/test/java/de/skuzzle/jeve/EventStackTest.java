@@ -56,8 +56,8 @@ public class EventStackTest {
 
     @Test
     public void testPrevented() {
-        final SynchronousEvent<?, SampleListener> first = new SynchronousEvent<>(null, SampleListener.class);
-        final SynchronousEvent<?, SampleListener> second = new SynchronousEvent<>(null, SampleListener.class);
+        final SynchronousEvent<?, SampleListener> first = new SynchronousEvent<>(new Object(), SampleListener.class);
+        final SynchronousEvent<?, SampleListener> second = new SynchronousEvent<>(new Object(), SampleListener.class);
 
         this.subject.pushEvent(first);
         this.subject.pushEvent(second);

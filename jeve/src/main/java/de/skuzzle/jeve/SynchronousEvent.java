@@ -83,7 +83,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      * @param eventStack The current event stack.
      */
     public void setEventStack(EventStack eventStack) {
-        if (eventStack == null) {
+        if (this.eventStack == null) {
             this.eventStack = eventStack;
         }
     }

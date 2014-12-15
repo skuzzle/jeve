@@ -30,6 +30,7 @@ public class AsynchronousEventProviderTest extends
     @Override
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         Mockito.when(this.executor.isShutdown()).thenReturn(false);
         Mockito.when(this.executor.isTerminated()).thenReturn(false);
     }

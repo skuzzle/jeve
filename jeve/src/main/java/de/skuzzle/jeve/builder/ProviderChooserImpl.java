@@ -12,6 +12,7 @@ import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.UnrollingEventProvider;
 
 class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S> {
 
@@ -93,11 +94,17 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
         };
     }
 
-
     @Override
     public Final<ProviderConfigurator<S, SynchronousEventProvider<S>>, SynchronousEventProvider<S>> useSynchronousProvider() {
         final Supplier<SynchronousEventProvider<S>> supplier =
                 () -> new SynchronousEventProvider<S>(this.storeSupplier.get());
+        return synchronAnd(supplier);
+    }
+
+    @Override
+    public Final<ProviderConfigurator<S, UnrollingEventProvider<S>>, UnrollingEventProvider<S>> useUnrollingProvider() {
+        final Supplier<UnrollingEventProvider<S>> supplier =
+                () -> new UnrollingEventProvider<S>(this.storeSupplier.get());
         return synchronAnd(supplier);
     }
 

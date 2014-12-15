@@ -15,6 +15,7 @@ import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.UnrollingEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 
 /**
@@ -71,6 +72,14 @@ public interface EventProviderConfigurator {
          */
         <C, E extends EventProvider<S>> Final<C, E> useCustomProvider(
                 CustomConfigurator<S, C, E> configurator);
+
+        /**
+         *
+         * @return
+         * @since 3.0.0
+         */
+        Final<ProviderConfigurator<S, UnrollingEventProvider<S>>, UnrollingEventProvider<S>>
+                useUnrollingProvider();
 
         /**
          * Configures a synchronous EventProvider which will dispatch all events

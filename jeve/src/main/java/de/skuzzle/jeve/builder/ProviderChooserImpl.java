@@ -37,12 +37,13 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
 
             @Override
             public C and() {
-                return configurator.getConfigurator(ProviderChooserImpl.this.storeSupplier);
+                return configurator.getConfigurator(
+                        ProviderChooserImpl.this.storeSupplier);
             }
 
             @Override
             public Supplier<E> createSupplier() {
-                return () -> create();
+                return this::create;
             }
 
             @Override
@@ -73,8 +74,8 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
         };
     }
 
-    private <E extends EventProvider<S>> Final<AsyncProviderConfigurator<S, E>, E> asynchronAnd(
-            Supplier<E> supplier) {
+    private <E extends EventProvider<S>> Final<AsyncProviderConfigurator<S, E>, E>
+            asynchronAnd(Supplier<E> supplier) {
 
         return new Final<AsyncProviderConfigurator<S, E>, E>() {
             @Override

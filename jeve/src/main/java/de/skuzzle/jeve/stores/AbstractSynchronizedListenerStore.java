@@ -8,11 +8,31 @@ import java.util.stream.Stream;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 
-public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore> implements
-        ListenerStore {
+/**
+ * Helper class for implementing the {@link ListenerStore#synchronizedView()}
+ * method. This class provides a thread safe interface to the decorated store
+ * which is passed in the constructor.
+ *
+ * @author Simon Taddiken
+ * @param <T> The type of the decorated store.
+ * @since 3.0.0
+ */
+public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
+        implements ListenerStore {
 
+    /**
+     * Represents an atomic write transaction. Actions within {@link #perform()}
+     * will be executed in the context of a write lock when passed to the
+     * {@link AbstractSynchronizedListenerStore#modify(Transaction)}.
+     *
+     * @author Simon Taddiken
+     */
     @FunctionalInterface
     protected static interface Transaction {
+        /**
+         * Can be executed atomically by passing an instance of this interface
+         * to {@link AbstractSynchronizedListenerStore#modify(Transaction)}.
+         */
         public void perform();
     }
 
@@ -27,6 +47,11 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
         this.lock = new ReentrantReadWriteLock();
     }
 
+    /**
+     * Executes the given transaction within the context of a write lock.
+     *
+     * @param t The transaction to execute.
+     */
     protected void modify(Transaction t) {
         try {
             this.lock.writeLock().lock();
@@ -36,6 +61,12 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
         }
     }
 
+    /**
+     * Executes the given supplier within the context of a read lock.
+     *
+     * @param sup The supplier.
+     * @return The result of {@link Supplier#get()}.
+     */
     protected <E> E read(Supplier<E> sup) {
         try {
             this.lock.readLock().lock();
@@ -92,5 +123,4 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
     public void close() {
         modify(() -> this.wrapped.close());
     }
-
 }

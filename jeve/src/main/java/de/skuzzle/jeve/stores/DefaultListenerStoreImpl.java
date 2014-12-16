@@ -18,7 +18,7 @@ class DefaultListenerStoreImpl extends AbstractListenerStore implements
             AbstractSynchronizedListenerStore<DefaultListenerStore> implements
             DefaultListenerStore {
 
-        public SynchronizedStore(DefaultListenerStore wrapped) {
+        private SynchronizedStore(DefaultListenerStore wrapped) {
             super(wrapped);
         }
 

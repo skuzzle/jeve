@@ -8,7 +8,7 @@ public class ListenerStoreConfiguratorImpl implements ListenerStoreConfigurator 
     private static class FinalImpl<S extends ListenerStore> implements
             Final<S, ConfigureThreadSafety<S>> {
 
-        final S store;
+        private final S store;
 
         public FinalImpl(S store) {
             this.store = store;
@@ -38,7 +38,8 @@ public class ListenerStoreConfiguratorImpl implements ListenerStoreConfigurator 
     }
 
     @Override
-    public Final<DefaultListenerStore, ConfigureThreadSafety<DefaultListenerStore>> defaultStore() {
+    public Final<DefaultListenerStore, ConfigureThreadSafety<DefaultListenerStore>>
+            defaultStore() {
         return new FinalImpl<>(DefaultListenerStore.create());
     }
 

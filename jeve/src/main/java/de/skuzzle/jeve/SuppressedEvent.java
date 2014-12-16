@@ -1,5 +1,7 @@
 package de.skuzzle.jeve;
 
+import de.skuzzle.jeve.providers.SynchronousEventProvider;
+
 /**
  * Holds information about an event which has not been dispatched because it was
  * prevented by an other event. If an EventProvider encounters that an Event
@@ -15,6 +17,7 @@ package de.skuzzle.jeve;
  *
  * @author Simon Taddiken
  * @since 3.0.0
+ * @see SynchronousEventProvider
  */
 public interface SuppressedEvent {
 

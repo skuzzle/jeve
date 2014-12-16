@@ -246,4 +246,19 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         this.subject.dispatch(event);
         Mockito.verify(event).defaultDispatch(this.subject, this.subject.exceptionHandler);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDispatch() throws Exception {
+        final SampleListener listener1 = Mockito.mock(SampleListener.class);
+        final SampleListener listener2 = Mockito.mock(SampleListener.class);
+        Mockito.when(this.store.get(SampleListener.class)).thenReturn(
+                Arrays.asList(listener1, listener2).stream());
+        final Event<?, SampleListener> event = Mockito.mock(Event.class);
+        Mockito.when(event.getListenerClass()).thenReturn(SampleListener.class);
+        this.subject.dispatch(event, SampleListener::onEvent);
+
+        Mockito.verify(listener1).onEvent(event);
+        Mockito.verify(listener2).onEvent(event);
+    }
 }

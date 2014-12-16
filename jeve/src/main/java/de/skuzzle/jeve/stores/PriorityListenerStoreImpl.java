@@ -46,7 +46,7 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
             AbstractSynchronizedListenerStore<PriorityListenerStore> implements
             PriorityListenerStore {
 
-        public SynchronizedStore(PriorityListenerStore wrapped) {
+        private SynchronizedStore(PriorityListenerStore wrapped) {
             super(wrapped);
         }
 

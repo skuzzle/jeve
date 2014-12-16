@@ -3,17 +3,19 @@ Author: Simon Taddiken
 
 Version 3.0.0 [Released: TODO]
     * [ADD] PerformanceListenerStore implementation
+    * [ADD] UnrollingEventProvider implementation
     * [ADD] SynchronousEvent and EventStack to control cascading events when using 
-            DefaultEventProvider.
+            SynchronousEventProvider.
     * [CHANGE] Event#getListenerStore() throws an Exception when called if the event is 
                not dispatched.
     * [CHANGE] Remove 'final' modifier from DefaultListenerStore 
-    * [CHANGE] Remove EventProvider.DEFAULT_HANDLER (deprecated since 2.0.2)
-    * [DEPRECATED] DefaultTargetEvent (use Event.dispatchDefault instead)
+    * [CHANGE] Remove EventProvider.DEFAULT_HANDLER (deprecated since 2.0.1)
+    * [CHANGE] Event's source must not be null
+    * [DEPRECATED] DefaultTargetEvent (use DefaultDispatchable instead)
     * [DEPRECATED] ExceptionCallback.exception(Exception, Listener, Event) (use
                    ExceptionCallback.exception(EventProvider, Listener, Event) instead)
     * [DEPRECATED] EventProvider.dispatch(DefaultTargetEvent) (use 
-                   EventProvider.dispatch(Event) instead)
+                   EventProvider.dispatch(DefaultDispatchable) instead)
     * [DEPRECATED] DefaultListenerStore.removeInternal
 
 Version 2.0.2 [Released: 01.12.2014]

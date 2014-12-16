@@ -12,7 +12,7 @@ import de.skuzzle.jeve.ListenerStore;
 /**
  *
  * @author Simon Taddiken
- * @param <S>
+ * @param <S> The type of the ListenerStore this provider uses.
  * @since 3.0.0
  */
 public class UnrollingEventProvider<S extends ListenerStore> extends
@@ -24,15 +24,16 @@ public class UnrollingEventProvider<S extends ListenerStore> extends
         private final ExceptionCallback ec;
         private final BiConsumer<L, E> consumer;
 
-        public QueuedEvent(E event, ExceptionCallback ec, BiConsumer<L, E> consumer) {
+        private QueuedEvent(E event, ExceptionCallback ec, BiConsumer<L, E> consumer) {
             super();
             this.event = event;
             this.ec = ec;
             this.consumer = consumer;
         }
 
-        public void dispatch() {
-            UnrollingEventProvider.super.notifyListeners(this.event, this.consumer, this.ec);
+        private void dispatch() {
+            UnrollingEventProvider.super.notifyListeners(this.event,
+                    this.consumer, this.ec);
         }
     }
 
@@ -40,6 +41,11 @@ public class UnrollingEventProvider<S extends ListenerStore> extends
 
     private boolean dispatchInProgress;
 
+    /**
+     * Creates a new UnrollingEventProvider using the given ListenerStore.
+     *
+     * @param store the store which supplies listeners to this provider.
+     */
     public UnrollingEventProvider(S store) {
         super(store);
         this.dispatchQueue = new ArrayDeque<>();

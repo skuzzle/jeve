@@ -34,10 +34,22 @@ import de.skuzzle.jeve.RegistrationEvent;
  */
 public interface PriorityListenerStore extends ListenerStore {
 
+    /**
+     * Creates a new PriorityListenerStore with default priority of {@code 0}.
+     *
+     * @return A new PriorityListenerStore instance.
+     */
     public static PriorityListenerStore create() {
         return new PriorityListenerStoreImpl();
     }
 
+    /**
+     * Creates a new PriorityListenerStore with the given default priority.
+     *
+     * @param defaultPriority The default priority to assign to listeners which
+     *            have been registered using {@link #add(Class, Listener)}.
+     * @return A new PriorityListenerStore instance.
+     */
     public static PriorityListenerStore create(int defaultPriority) {
         return new PriorityListenerStoreImpl(defaultPriority);
     }

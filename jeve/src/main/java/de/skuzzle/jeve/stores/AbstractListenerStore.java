@@ -15,6 +15,8 @@ import de.skuzzle.jeve.annotation.ListenerInterface;
 import de.skuzzle.jeve.annotation.ListenerKind;
 
 /**
+ * Abstract helper class for implementing your own {@link ListenerStore
+ * ListenerStores}.
  *
  * @author Simon Taddiken
  * @since 3.0.0

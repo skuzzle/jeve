@@ -2,6 +2,9 @@ package de.skuzzle.jeve;
 
 
 /**
+ * This interface is ought to be implemented by Event subclasses to provide a
+ * simple default dispatch mechanism. Objects implementing this interface can be
+ * passed to {@link EventProvider#dispatch(DefaultDispatchable)}.
  *
  * @author Simon Taddiken
  * @since 3.0.0

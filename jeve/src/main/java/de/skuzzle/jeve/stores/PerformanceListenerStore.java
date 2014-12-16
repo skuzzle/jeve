@@ -35,10 +35,22 @@ import de.skuzzle.jeve.ListenerStore;
  */
 public interface PerformanceListenerStore extends DefaultListenerStore {
 
+    /**
+     * Creates a new default PerformanceListenerStore.
+     *
+     * @return A new PerformanceListenerStore instance.
+     */
     public static PerformanceListenerStore create() {
         return new PerformanceListenerStoreImpl();
     }
 
+    /**
+     * Creates a new PerformanceListenerStore with the auto optimize flag set to
+     * true. This store will automatically call its {@link #optimizeGet()}
+     * method the first time its {@link #get(Class)} method is called.
+     *
+     * @return A new PerformanceListenerStore instance.
+     */
     public static PerformanceListenerStore withAutoOptimize() {
         return new PerformanceListenerStoreImpl(true);
     }

@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 /**
  * Provides a convenient way to implement Listeners which only have a single
  * listening method. If a listener only has a single listening method, it is
- * redundant to specify it when calling the {@link EventProvider 
+ * redundant to specify it when calling the {@link EventProvider
  * EventProvider's} {@code dispatch} method. As dispatch may be called often for
  * some kind of events, it is easier to statically provide the method reference
  * to the listening method. That is what this event class is for.
@@ -19,11 +19,11 @@ import java.util.function.BiConsumer;
  * <pre>
  * <code>
  * public class UserEvent extends DefaultTargetEvent&lt;UserManager, UserEvent, UserListener&gt; {
- * 
+ *
  *     public UserEvent(UserManager source) {
  *         super(source, UserListener.class);
  *     }
- * 
+ *
  *     &#64;Override
  *     public BiConsumer&lt;UserListener, UserEvent&gt; getTarget() {
  *         return UserListener::userAdded;
@@ -54,14 +54,14 @@ import java.util.function.BiConsumer;
  *
  * @author Simon Taddiken
  * @param <T> Type of the source of this event.
- * @param <SELF> The concrete type of the extending class.
+ * @param <S> The concrete type of the extending class.
  * @param <L> Type of the listener which can handle this event.
  * @see Event
  * @since 2.0.0
  * @deprecated Since 3.0.0 - use {@link DefaultDispatchable} instead.
  */
 @Deprecated
-public abstract class DefaultTargetEvent<T, SELF extends Event<?, L>, L extends Listener>
+public abstract class DefaultTargetEvent<T, S extends Event<?, L>, L extends Listener>
         extends Event<T, L> {
 
     /**
@@ -82,5 +82,5 @@ public abstract class DefaultTargetEvent<T, SELF extends Event<?, L>, L extends 
      * @return A method reference to a listening method of a listener.
      */
     @Deprecated
-    public abstract BiConsumer<L, SELF> getTarget();
+    public abstract BiConsumer<L, S> getTarget();
 }

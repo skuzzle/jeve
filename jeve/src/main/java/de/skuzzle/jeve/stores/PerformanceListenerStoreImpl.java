@@ -15,7 +15,7 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
             AbstractSynchronizedListenerStore<PerformanceListenerStore> implements
             PerformanceListenerStore {
 
-        public SynchronizedStore(PerformanceListenerStore wrapped) {
+        private SynchronizedStore(PerformanceListenerStore wrapped) {
             super(wrapped);
         }
 
@@ -31,12 +31,12 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
 
         @Override
         public boolean isOptimized() {
-            return read(() -> this.wrapped.isAutoOptimize());
+            return read(this.wrapped::isAutoOptimize);
         }
 
         @Override
         public void optimizeGet() {
-            modify(() -> this.wrapped.optimizeGet());
+            modify(this.wrapped::optimizeGet);
         }
 
     }

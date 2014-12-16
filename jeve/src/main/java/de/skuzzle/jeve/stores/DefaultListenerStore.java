@@ -25,6 +25,11 @@ import de.skuzzle.jeve.ListenerStore;
  */
 public interface DefaultListenerStore extends ListenerStore {
 
+    /**
+     * Creates a new DefaultListenerStore instance.
+     *
+     * @return A new DefaultListenerStore.
+     */
     public static DefaultListenerStore create() {
         return new DefaultListenerStoreImpl();
     }

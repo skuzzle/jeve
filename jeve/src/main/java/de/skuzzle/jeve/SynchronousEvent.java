@@ -143,7 +143,6 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      *
      * @param <E> Type of the listener class.
      * @param listenerClass The listener class to prevent being notified.
-     * @since 3.0.0
      * @see #preventCascade()
      */
     public <E extends Listener> void preventCascade(Class<E> listenerClass) {
@@ -161,7 +160,6 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      * dispatching this event with an EventProvider which supports the
      * {@link EventStack}.
      *
-     * @since 3.0.0
      * @see #preventCascade(Class)
      */
     public void preventCascade() {
@@ -174,7 +172,6 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      *
      * @return The listener classes marked to prevent.
      * @see #preventCascade(Class)
-     * @since 3.0.0
      */
     public Set<Class<?>> getPrevented() {
         if (this.prevent == null) {

@@ -51,7 +51,7 @@ public class Event<T, L extends Listener> {
     private final T source;
 
     /** Whether this event has been marked as handled */
-    private boolean isHandled;
+    private boolean handled;
 
     /** The class of the listener which can handle this event */
     private final Class<L> listenerClass;
@@ -139,7 +139,7 @@ public class Event<T, L extends Listener> {
 
         this.source = source;
         this.listenerClass = listenerClass;
-        this.isHandled = false;
+        this.handled = false;
         this.cause = cause;
     }
 
@@ -267,7 +267,7 @@ public class Event<T, L extends Listener> {
      * @return Whether this event was handled.
      */
     public boolean isHandled() {
-        return this.isHandled;
+        return this.handled;
     }
 
     /**
@@ -283,6 +283,6 @@ public class Event<T, L extends Listener> {
      * @param isHandled Whether this event was handled.
      */
     public void setHandled(boolean isHandled) {
-        this.isHandled = isHandled;
+        this.handled = isHandled;
     }
 }

@@ -9,14 +9,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(Parameterized.class)
 public class SynchronousEventProviderIT extends
-        EventProviderTestBase<DefaultListenerStore> {
+        EventProviderTestBase<ListenerStore> {
 
     /**
      * Parameterizes the test instances.
@@ -40,7 +39,7 @@ public class SynchronousEventProviderIT extends
     }
 
     public SynchronousEventProviderIT(
-            Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
+            Supplier<? extends EventProvider<ListenerStore>> factory) {
         super(factory);
     }
 

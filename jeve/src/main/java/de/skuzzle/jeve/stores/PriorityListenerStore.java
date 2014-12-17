@@ -54,6 +54,9 @@ public interface PriorityListenerStore extends ListenerStore {
         return new PriorityListenerStoreImpl(defaultPriority);
     }
 
+    @Override
+    public PriorityListenerStore synchronizedView();
+
     /**
      * Adds a listener with the default priority specified in the constructor.
      * It will be notified for every event represented by the given listener

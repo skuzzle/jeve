@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -53,26 +54,23 @@ public class ThreadedEventProviderIT extends
 
     @Test(expected = IllegalArgumentException.class)
     public void setThreadPoolNull() {
-        if (this.subject instanceof ExecutorAware) {
+        Assume.assumeTrue(this.subject instanceof ExecutorAware);
             final ExecutorAware ea = (ExecutorAware) this.subject;
             ea.setExecutorService(null);
-        }
-        throw new IllegalArgumentException();
     }
 
     @Test
     public void testSetExecutor() {
-        if (this.subject instanceof ExecutorAware) {
-            final ExecutorAware ea = (ExecutorAware) this.subject;
-            final ExecutorService executor = Mockito.mock(ExecutorService.class);
-            ea.setExecutorService(executor);
-            final StringListener listener = Mockito.mock(StringListener.class);
-            this.subject.listeners().add(StringListener.class, listener);
+        Assume.assumeTrue(this.subject instanceof ExecutorAware);
+        final ExecutorAware ea = (ExecutorAware) this.subject;
+        final ExecutorService executor = Mockito.mock(ExecutorService.class);
+        ea.setExecutorService(executor);
+        final StringListener listener = Mockito.mock(StringListener.class);
+        this.subject.listeners().add(StringListener.class, listener);
 
-            this.subject.dispatch(new StringEvent(this.subject, ""),
-                    StringListener::onStringEvent);
+        this.subject.dispatch(new StringEvent(this.subject, ""),
+                StringListener::onStringEvent);
 
-            Mockito.verify(executor).execute(Mockito.any());
-        }
+        Mockito.verify(executor).execute(Mockito.any());
     }
 }

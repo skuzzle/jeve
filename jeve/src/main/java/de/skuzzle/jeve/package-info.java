@@ -13,6 +13,5 @@
  *
  * @author Simon Taddiken
  * @since 1.0.0
- * @version 2.0.0
  */
 package de.skuzzle.jeve;

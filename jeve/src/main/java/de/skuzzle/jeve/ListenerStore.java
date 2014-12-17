@@ -52,8 +52,8 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * remove themselves from the store for not being notified again). For
  * performance reasons, stores should always be implemented without
  * synchronization and instead return a synchronized view of themselves with
- * {@link #synchronizedView()}. See {@link AbstractSynchronizedListenerStore} for
- * information on how to properly implement this.
+ * {@link #synchronizedView()}. See {@link AbstractSynchronizedListenerStore}
+ * for information on how to properly implement this.
  * </p>
  *
  * <h2>Closing</h2>
@@ -89,7 +89,9 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * and
  *
  * <pre>
- * EventProvider.configure().store(new PriorityListenerStore().synchronizedView()).create();
+ * EventProvider.configure()
+ *         .store(new PriorityListenerStore().synchronizedView())
+ *         .create();
  * </pre>
  * <p>
  * would yield two incompatible EventProvider types (the first is of type

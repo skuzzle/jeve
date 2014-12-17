@@ -110,7 +110,6 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleHandleException() {
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
@@ -214,14 +213,13 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
 
     @Test
     public void testDispatch() throws Exception {
-        final SampleListener listener = Mockito.mock(SampleListener.class);
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
-                Arrays.asList(listener, listener2).stream());
+                Arrays.asList(this.listener, listener2).stream());
         Mockito.when(this.event.getListenerClass()).thenReturn(SampleListener.class);
         this.subject.dispatch(this.event, SampleListener::onEvent);
 
-        Mockito.verify(listener).onEvent(this.event);
+        Mockito.verify(this.listener).onEvent(this.event);
         Mockito.verify(listener2).onEvent(this.event);
     }
 }

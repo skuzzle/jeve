@@ -15,6 +15,8 @@ import de.skuzzle.jeve.RegistrationEvent;
 class PriorityListenerStoreImpl extends AbstractListenerStore implements
         PriorityListenerStore {
 
+    private static final int PRIME = 31;
+
     private static class ListenerWrapper {
         private final Object listener;
         private final int priority;
@@ -26,7 +28,7 @@ class PriorityListenerStoreImpl extends AbstractListenerStore implements
 
         @Override
         public int hashCode() {
-            return 31 * this.listener.hashCode();
+            return PRIME * this.listener.hashCode();
         }
 
         @Override

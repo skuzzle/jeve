@@ -226,7 +226,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         } catch (AbortionException abort) {
             throw abort;
         } catch (Exception ignore) {
-            this.logger.error("ExceptionCallback '{}' threw an exception", ignore);
+            this.logger.error("ExceptionCallback '{}' threw an exception", ec, ignore);
             // where is your god now?
         }
     }

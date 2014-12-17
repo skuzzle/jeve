@@ -26,6 +26,7 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
      * {@link AbstractSynchronizedListenerStore#modify(Transaction)}.
      *
      * @author Simon Taddiken
+     * @since 3.0.0
      */
     @FunctionalInterface
     protected static interface Transaction {

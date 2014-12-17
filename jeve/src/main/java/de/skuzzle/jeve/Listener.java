@@ -21,7 +21,8 @@ import java.util.EventListener;
  * method of an EventProvider.
  *
  * <pre>
- * eventProvider.dispatch(MyListener.class, someEventInstance, MyListener::listeningMethod);
+ * eventProvider.dispatch(MyListener.class, someEventInstance,
+ *         MyListener::listeningMethod);
  * </pre>
  *
  * <h2>ListenerInterface Annotation</h2>

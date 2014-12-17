@@ -53,8 +53,8 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
         };
     }
 
-    private <E extends EventProvider<S>> Final<ProviderConfigurator<S, E>, E> synchronAnd(
-            Supplier<E> supplier) {
+    private <E extends EventProvider<S>> Final<ProviderConfigurator<S, E>, E>
+            synchronAnd(Supplier<E> supplier) {
 
         return new Final<ProviderConfigurator<S, E>, E>() {
             @Override
@@ -96,42 +96,48 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
     }
 
     @Override
-    public Final<ProviderConfigurator<S, SynchronousEventProvider<S>>, SynchronousEventProvider<S>> useSynchronousProvider() {
+    public Final<ProviderConfigurator<S, SynchronousEventProvider<S>>,
+            SynchronousEventProvider<S>> useSynchronousProvider() {
         final Supplier<SynchronousEventProvider<S>> supplier =
                 () -> new SynchronousEventProvider<S>(this.storeSupplier.get());
         return synchronAnd(supplier);
     }
 
     @Override
-    public Final<ProviderConfigurator<S, UnrollingEventProvider<S>>, UnrollingEventProvider<S>> useUnrollingProvider() {
+    public Final<ProviderConfigurator<S, UnrollingEventProvider<S>>,
+            UnrollingEventProvider<S>> useUnrollingProvider() {
         final Supplier<UnrollingEventProvider<S>> supplier =
                 () -> new UnrollingEventProvider<S>(this.storeSupplier.get());
         return synchronAnd(supplier);
     }
 
     @Override
-    public Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>, AsynchronousEventProvider<S>> useAsynchronousProvider() {
+    public Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
+            AsynchronousEventProvider<S>> useAsynchronousProvider() {
         final Supplier<AsynchronousEventProvider<S>> supplier =
                 () -> new AsynchronousEventProvider<S>(this.storeSupplier.get());
         return asynchronAnd(supplier);
     }
 
     @Override
-    public Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>, ParallelEventProvider<S>> useParallelProvider() {
+    public Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
+            ParallelEventProvider<S>> useParallelProvider() {
         final Supplier<ParallelEventProvider<S>> supplier =
                 () -> new ParallelEventProvider<S>(this.storeSupplier.get());
         return asynchronAnd(supplier);
     }
 
     @Override
-    public Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> useWaitingAWTEventProvider() {
+    public Final<ProviderConfigurator<S, AWTEventProvider<S>>,
+            AWTEventProvider<S>> useWaitingAWTEventProvider() {
         final Supplier<AWTEventProvider<S>> supplier =
                 () -> new AWTEventProvider<S>(this.storeSupplier.get(), true);
         return synchronAnd(supplier);
     }
 
     @Override
-    public Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>> useAsynchronAWTEventProvider() {
+    public Final<ProviderConfigurator<S, AWTEventProvider<S>>,
+            AWTEventProvider<S>> useAsynchronAWTEventProvider() {
         final Supplier<AWTEventProvider<S>> supplier =
                 () -> new AWTEventProvider<S>(this.storeSupplier.get(), false);
         return synchronAnd(supplier);

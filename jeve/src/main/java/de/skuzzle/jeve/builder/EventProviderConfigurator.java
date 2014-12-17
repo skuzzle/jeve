@@ -74,12 +74,16 @@ public interface EventProviderConfigurator {
                 CustomConfigurator<S, C, E> configurator);
 
         /**
+         * Creates a new {@link UnrollingEventProvider}. This provider fires
+         * event sequentially within the current thread but will not fire nested
+         * events. Instead, nested events will be added to a queue which will be
+         * processed once the current dispatch action is done.
          *
-         * @return
+         * @return Fluent API object for further configuration.
          * @since 3.0.0
          */
-        Final<ProviderConfigurator<S, UnrollingEventProvider<S>>, UnrollingEventProvider<S>>
-                useUnrollingProvider();
+        Final<ProviderConfigurator<S, UnrollingEventProvider<S>>,
+                UnrollingEventProvider<S>> useUnrollingProvider();
 
         /**
          * Configures a synchronous EventProvider which will dispatch all events
@@ -91,8 +95,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, SynchronousEventProvider<S>>, SynchronousEventProvider<S>>
-            useSynchronousProvider();
+        Final<ProviderConfigurator<S, SynchronousEventProvider<S>>,
+                SynchronousEventProvider<S>> useSynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which fires each event in a
@@ -118,8 +122,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>, AsynchronousEventProvider<S>>
-                useAsynchronousProvider();
+        Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
+                AsynchronousEventProvider<S>> useAsynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which notifies each listener
@@ -139,8 +143,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>, ParallelEventProvider<S>>
-                useParallelProvider();
+        Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
+                ParallelEventProvider<S>> useParallelProvider();
 
         /**
          * Configures an {@link EventProvider} which dispatches all events in
@@ -259,7 +263,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>> statistics();
+        Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
+                StatisticsEventProvider<S, E>> statistics();
     }
 
     /**
@@ -317,7 +322,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>> statistics();
+        Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
+                StatisticsEventProvider<S, E>> statistics();
     }
 
     /**

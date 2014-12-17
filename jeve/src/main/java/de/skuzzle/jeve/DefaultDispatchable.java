@@ -20,7 +20,8 @@ public interface DefaultDispatchable {
      * </p>
      *
      * <pre>
-     * public void defaultDispatch(EventProvider&lt;?&gt; eventProvider, ExceptionCallback ec) {
+     * &#064;Override
+     * public void defaultDispatch(EventProvider&lt;?&gt; provider, ExceptionCallback ec) {
      *     eventProvider.dispatch(this, UserListener::userAdded, ec);
      * }
      * </pre>
@@ -31,8 +32,8 @@ public interface DefaultDispatchable {
      * {@link EventProvider#dispatch(DefaultDispatchable, ExceptionCallback)}.
      * </p>
      *
-     * @param eventProvider The EventProvider to use for dispatching.
+     * @param provider The EventProvider to use for dispatching.
      * @param ec The exception call back to use for this dispatch action.
      */
-    public void defaultDispatch(EventProvider<?> eventProvider, ExceptionCallback ec);
+    public void defaultDispatch(EventProvider<?> provider, ExceptionCallback ec);
 }

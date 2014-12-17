@@ -174,7 +174,8 @@ public interface EventProvider<S extends ListenerStore> {
      *
      * <pre>
      * <code>
-     * EventProvider&lt;PriorityListenerStore&gt; eventProvider = EventProvider.configure()
+     * EventProvider&lt;PriorityListenerStore&gt; eventProvider = EventProvider
+     *          .configure()
      *          .store(PriorityListenerStore::new)
      *          .useSynchronousEventProvider()
      *          .create();
@@ -194,7 +195,8 @@ public interface EventProvider<S extends ListenerStore> {
      *
      * <pre>
      * <code>
-     * Supplier&lt;EventProvider&lt;?&gt;&gt; eventProvider = EventProvider.configure()
+     * Supplier&lt;EventProvider&lt;?&gt;&gt; eventProvider = EventProvider
+     *          .configure()
      *          .defaultStore()
      *          .useSynchronousEventProvider().and()
      *          .exceptionCallBack(myCallback)
@@ -403,8 +405,8 @@ public interface EventProvider<S extends ListenerStore> {
      *             instead.
      */
     @Deprecated
-    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
-            E event) {
+    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void
+            dispatch(E event) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
         }
@@ -429,8 +431,8 @@ public interface EventProvider<S extends ListenerStore> {
      *             instead.
      */
     @Deprecated
-    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void dispatch(
-            E event, ExceptionCallback ec) {
+    public default <L extends Listener, E extends DefaultTargetEvent<?, E, L>> void
+            dispatch(E event, ExceptionCallback ec) {
         if (event == null) {
             throw new IllegalArgumentException("event is null");
         } else if (ec == null) {

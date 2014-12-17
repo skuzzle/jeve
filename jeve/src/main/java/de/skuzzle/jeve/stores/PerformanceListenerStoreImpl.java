@@ -86,7 +86,7 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
             return;
         }
         this.optimized = true;
-        for (final Entry<Class<? extends Listener>, List<Object>> e : this.listenerMap.entrySet()) {
+        for (final Entry<?, List<Object>> e : this.listenerMap.entrySet()) {
             final List<Object> cpy = new CopyOnWriteArrayList<>(e.getValue());
             e.setValue(cpy);
         }

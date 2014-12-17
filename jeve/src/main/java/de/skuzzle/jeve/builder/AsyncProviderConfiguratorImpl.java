@@ -39,15 +39,16 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
                 ea.setExecutorService(this.executorSupplier.get());
             } else {
                 throw new IllegalStateException(String.format(
-                        "The configured EventProvider %s does not support setting an ExecutorService",
-                        result));
+                        "The configured EventProvider %s does not support setting "
+                                + "an ExecutorService", result));
             }
         }
         return result;
     }
 
     @Override
-    public Final<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec) {
+    public Final<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+            ExceptionCallback ec) {
         this.ecSupplier = () -> ec;
         return new Final<AsyncProviderConfigurator<S, E>, E>() {
 
@@ -87,7 +88,8 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>> statistics() {
+    public Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
+            StatisticsEventProvider<S, E>> statistics() {
         final Supplier<StatisticsEventProvider<S, E>> supplier =
                 () -> new StatisticsEventProvider<S, E>(this.create());
 

@@ -59,7 +59,8 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      *            event. This value must not be <code>null</code>.
      * @param cause The cause of this event.
      */
-    public SynchronousEvent(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
+    public SynchronousEvent(T source, Class<L> listenerClass,
+            Optional<Event<?, ?>> cause) {
         super(source, listenerClass, cause);
     }
 

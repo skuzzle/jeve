@@ -11,7 +11,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.providers.ExecutorAware;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -35,10 +34,10 @@ public class ThreadedEventProviderIT extends
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().defaultStore().useParallelProvider().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useAsynchronousProvider().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useParallelProvider().and().statistics().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useAsynchronousProvider().and().statistics().createSupplier() }
+                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useParallelProvider().createSupplier() },
+                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useAsynchronousProvider().createSupplier() },
+                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useParallelProvider().and().statistics().createSupplier() },
+                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useAsynchronousProvider().and().statistics().createSupplier() }
                 );
     }
 

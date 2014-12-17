@@ -10,6 +10,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.stores.DefaultListenerStore;
+import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
@@ -26,8 +27,15 @@ public class SynchronousEventProviderIT extends
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().defaultStore().useSynchronousProvider().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useSynchronousProvider().and().statistics().createSupplier() }
+                new Object[] { EventProvider.configure()
+                        .defaultStore()
+                        .useSynchronousProvider()
+                        .createSupplier() },
+                new Object[] { EventProvider.configure()
+                        .store(PriorityListenerStore.create().synchronizedView())
+                        .useSynchronousProvider().and()
+                        .statistics()
+                        .createSupplier() }
                 );
     }
 

@@ -39,6 +39,12 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
     protected final ReadWriteLock lock;
     protected final T wrapped;
 
+    /**
+     * Creates a new AbstractSynchronizedListenerStore which wraps the given
+     * store.
+     *
+     * @param wrapped The wrapped store.
+     */
     public AbstractSynchronizedListenerStore(T wrapped) {
         if (wrapped == null) {
             throw new IllegalArgumentException("wrapped is null");

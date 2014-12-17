@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class EventStack {
      * Contains the listener classes for which a dispatch action is currently
      * active.
      */
-    private final LinkedList<Event<?, ?>> stack;
+    private final Deque<Event<?, ?>> stack;
 
     /**
      * Creates a new EventStack.

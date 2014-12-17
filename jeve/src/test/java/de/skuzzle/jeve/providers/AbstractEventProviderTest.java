@@ -28,6 +28,12 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
 
     @Mock
     protected ListenerStore store;
+    @Mock
+    protected Event<Object, SampleListener> event;
+    @Mock
+    protected ExceptionCallback ec;
+    @Mock
+    protected SampleListener listener;
 
     protected T subject;
 
@@ -60,27 +66,20 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         this.subject.dispatch((Event<?, SampleListener>) null, SampleListener::onEvent);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchBCIsNull() throws Exception {
-        final Event<?, SampleListener> event = Mockito.mock(Event.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        this.subject.dispatch(event, null, ec);
+        this.subject.dispatch(this.event, null, this.ec);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchBCisNull2() throws Exception {
-        final Event<?, SampleListener> event = Mockito.mock(Event.class);
-        this.subject.dispatch(event, (BiConsumer<SampleListener, Event<?, SampleListener>>) null);
+        this.subject.dispatch(this.event, (BiConsumer<SampleListener, Event<?, SampleListener>>) null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testDispatchECIsNull() throws Exception {
-        final Event<?, SampleListener> event = Mockito.mock(Event.class);
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc = SampleListener::onEvent;
-        this.subject.dispatch(event, bc, null);
+        this.subject.dispatch(this.event, bc, null);
     }
 
     @Test
@@ -88,130 +87,97 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Assert.assertSame(this.store, this.subject.listeners());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleSuccess() throws Exception {
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
                 SampleListener::onEvent;
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        final SampleListener listener = Mockito.mock(SampleListener.class);
-        this.subject.notifySingle(listener, e, bc, ec);
-        Mockito.verify(listener).onEvent(e);
-        Mockito.verifyZeroInteractions(ec);
+        this.subject.notifySingle(this.listener, this.event, bc, this.ec);
+        Mockito.verify(this.listener).onEvent(this.event);
+        Mockito.verifyZeroInteractions(this.ec);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleDelegateAbortionException() {
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
                 SampleListener::onEvent;
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        final SampleListener listener = Mockito.mock(SampleListener.class);
-        Mockito.doThrow(AbortionException.class).when(listener).onEvent(e);
+        Mockito.doThrow(AbortionException.class).when(this.listener).onEvent(this.event);
 
         try {
-            this.subject.notifySingle(listener, e, bc, ec);
+            this.subject.notifySingle(this.listener, this.event, bc, this.ec);
             Assert.fail("Expected AbortionException");
         } catch (AbortionException ex) {
-            Mockito.verifyZeroInteractions(ec);
+            Mockito.verifyZeroInteractions(this.ec);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testNotifySingleHandleException() {
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
                 SampleListener::onEvent;
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        final SampleListener listener = Mockito.mock(SampleListener.class);
         final RuntimeException ex = new RuntimeException();
-        Mockito.doThrow(ex).when(listener).onEvent(e);
+        Mockito.doThrow(ex).when(this.listener).onEvent(this.event);
 
-        this.subject.notifySingle(listener, e, bc, ec);
-        Mockito.verify(ec).exception(this.subject, ex, listener, e);
+        this.subject.notifySingle(this.listener, this.event, bc, this.ec);
+        Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testHandleExceptionSuccess() throws Exception {
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
-        final SampleListener listener = Mockito.mock(SampleListener.class);
 
-        this.subject.handleException(ec, ex, listener, e);
-        Mockito.verify(ec).exception(this.subject, ex, listener, e);
+        this.subject.handleException(this.ec, ex, this.listener, this.event);
+        Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testHandleExceptionSwallow() throws Exception {
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
-        final SampleListener listener = Mockito.mock(SampleListener.class);
-        Mockito.doThrow(new RuntimeException()).when(ec).exception(this.subject, ex, listener, e);
+        Mockito.doThrow(new RuntimeException()).when(this.ec).exception(this.subject, ex, this.listener, this.event);
 
-        this.subject.handleException(ec, ex, listener, e);
-        Mockito.verify(ec).exception(this.subject, ex, listener, e);
+        this.subject.handleException(this.ec, ex, this.listener, this.event);
+        Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testHandleExceptionDelegateAbortionException() throws Exception {
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final RuntimeException ex = new RuntimeException();
-        final SampleListener listener = Mockito.mock(SampleListener.class);
-        Mockito.doThrow(new AbortionException()).when(ec).exception(this.subject, ex, listener, e);
+        Mockito.doThrow(new AbortionException()).when(this.ec).exception(this.subject, ex, this.listener, this.event);
 
         try {
-            this.subject.handleException(ec, ex, listener, e);
+            this.subject.handleException(this.ec, ex, this.listener, this.event);
             Assert.fail("Expected AbortionException");
         } catch (AbortionException ex2) {
-            Mockito.verify(ec).exception(this.subject, ex, listener, e);
+            Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testNotifyListeners() throws Exception {
-        final AbstractEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
-        final SampleListener listener1 = Mockito.mock(SampleListener.class);
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        Mockito.when(e.getListenerClass()).thenReturn(SampleListener.class);
+        Mockito.when(this.event.getListenerClass()).thenReturn(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
-                Arrays.asList(listener1, listener2).stream());
+                Arrays.asList(this.listener, listener2).stream());
 
-        spy.notifyListeners(e, SampleListener::onEvent, ec);
-        InOrder inOrder = Mockito.inOrder(e, listener1, listener2);
-        inOrder.verify(e).setListenerStore(this.store);
-        inOrder.verify(listener1).onEvent(e);
-        inOrder.verify(listener2).onEvent(e);
+        this.subject.notifyListeners(this.event, SampleListener::onEvent, this.ec);
+        InOrder inOrder = Mockito.inOrder(this.event, this.listener, listener2);
+        inOrder.verify(this.event).setListenerStore(this.store);
+        inOrder.verify(this.listener).onEvent(this.event);
+        inOrder.verify(listener2).onEvent(this.event);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testNotifyListenersHandledEvent() throws Exception {
-        final AbstractEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
-        final SampleListener listener1 = Mockito.mock(SampleListener.class);
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        final Event<?, SampleListener> e = Mockito.mock(Event.class);
-        Mockito.when(e.getListenerClass()).thenReturn(SampleListener.class);
-        Mockito.when(e.isHandled()).thenReturn(true);
+        Mockito.when(this.event.getListenerClass()).thenReturn(SampleListener.class);
+        Mockito.when(this.event.isHandled()).thenReturn(true);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
-                Arrays.asList(listener1, listener2).stream());
+                Arrays.asList(this.listener, listener2).stream());
 
-        spy.notifyListeners(e, SampleListener::onEvent, ec);
-        InOrder inOrder = Mockito.inOrder(e, listener1, listener2);
-        inOrder.verify(e).setListenerStore(this.store);
-        inOrder.verify(listener1, Mockito.never()).onEvent(Mockito.any());
+        this.subject.notifyListeners(this.event, SampleListener::onEvent, this.ec);
+        InOrder inOrder = Mockito.inOrder(this.event, this.listener, listener2);
+        inOrder.verify(this.event).setListenerStore(this.store);
+        inOrder.verify(this.listener, Mockito.never()).onEvent(Mockito.any());
         inOrder.verify(listener2, Mockito.never()).onEvent(Mockito.any());
     }
 
@@ -229,9 +195,8 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
 
     @Test
     public void testSetExceptionCallback() throws Exception {
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
-        this.subject.setExceptionCallback(ec);
-        Assert.assertSame(ec, this.subject.exceptionHandler);
+        this.subject.setExceptionCallback(this.ec);
+        Assert.assertSame(this.ec, this.subject.exceptionHandler);
     }
 
     @Test
@@ -247,18 +212,16 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.verify(event).defaultDispatch(this.subject, this.subject.exceptionHandler);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testDispatch() throws Exception {
-        final SampleListener listener1 = Mockito.mock(SampleListener.class);
+        final SampleListener listener = Mockito.mock(SampleListener.class);
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
-                Arrays.asList(listener1, listener2).stream());
-        final Event<?, SampleListener> event = Mockito.mock(Event.class);
-        Mockito.when(event.getListenerClass()).thenReturn(SampleListener.class);
-        this.subject.dispatch(event, SampleListener::onEvent);
+                Arrays.asList(listener, listener2).stream());
+        Mockito.when(this.event.getListenerClass()).thenReturn(SampleListener.class);
+        this.subject.dispatch(this.event, SampleListener::onEvent);
 
-        Mockito.verify(listener1).onEvent(event);
-        Mockito.verify(listener2).onEvent(event);
+        Mockito.verify(listener).onEvent(this.event);
+        Mockito.verify(listener2).onEvent(this.event);
     }
 }

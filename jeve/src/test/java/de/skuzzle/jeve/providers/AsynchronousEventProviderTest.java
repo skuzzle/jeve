@@ -17,7 +17,6 @@ import org.mockito.stubbing.Answer;
 
 import de.skuzzle.jeve.DefaultDispatchable;
 import de.skuzzle.jeve.Event;
-import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.ListenerStore;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -80,21 +79,18 @@ public class AsynchronousEventProviderTest extends
         Mockito.verify(this.executor, Mockito.never()).execute(Mockito.any());
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     @Test
     public void testDispatch() {
         final AsynchronousEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
-        final SampleListener listener1 = Mockito.mock(SampleListener.class);
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
 
-        final Event<?, SampleListener> event = Mockito.mock(Event.class);
-        final ExceptionCallback ec = Mockito.mock(ExceptionCallback.class);
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc =
                 SampleListener::onEvent;
 
-        Mockito.when(event.getListenerClass()).thenReturn(SampleListener.class);
+        Mockito.when(this.event.getListenerClass()).thenReturn(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
-                Arrays.asList(listener1, listener2).stream());
+                Arrays.asList(this.listener, listener2).stream());
         Mockito.doAnswer(new Answer<Void>() {
 
             @Override
@@ -105,9 +101,9 @@ public class AsynchronousEventProviderTest extends
             }
         }).when(this.executor).execute(Mockito.any());
 
-        Mockito.doReturn(true).when(spy).notifyListeners(event, bc, ec);
-        spy.dispatch(event, bc, ec);
-        Mockito.verify(spy).notifyListeners(event, bc, ec);
+        Mockito.doReturn(true).when(spy).notifyListeners(this.event, bc, this.ec);
+        spy.dispatch(this.event, bc, this.ec);
+        Mockito.verify(spy).notifyListeners(this.event, bc, this.ec);
     }
 
     @Test

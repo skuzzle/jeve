@@ -13,6 +13,15 @@ import de.skuzzle.jeve.ListenerStore;
  * method. This class provides a thread safe interface to the decorated store
  * which is passed in the constructor.
  *
+ * <h2>Implementation Note</h2>
+ * <p>
+ * The implementation of this class should always be assignment compatible with
+ * the store it decorates. Thus in general, you would define an interface for
+ * your store which will then be implemented by the actual store implementation
+ * and the implementation of this class (which is typically a private class of
+ * your store).
+ * </p>
+ *
  * @author Simon Taddiken
  * @param <T> The type of the decorated store.
  * @since 3.0.0
@@ -37,7 +46,9 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
         public void perform();
     }
 
-    protected final ReadWriteLock lock;
+    private final ReadWriteLock lock;
+
+    /** The wrapped store */
     protected final T wrapped;
 
     /**
@@ -83,6 +94,14 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>
+     * <b>Note:</b> This method should be implemented to return this store
+     * itself.
+     * </p>
+     */
     @Override
     public abstract T synchronizedView();
 

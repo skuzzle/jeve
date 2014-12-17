@@ -31,14 +31,8 @@ public interface DefaultDispatchable {
      * {@link EventProvider#dispatch(DefaultDispatchable, ExceptionCallback)}.
      * </p>
      *
-     * <p>
-     * The default implementation throws an
-     * {@link UnsupportedOperationException}
-     * </p>
-     *
      * @param eventProvider The EventProvider to use for dispatching.
      * @param ec The exception call back to use for this dispatch action.
      */
-    public abstract void defaultDispatch(EventProvider<?> eventProvider,
-            ExceptionCallback ec);
+    public void defaultDispatch(EventProvider<?> eventProvider, ExceptionCallback ec);
 }

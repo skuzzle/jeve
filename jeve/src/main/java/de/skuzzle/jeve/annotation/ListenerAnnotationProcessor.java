@@ -86,16 +86,15 @@ public class ListenerAnnotationProcessor extends AbstractProcessor {
                 if (!members.isEmpty()) {
                     msg.printMessage(Kind.ERROR, TAGGING_NOT_EMPTY, parent);
                 }
-                continue;
             } else if (members.isEmpty()) {
                 msg.printMessage(Kind.WARNING, EMPTY_LISTENER, parent);
-                continue;
-            }
+            } else {
 
-            for (final ExecutableElement member : members) {
-                checkReturnValue(member, kind);
-                checkParameter(member);
-                checkThrown(member);
+                for (final ExecutableElement member : members) {
+                    checkReturnValue(member, kind);
+                    checkParameter(member);
+                    checkThrown(member);
+                }
             }
         }
 

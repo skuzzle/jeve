@@ -32,7 +32,7 @@ public class SynchronousEventProviderIT extends
                         .exceptionCallBack(SampleExceptionCallback::new)
                         .createSupplier() },
                 new Object[] { EventProvider.configure()
-                        .store(PriorityListenerStore::create)
+                        .store(PriorityListenerStore.create())
                         .useSynchronousProvider().and()
                         .synchronizeStore().and()
                         .statistics()

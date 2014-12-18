@@ -74,23 +74,6 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     }
 
     @Override
-    public Final<ProviderConfigurator<S, E>, E> synchronizeStore() {
-        this.synchronizeStore = true;
-        return new Final<ProviderConfigurator<S, E>, E>() {
-
-            @Override
-            public ProviderConfigurator<S, E> and() {
-                return ProviderConfiguratorImpl.this;
-            }
-
-            @Override
-            public E create() {
-                return ProviderConfiguratorImpl.this.create();
-            }
-        };
-    }
-
-    @Override
     public Final<ProviderConfigurator<S, E>, E> exceptionCallBack(
             Supplier<ExceptionCallback> callBackSupplier) {
         if (callBackSupplier == null) {
@@ -109,6 +92,23 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
                 return ProviderConfiguratorImpl.this.create();
             }
 
+        };
+    }
+
+    @Override
+    public Final<ProviderConfigurator<S, E>, E> synchronizeStore() {
+        this.synchronizeStore = true;
+        return new Final<ProviderConfigurator<S, E>, E>() {
+
+            @Override
+            public ProviderConfigurator<S, E> and() {
+                return ProviderConfiguratorImpl.this;
+            }
+
+            @Override
+            public E create() {
+                return ProviderConfiguratorImpl.this.create();
+            }
         };
     }
 

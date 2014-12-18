@@ -16,7 +16,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.providers.AWTEventProvider;
-import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.stores.PerformanceListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -28,7 +27,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerStore> {
+public class AWTEventProviderIT extends EventProviderTestBase<ListenerStore> {
 
     /**
      * Parameterizes the test instances.
@@ -40,12 +39,12 @@ public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerSto
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
                 new Object[] { EventProvider.configure()
-                        .store(PerformanceListenerStore::create)
+                        .store(PerformanceListenerStore.create())
                         .useWaitingAWTEventProvider().and()
                         .synchronizeStore()
                         .createSupplier() },
                 new Object[] { EventProvider.configure()
-                        .store(PriorityListenerStore::create)
+                        .store(PriorityListenerStore.create())
                         .useAsynchronAWTEventProvider().and()
                         .synchronizeStore()
                         .createSupplier() },
@@ -70,7 +69,7 @@ public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerSto
      * @param factory Factory to create a single provider
      */
     public AWTEventProviderIT(
-            Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
+            Supplier<? extends EventProvider<ListenerStore>> factory) {
         super(factory);
     }
 

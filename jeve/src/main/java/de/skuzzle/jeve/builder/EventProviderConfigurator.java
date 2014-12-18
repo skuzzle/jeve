@@ -80,7 +80,7 @@ public interface EventProviderConfigurator {
          * @param configurator The custom fluent API entry point.
          * @return Fluent API object for further configuration.
          */
-        <C, E extends EventProvider<S>> Final<C, E> useCustomProvider(
+        <C, E extends EventProvider<S>> Chainable<C, E> useCustomProvider(
                 CustomConfigurator<S, C, E> configurator);
 
         /**
@@ -92,7 +92,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          * @since 3.0.0
          */
-        Final<ProviderConfigurator<S, UnrollingEventProvider<S>>,
+        Chainable<ProviderConfigurator<S, UnrollingEventProvider<S>>,
                 UnrollingEventProvider<S>> useUnrollingProvider();
 
         /**
@@ -105,7 +105,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, SynchronousEventProvider<S>>,
+        Chainable<ProviderConfigurator<S, SynchronousEventProvider<S>>,
                 SynchronousEventProvider<S>> useSynchronousProvider();
 
         /**
@@ -132,7 +132,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
+        Chainable<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
                 AsynchronousEventProvider<S>> useAsynchronousProvider();
 
         /**
@@ -153,7 +153,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
+        Chainable<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
                 ParallelEventProvider<S>> useParallelProvider();
 
         /**
@@ -170,7 +170,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
+        Chainable<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
                 useWaitingAWTEventProvider();
 
         /**
@@ -187,7 +187,7 @@ public interface EventProviderConfigurator {
          *
          * @return A new EventProvider instance.
          */
-        Final<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
+        Chainable<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
                 useAsynchronAWTEventProvider();
     }
 
@@ -195,19 +195,30 @@ public interface EventProviderConfigurator {
      * Allows chaining of fluent API objects using the word 'and' and provides
      * methods to obtain the configured {@link EventProvider}.
      *
+     * @author Simon Taddiken
      * @param <C> The type of the chained fluent API object.
      * @param <E> The type of the EventProvider which is created by by this
      *            object.
-     * @author Simon Taddiken
-     * @since 2.0.0
+     * @since 3.0.0
      */
-    interface Final<C, E> {
+    interface Chainable<C, E> extends Final<E> {
         /**
          * Returns the chained fluent API object
          *
          * @return The fluent API object.
          */
         C and();
+    }
+
+    /**
+     * Provides methods to obtain the configured {@link EventProvider}.
+     *
+     * @param <E> The type of the EventProvider which is created by by this
+     *            object.
+     * @author Simon Taddiken
+     * @since 2.0.0
+     */
+    interface Final<E> {
 
         /**
          * Returns a {@link Supplier} which can be used to recreate instances of
@@ -253,7 +264,7 @@ public interface EventProviderConfigurator {
          * @param ec The ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec);
+        Chainable<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec);
 
         /**
          * Instruct the provider to use the synchronized (thread-safe) version
@@ -262,7 +273,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          * @see ListenerStore#synchronizedView()
          */
-        Final<ProviderConfigurator<S, E>, E> synchronizeStore();
+        Chainable<ProviderConfigurator<S, E>, E> synchronizeStore();
 
         /**
          * Configures the {@link ExceptionCallback} to use as a supplier.
@@ -271,7 +282,7 @@ public interface EventProviderConfigurator {
          *            ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, E>, E> exceptionCallBack(
+        Chainable<ProviderConfigurator<S, E>, E> exceptionCallBack(
                 Supplier<ExceptionCallback> callBackSupplier);
 
         /**
@@ -282,8 +293,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
-                StatisticsEventProvider<S, E>> statistics();
+        Final<StatisticsEventProvider<S, E>> statistics();
     }
 
     /**
@@ -304,7 +314,8 @@ public interface EventProviderConfigurator {
          * @param ec The ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec);
+        Chainable<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+                ExceptionCallback ec);
 
         /**
          * Configures the {@link ExceptionCallback} to use as a supplier.
@@ -313,7 +324,7 @@ public interface EventProviderConfigurator {
          *            ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+        Chainable<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
                 Supplier<ExceptionCallback> callBackSupplier);
 
         /**
@@ -322,7 +333,7 @@ public interface EventProviderConfigurator {
          * @param executor The ExecutorService
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, E>, E> executor(ExecutorService executor);
+        Chainable<AsyncProviderConfigurator<S, E>, E> executor(ExecutorService executor);
 
         /**
          * Instruct the provider to use the synchronized (thread-safe) version
@@ -331,7 +342,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          * @see ListenerStore#synchronizedView()
          */
-        Final<AsyncProviderConfigurator<S, E>, E> synchronizeStore();
+        Chainable<AsyncProviderConfigurator<S, E>, E> synchronizeStore();
 
         /**
          * Configures the {@link ExecutorService} to use as a supplier.
@@ -339,7 +350,7 @@ public interface EventProviderConfigurator {
          * @param executorSupplier Supplier which supplies the ExecutorService.
          * @return Fluent API object for further configuration.
          */
-        Final<AsyncProviderConfigurator<S, E>, E> executor(
+        Chainable<AsyncProviderConfigurator<S, E>, E> executor(
                 Supplier<ExecutorService> executorSupplier);
 
         /**
@@ -350,8 +361,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
-                StatisticsEventProvider<S, E>> statistics();
+        Final<StatisticsEventProvider<S, E>> statistics();
     }
 
     /**

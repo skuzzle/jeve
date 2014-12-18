@@ -76,7 +76,7 @@ public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProv
 
                     // this should not be reachable, as notifyListeners can not
                     // throw any other exceptions
-                    throw new AbortionException(e);
+                    throw new IllegalStateException(e);
                 } catch (InterruptedException e) {
                     throw new AbortionException(e);
                 }

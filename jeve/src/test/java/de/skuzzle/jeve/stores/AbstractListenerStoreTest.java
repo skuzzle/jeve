@@ -30,7 +30,16 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
 
     }
 
-    private class MultiListenerImpl implements SampleListener, OtherListener {
+    protected interface SuperListener extends Listener {
+
+    }
+
+    private class SuperClass implements OtherListener, SuperListener {
+
+    }
+
+    private class MultiListenerImpl extends SuperClass implements SampleListener,
+            OtherListener {
 
     }
 
@@ -166,8 +175,43 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
         @SuppressWarnings("unchecked")
         final MultiListenerImpl listener = Mockito.mock(MultiListenerImpl.class);
         this.subject.add(listener);
-        Assert.assertSame(listener, this.subject.get(SampleListener.class).iterator().next());
+
+        final Iterator<SampleListener> saIt = this.subject.get(SampleListener.class).iterator();
+        final Iterator<OtherListener> otIt = this.subject.get(OtherListener.class).iterator();
+        final Iterator<SuperListener> suIt = this.subject.get(SuperListener.class).iterator();
+        final Iterator<NestedListener> neIt = this.subject.get(NestedListener.class).iterator();
+
+        Assert.assertSame(listener, saIt.next());
+        Assert.assertFalse("Listener should have been added only once", saIt.hasNext());
+
+        Assert.assertSame(listener, otIt.next());
+        Assert.assertFalse("Listener should have been added only once", otIt.hasNext());
+
+        Assert.assertSame(listener, suIt.next());
+        Assert.assertFalse("Listener should have been added only once", suIt.hasNext());
+
         Assert.assertSame(listener, this.subject.get(OtherListener.class).iterator().next());
-        Assert.assertFalse(this.subject.get(NestedListener.class).iterator().hasNext());
+        Assert.assertFalse("Nested listener should not have beend added", neIt.hasNext());
+    }
+
+    @Test
+    public void testRemoveMulti() throws Exception {
+        @SuppressWarnings("unchecked")
+        final MultiListenerImpl listener = Mockito.mock(MultiListenerImpl.class);
+        // Add manually
+        this.subject.add(SampleListener.class, listener);
+        this.subject.add(OtherListener.class, listener);
+        this.subject.add(SuperListener.class, listener);
+
+        this.subject.remove(listener);
+        final Iterator<SampleListener> saIt = this.subject.get(SampleListener.class).iterator();
+        final Iterator<OtherListener> otIt = this.subject.get(OtherListener.class).iterator();
+        final Iterator<SuperListener> suIt = this.subject.get(SuperListener.class).iterator();
+        final Iterator<NestedListener> neIt = this.subject.get(NestedListener.class).iterator();
+
+        Assert.assertFalse(saIt.hasNext());
+        Assert.assertFalse(otIt.hasNext());
+        Assert.assertFalse(suIt.hasNext());
+        Assert.assertFalse(neIt.hasNext());
     }
 }

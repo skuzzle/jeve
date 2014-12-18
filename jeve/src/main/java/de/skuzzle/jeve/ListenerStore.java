@@ -173,7 +173,10 @@ public interface ListenerStore {
      * have been processed, the same process is recursively applied to the super
      * class of the given listener if it has one. The <em>"otherwise"</em>
      * implies, that the inheritance hierarchy of classes which have already
-     * been recognized as target listener class will not be traversed.
+     * been recognized as target listener class will not be traversed. If the
+     * same listener class is encountered multiple times while traversing the
+     * hierarchy, the listener will still only be registered once for that
+     * class.
      * </p>
      * <p>
      * Note that for each class the listener is being added its
@@ -190,7 +193,10 @@ public interface ListenerStore {
     /**
      * Removes the given object for all listener classes it implements. See
      * {@link #add(Listener)} to learn how these classes are collected from the
-     * given listener.
+     * given listener. If the same listener has been added multiple times for
+     * the same listener class, only one reference will be removed. This is
+     * compatible with the definition of {@link #remove(Class, Listener)}, which
+     * also only removes one reference of the listener.
      *
      * <p>
      * Note that for each class the listener is being removed its

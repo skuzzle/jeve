@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.annotation.ListenerInterface;
@@ -22,6 +25,8 @@ import de.skuzzle.jeve.annotation.ListenerKind;
  * @since 3.0.0
  */
 public abstract class AbstractListenerStore implements ListenerStore {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractListenerStore.class);
 
     /** The default size hint for {@link #createListenerList()} */
     protected static final int DEFAULT_SIZE_HINT = 8;
@@ -72,19 +77,20 @@ public abstract class AbstractListenerStore implements ListenerStore {
     public <T extends Listener> void add(T listener) {
         final Set<Class<? extends Listener>> toAdd = new HashSet<>();
         handleClass(listener.getClass(), toAdd);
+        LOGGER.debug("{} will be registered for {}", toAdd);
         toAdd.forEach(listenerClass -> add((Class<T>) listenerClass, listener));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Listener> void remove(T listener) {
-        final Set<Class<? extends Listener>> toRemove = new HashSet<>();
+        final List<Class<? extends Listener>> toRemove = new ArrayList<>();
         handleClass(listener.getClass(), toRemove);
         toRemove.forEach(listenerClass -> remove((Class<T>) listenerClass, listener));
     }
 
     @SuppressWarnings("unchecked")
-    private void handleClass(Class<?> cls, Set<Class<? extends Listener>> result) {
+    private void handleClass(Class<?> cls, Collection<Class<? extends Listener>> result) {
         if (cls == null) {
             return;
         }

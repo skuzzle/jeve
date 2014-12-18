@@ -18,7 +18,7 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     private final Supplier<S> storeSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
-    private boolean synchronizeStore;
+    private boolean synchStore;
 
     ProviderConfiguratorImpl(Function<S, E> providerConstructor,
             Supplier<S> storeSupplier) {
@@ -40,12 +40,12 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
         this.providerConstructor = providerConstructor;
         this.storeSupplier = storeSupplier;
         this.ecSupplier = ecSupplier;
-        this.synchronizeStore = synchronizeStore;
+        this.synchStore = synchronizeStore;
     }
 
     @SuppressWarnings("unchecked")
     private E create() {
-        final S store = this.synchronizeStore
+        final S store = this.synchStore
                 ? (S) this.storeSupplier.get().synchronizedView()
                 : this.storeSupplier.get();
 
@@ -98,7 +98,7 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
 
     @Override
     public Chainable<ProviderConfigurator<S, E>, E> synchronizeStore() {
-        this.synchronizeStore = true;
+        this.synchStore = true;
         return new Chainable<ProviderConfigurator<S, E>, E>() {
 
             @Override

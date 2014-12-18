@@ -21,7 +21,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
 
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<ExecutorService> executorSupplier;
-    private boolean synchronizeStore;
+    private boolean synchStore;
 
     AsyncProviderConfiguratorImpl(Function<S, E> providerConstructor,
             Supplier<S> storeSupplier) {
@@ -37,7 +37,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
 
     @SuppressWarnings("unchecked")
     private E create() {
-        final S store = this.synchronizeStore
+        final S store = this.synchStore
                 ? (S) this.storeSupplier.get().synchronizedView()
                 : this.storeSupplier.get();
         final E result = this.providerConstructor.apply(store);
@@ -100,7 +100,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
 
     @Override
     public Chainable<AsyncProviderConfigurator<S, E>, E> synchronizeStore() {
-        this.synchronizeStore = true;
+        this.synchStore = true;
         return new Chainable<AsyncProviderConfigurator<S, E>, E>() {
 
             @Override

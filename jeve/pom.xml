@@ -46,6 +46,11 @@
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
+            <!-- Mutation Coverage -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+            </plugin>
             <!-- Add Integration Test source folder -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

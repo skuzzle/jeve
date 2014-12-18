@@ -100,6 +100,29 @@
                         </jacocoReports>
                     </configuration>
                 </plugin>
+                <!-- Mutation Coverage -->
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>1.1.2</version>
+                    <configuration>
+                        <threads>4</threads>
+                        <targetClasses>
+                            <param>de.skuzzle.*</param>
+                        </targetClasses>
+                        <targetTests>
+                            <param>de.skuzzle.*</param>
+                        </targetTests>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>mutationCoverage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>

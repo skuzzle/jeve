@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.builder;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
@@ -54,43 +55,45 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
     }
 
     private <E extends EventProvider<S>> Final<ProviderConfigurator<S, E>, E>
-            synchronAnd(Supplier<E> supplier) {
+            synchronAnd(Function<S, E> providerConstructor, Supplier<S> storeSupplier) {
 
         return new Final<ProviderConfigurator<S, E>, E>() {
             @Override
             public ProviderConfigurator<S, E> and() {
-                return new ProviderConfiguratorImpl<S, E>(supplier);
+                return new ProviderConfiguratorImpl<S, E>(providerConstructor,
+                        storeSupplier);
             }
 
             @Override
             public Supplier<E> createSupplier() {
-                return supplier;
+                return this::create;
             }
 
             @Override
             public E create() {
-                return supplier.get();
+                return providerConstructor.apply(storeSupplier.get());
             }
         };
     }
 
     private <E extends EventProvider<S>> Final<AsyncProviderConfigurator<S, E>, E>
-            asynchronAnd(Supplier<E> supplier) {
+            asynchronAnd(Function<S, E> providerConstructor, Supplier<S> storeSupplier) {
 
         return new Final<AsyncProviderConfigurator<S, E>, E>() {
             @Override
             public AsyncProviderConfigurator<S, E> and() {
-                return new AsyncProviderConfiguratorImpl<S, E>(supplier);
+                return new AsyncProviderConfiguratorImpl<S, E>(providerConstructor,
+                        storeSupplier);
             }
 
             @Override
             public Supplier<E> createSupplier() {
-                return supplier;
+                return this::create;
             }
 
             @Override
             public E create() {
-                return supplier.get();
+                return providerConstructor.apply(storeSupplier.get());
             }
         };
     }
@@ -98,49 +101,49 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
     @Override
     public Final<ProviderConfigurator<S, SynchronousEventProvider<S>>,
             SynchronousEventProvider<S>> useSynchronousProvider() {
-        final Supplier<SynchronousEventProvider<S>> supplier =
-                () -> new SynchronousEventProvider<S>(this.storeSupplier.get());
-        return synchronAnd(supplier);
+        final Function<S, SynchronousEventProvider<S>> ctor =
+                SynchronousEventProvider<S>::new;
+        return synchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
     public Final<ProviderConfigurator<S, UnrollingEventProvider<S>>,
             UnrollingEventProvider<S>> useUnrollingProvider() {
-        final Supplier<UnrollingEventProvider<S>> supplier =
-                () -> new UnrollingEventProvider<S>(this.storeSupplier.get());
-        return synchronAnd(supplier);
+        final Function<S, UnrollingEventProvider<S>> ctor =
+                UnrollingEventProvider<S>::new;
+        return synchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
     public Final<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
             AsynchronousEventProvider<S>> useAsynchronousProvider() {
-        final Supplier<AsynchronousEventProvider<S>> supplier =
-                () -> new AsynchronousEventProvider<S>(this.storeSupplier.get());
-        return asynchronAnd(supplier);
+        final Function<S, AsynchronousEventProvider<S>> ctor =
+                AsynchronousEventProvider<S>::new;
+        return asynchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
     public Final<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
             ParallelEventProvider<S>> useParallelProvider() {
-        final Supplier<ParallelEventProvider<S>> supplier =
-                () -> new ParallelEventProvider<S>(this.storeSupplier.get());
-        return asynchronAnd(supplier);
+        final Function<S, ParallelEventProvider<S>> ctor =
+                ParallelEventProvider<S>::new;
+        return asynchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
     public Final<ProviderConfigurator<S, AWTEventProvider<S>>,
             AWTEventProvider<S>> useWaitingAWTEventProvider() {
-        final Supplier<AWTEventProvider<S>> supplier =
-                () -> new AWTEventProvider<S>(this.storeSupplier.get(), true);
-        return synchronAnd(supplier);
+        final Function<S, AWTEventProvider<S>> ctor =
+                store -> new AWTEventProvider<>(store, true);
+        return synchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
     public Final<ProviderConfigurator<S, AWTEventProvider<S>>,
             AWTEventProvider<S>> useAsynchronAWTEventProvider() {
-        final Supplier<AWTEventProvider<S>> supplier =
-                () -> new AWTEventProvider<S>(this.storeSupplier.get(), false);
-        return synchronAnd(supplier);
+        final Function<S, AWTEventProvider<S>> ctor =
+                store -> new AWTEventProvider<>(store, false);
+        return synchronAnd(ctor, this.storeSupplier);
     }
 
 }

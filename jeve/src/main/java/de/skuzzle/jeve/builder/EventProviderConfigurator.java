@@ -50,6 +50,16 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
 public interface EventProviderConfigurator {
 
     /**
+     * Creates a new configurator instance.
+     *
+     * @return The new configurator.
+     * @since 3.0.0
+     */
+    public static EventProviderConfigurator create() {
+        return new EventProviderConfiguratorImpl();
+    }
+
+    /**
      * Configures the type of EventProvider to use on the previously chosen
      * ListenerStore.
      *
@@ -213,7 +223,7 @@ public interface EventProviderConfigurator {
          * @return A supplier for creating EventProviders.
          */
         default Supplier<E> createSupplier() {
-            return () -> create();
+            return this::create;
         }
 
         /**
@@ -244,6 +254,8 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          */
         Final<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec);
+
+        Final<ProviderConfigurator<S, E>, E> synchronizeStore();
 
         /**
          * Configures the {@link ExceptionCallback} to use as a supplier.

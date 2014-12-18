@@ -3,7 +3,6 @@ package de.skuzzle.jeve;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import de.skuzzle.jeve.builder.ConfiguratorImpl;
 import de.skuzzle.jeve.builder.EventProviderConfigurator;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
@@ -208,7 +207,7 @@ public interface EventProvider<S extends ListenerStore> {
      * @since 2.0.0
      */
     public static EventProviderConfigurator configure() {
-        return new ConfiguratorImpl();
+        return EventProviderConfigurator.create();
     }
 
     /**

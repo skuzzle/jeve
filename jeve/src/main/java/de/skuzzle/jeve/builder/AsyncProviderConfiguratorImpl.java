@@ -1,6 +1,7 @@
 package de.skuzzle.jeve.builder;
 
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
@@ -15,21 +16,27 @@ import de.skuzzle.jeve.providers.StatisticsEventProvider;
 class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<S>>
         implements AsyncProviderConfigurator<S, E> {
 
-    private final Supplier<E> providerSupplier;
+    private final Function<S, E> providerConstructor;
+    private final Supplier<S> storeSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<ExecutorService> executorSupplier;
 
-    AsyncProviderConfiguratorImpl(Supplier<E> providerSupplier) {
-        if (providerSupplier == null) {
+    AsyncProviderConfiguratorImpl(Function<S, E> providerConstructor,
+            Supplier<S> storeSupplier) {
+        if (providerConstructor == null) {
             throw new IllegalArgumentException("providerSupplier is null");
+        } else if (storeSupplier == null) {
+            throw new IllegalArgumentException("storeSupplier is null");
         }
 
-        this.providerSupplier = providerSupplier;
+        this.providerConstructor = providerConstructor;
+        this.storeSupplier = storeSupplier;
     }
 
     private E create() {
-        final E result = this.providerSupplier.get();
+        final S store = this.storeSupplier.get();
+        final E result = this.providerConstructor.apply(store);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
         }
@@ -90,25 +97,32 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     @Override
     public Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
             StatisticsEventProvider<S, E>> statistics() {
-        final Supplier<StatisticsEventProvider<S, E>> supplier =
-                () -> new StatisticsEventProvider<S, E>(this.create());
+        final Function<S, StatisticsEventProvider<S, E>> ctor = store -> {
+            // XXX: passed store will be null here!
+            final E provider = AsyncProviderConfiguratorImpl.this.create();
+            return new StatisticsEventProvider<S, E>(provider);
+        };
 
         return new Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>>() {
 
             @Override
             public ProviderConfigurator<S, StatisticsEventProvider<S, E>> and() {
                 return new ProviderConfiguratorImpl<S, StatisticsEventProvider<S, E>>(
-                        supplier, AsyncProviderConfiguratorImpl.this.ecSupplier);
+                        ctor,
+                        AsyncProviderConfiguratorImpl.this.storeSupplier,
+                        AsyncProviderConfiguratorImpl.this.ecSupplier);
             }
 
             @Override
             public Supplier<StatisticsEventProvider<S, E>> createSupplier() {
-                return supplier;
+                return this::create;
             }
 
             @Override
             public StatisticsEventProvider<S, E> create() {
-                return supplier.get();
+                // XXX: store parameter is not needed here, because the store is
+                // already created for the wrapped provider
+                return ctor.apply(null);
             }
 
         };

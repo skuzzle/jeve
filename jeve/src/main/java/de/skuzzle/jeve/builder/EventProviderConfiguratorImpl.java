@@ -12,7 +12,7 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
  * @author Simon Taddiken
  * @since 2.0.0
  */
-public class ConfiguratorImpl implements EventProviderConfigurator {
+class EventProviderConfiguratorImpl implements EventProviderConfigurator {
 
     @Override
     public SynchronousEventProvider<DefaultListenerStore> createInstantly() {

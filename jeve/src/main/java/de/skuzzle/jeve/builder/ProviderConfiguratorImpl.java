@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.builder;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
@@ -12,27 +13,36 @@ import de.skuzzle.jeve.providers.StatisticsEventProvider;
 class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<S>>
         implements ProviderConfigurator<S, E> {
 
-    private final Supplier<E> providerSupplier;
+    private final Function<S, E> providerConstructor;
+    private Supplier<S> storeSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
+    private boolean synchronizeStore;
 
-    ProviderConfiguratorImpl(Supplier<E> providerSupplier) {
-        if (providerSupplier == null) {
+    ProviderConfiguratorImpl(Function<S, E> providerConstructor,
+            Supplier<S> storeSupplier) {
+        if (providerConstructor == null) {
             throw new IllegalArgumentException("providerSupplier is null");
+        } else if (storeSupplier == null) {
+            throw new IllegalArgumentException("storeSupplier is null");
         }
 
-        this.providerSupplier = providerSupplier;
+        this.providerConstructor = providerConstructor;
+        this.storeSupplier = storeSupplier;
     }
 
-    ProviderConfiguratorImpl(Supplier<E> providerSupplier,
+    ProviderConfiguratorImpl(Function<S, E> providerConstructor,
+            Supplier<S> storeSupplier,
             Supplier<ExceptionCallback> ecSupplier) {
 
-        this.providerSupplier = providerSupplier;
+        this.providerConstructor = providerConstructor;
+        this.storeSupplier = storeSupplier;
         this.ecSupplier = ecSupplier;
     }
 
     private E create() {
-        final E result = this.providerSupplier.get();
+        final S store = this.storeSupplier.get();
+        final E result = this.providerConstructor.apply(store);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
         }
@@ -54,6 +64,27 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
                 return ProviderConfiguratorImpl.this.create();
             }
 
+        };
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Final<ProviderConfigurator<S, E>, E> synchronizeStore() {
+        if (!this.synchronizeStore) {
+            this.storeSupplier = () -> (S) this.storeSupplier.get().synchronizedView();
+        }
+        this.synchronizeStore = true;
+        return new Final<ProviderConfigurator<S, E>, E>() {
+
+            @Override
+            public ProviderConfigurator<S, E> and() {
+                return ProviderConfiguratorImpl.this;
+            }
+
+            @Override
+            public E create() {
+                return ProviderConfiguratorImpl.this.create();
+            }
         };
     }
 
@@ -81,25 +112,32 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
 
     @Override
     public Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>> statistics() {
-        final Supplier<StatisticsEventProvider<S, E>> supplier =
-                () -> new StatisticsEventProvider<S, E>(this.providerSupplier.get());
+        final Function<S, StatisticsEventProvider<S, E>> ctor = store -> {
+            // XXX: passed store will be null here!
+                    final E provider = ProviderConfiguratorImpl.this.create();
+                    return new StatisticsEventProvider<S, E>(provider);
+                };
 
         return new Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>, StatisticsEventProvider<S, E>>() {
 
             @Override
             public ProviderConfigurator<S, StatisticsEventProvider<S, E>> and() {
                 return new ProviderConfiguratorImpl<S, StatisticsEventProvider<S, E>>(
-                        supplier, ProviderConfiguratorImpl.this.ecSupplier);
+                        ctor,
+                        ProviderConfiguratorImpl.this.storeSupplier,
+                        ProviderConfiguratorImpl.this.ecSupplier);
             }
 
             @Override
             public Supplier<StatisticsEventProvider<S, E>> createSupplier() {
-                return supplier;
+                return this::create;
             }
 
             @Override
             public StatisticsEventProvider<S, E> create() {
-                return supplier.get();
+                // XXX: store parameter is not needed here, because the store is
+                // already created for the wrapped provider
+                return ctor.apply(null);
             }
 
         };

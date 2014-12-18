@@ -28,11 +28,13 @@ public class SynchronousEventProviderIT extends
         return Arrays.asList(
                 new Object[] { EventProvider.configure()
                         .defaultStore()
-                        .useSynchronousProvider()
+                        .useSynchronousProvider().and()
+                        .exceptionCallBack(SampleExceptionCallback::new)
                         .createSupplier() },
                 new Object[] { EventProvider.configure()
-                        .store(PriorityListenerStore.create().synchronizedView())
+                        .store(PriorityListenerStore::create)
                         .useSynchronousProvider().and()
+                        .synchronizeStore().and()
                         .statistics()
                         .createSupplier() }
                 );

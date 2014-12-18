@@ -21,6 +21,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
 
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<ExecutorService> executorSupplier;
+    private boolean synchronizeStore;
 
     AsyncProviderConfiguratorImpl(Function<S, E> providerConstructor,
             Supplier<S> storeSupplier) {
@@ -34,8 +35,11 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
         this.storeSupplier = storeSupplier;
     }
 
+    @SuppressWarnings("unchecked")
     private E create() {
-        final S store = this.storeSupplier.get();
+        final S store = this.synchronizeStore
+                ? (S) this.storeSupplier.get().synchronizedView()
+                : this.storeSupplier.get();
         final E result = this.providerConstructor.apply(store);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
@@ -95,6 +99,23 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
+    public Final<AsyncProviderConfigurator<S, E>, E> synchronizeStore() {
+        this.synchronizeStore = true;
+        return new Final<AsyncProviderConfigurator<S, E>, E>() {
+
+            @Override
+            public AsyncProviderConfigurator<S, E> and() {
+                return AsyncProviderConfiguratorImpl.this;
+            }
+
+            @Override
+            public E create() {
+                return AsyncProviderConfiguratorImpl.this.create();
+            }
+        };
+    }
+
+    @Override
     public Final<ProviderConfigurator<S, StatisticsEventProvider<S, E>>,
             StatisticsEventProvider<S, E>> statistics() {
         final Function<S, StatisticsEventProvider<S, E>> ctor = store -> {
@@ -110,7 +131,8 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
                 return new ProviderConfiguratorImpl<S, StatisticsEventProvider<S, E>>(
                         ctor,
                         AsyncProviderConfiguratorImpl.this.storeSupplier,
-                        AsyncProviderConfiguratorImpl.this.ecSupplier);
+                        AsyncProviderConfiguratorImpl.this.ecSupplier,
+                        AsyncProviderConfiguratorImpl.this.synchronizeStore);
             }
 
             @Override

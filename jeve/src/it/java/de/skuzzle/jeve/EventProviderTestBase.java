@@ -27,6 +27,10 @@ import de.skuzzle.jeve.util.StringListener;
 public abstract class EventProviderTestBase<S extends ListenerStore> extends
         AbstractEventProviderTest<S> {
 
+    protected static class SampleExceptionCallback implements ExceptionCallback {
+
+    }
+
     /**
      * Creates a new Test class instance.
      *

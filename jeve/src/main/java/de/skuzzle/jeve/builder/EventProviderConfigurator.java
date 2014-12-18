@@ -255,6 +255,13 @@ public interface EventProviderConfigurator {
          */
         Final<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec);
 
+        /**
+         * Instruct the provider to use the synchronized (thread-safe) version
+         * of the configured store.
+         *
+         * @return Fluent API object for further configuration.
+         * @see ListenerStore#synchronizedView()
+         */
         Final<ProviderConfigurator<S, E>, E> synchronizeStore();
 
         /**
@@ -316,6 +323,15 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          */
         Final<AsyncProviderConfigurator<S, E>, E> executor(ExecutorService executor);
+
+        /**
+         * Instruct the provider to use the synchronized (thread-safe) version
+         * of the configured store.
+         *
+         * @return Fluent API object for further configuration.
+         * @see ListenerStore#synchronizedView()
+         */
+        Final<AsyncProviderConfigurator<S, E>, E> synchronizeStore();
 
         /**
          * Configures the {@link ExecutorService} to use as a supplier.

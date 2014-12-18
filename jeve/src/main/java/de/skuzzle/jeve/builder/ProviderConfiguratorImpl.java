@@ -14,7 +14,7 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
         implements ProviderConfigurator<S, E> {
 
     private final Function<S, E> providerConstructor;
-    private Supplier<S> storeSupplier;
+    private final Supplier<S> storeSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
     private boolean synchronizeStore;
@@ -33,15 +33,21 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
 
     ProviderConfiguratorImpl(Function<S, E> providerConstructor,
             Supplier<S> storeSupplier,
-            Supplier<ExceptionCallback> ecSupplier) {
+            Supplier<ExceptionCallback> ecSupplier,
+            boolean synchronizeStore) {
 
         this.providerConstructor = providerConstructor;
         this.storeSupplier = storeSupplier;
         this.ecSupplier = ecSupplier;
+        this.synchronizeStore = synchronizeStore;
     }
 
+    @SuppressWarnings("unchecked")
     private E create() {
-        final S store = this.storeSupplier.get();
+        final S store = this.synchronizeStore
+                ? (S) this.storeSupplier.get().synchronizedView()
+                : this.storeSupplier.get();
+
         final E result = this.providerConstructor.apply(store);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
@@ -68,11 +74,7 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Final<ProviderConfigurator<S, E>, E> synchronizeStore() {
-        if (!this.synchronizeStore) {
-            this.storeSupplier = () -> (S) this.storeSupplier.get().synchronizedView();
-        }
         this.synchronizeStore = true;
         return new Final<ProviderConfigurator<S, E>, E>() {
 
@@ -125,7 +127,8 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
                 return new ProviderConfiguratorImpl<S, StatisticsEventProvider<S, E>>(
                         ctor,
                         ProviderConfiguratorImpl.this.storeSupplier,
-                        ProviderConfiguratorImpl.this.ecSupplier);
+                        ProviderConfiguratorImpl.this.ecSupplier,
+                        ProviderConfiguratorImpl.this.synchronizeStore);
             }
 
             @Override

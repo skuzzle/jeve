@@ -17,6 +17,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
+import de.skuzzle.jeve.stores.PerformanceListenerStore;
+import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
@@ -37,10 +39,28 @@ public class AWTEventProviderIT extends EventProviderTestBase<DefaultListenerSto
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().defaultStore().useWaitingAWTEventProvider().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useAsynchronAWTEventProvider().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useWaitingAWTEventProvider().and().statistics().createSupplier() },
-                new Object[] { EventProvider.configure().defaultStore().useAsynchronAWTEventProvider().and().statistics().createSupplier() }
+                new Object[] { EventProvider.configure()
+                        .store(PerformanceListenerStore::create)
+                        .useWaitingAWTEventProvider().and()
+                        .synchronizeStore()
+                        .createSupplier() },
+                new Object[] { EventProvider.configure()
+                        .store(PriorityListenerStore::create)
+                        .useAsynchronAWTEventProvider().and()
+                        .synchronizeStore()
+                        .createSupplier() },
+                new Object[] { EventProvider.configure()
+                        .defaultStore()
+                        .useWaitingAWTEventProvider().and()
+                        .synchronizeStore().and()
+                        .statistics()
+                        .createSupplier() },
+                new Object[] { EventProvider.configure()
+                        .defaultStore()
+                        .useAsynchronAWTEventProvider().and()
+                        .synchronizeStore().and()
+                        .statistics()
+                        .createSupplier() }
                 );
     }
 

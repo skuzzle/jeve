@@ -134,7 +134,7 @@ notify registered listeners.
 // ...
 
 public class UserManager {
-    private final EventProvider events = EventProvider.newDefaultEventProvider();
+    private final EventProvider<?> events = EventProvider.createDefault();
 
     public void addUserListener(UserListener listener) {
         this.events.listeners().add(UserListener.class, listener);

@@ -52,12 +52,9 @@ import de.skuzzle.jeve.SynchronousEvent;
  * eventProvider.dispatch(e, UserListener::userAdded);
  * 
  * // Dispatch all suppressed UIRefreshEvents
- * for (final SuppressedEvent suppressed : e.getSuppressedEvents()) {
- *     if (suppressed.getListenerClass() == UIRefreshEvent.class) {
- *         // redeliver all UIRefreshEvents
- *         suppressed.redispatch(eventProvider);
- *     }
- * }
+ * e.getSuppressedEvents().stream()
+ *     .filter(suppressed -&gt; suppressed.getListenerClass() == UIRefreshListener.class)
+ *     .forEach(suppressed -&gt; suppressed.redispatch(eventProvider);
  * </pre>
  *
  * @param <S> The type of the ListenerStore this provider uses.

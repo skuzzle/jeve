@@ -2,11 +2,10 @@ package de.skuzzle.jeve;
 
 /**
  * RegistrationEvents are created when adding or removing a {@link Listener}
- * from a {@link ListenerStore}.
+ * to/from a {@link ListenerStore}.
  *
  * @author Simon Taddiken
  * @since 1.0.0
- * @version 2.0.0
  */
 public final class RegistrationEvent extends Event<ListenerStore, Listener> {
 

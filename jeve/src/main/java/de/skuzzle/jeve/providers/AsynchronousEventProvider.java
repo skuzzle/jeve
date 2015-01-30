@@ -5,7 +5,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
@@ -20,6 +24,8 @@ import de.skuzzle.jeve.ListenerStore;
  */
 public class AsynchronousEventProvider<S extends ListenerStore> extends
         AbstractEventProvider<S> implements ExecutorAware {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
 
     private static final long TERMINATION_TIMEOUT = 2000;
 
@@ -84,7 +90,8 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
         try {
             this.executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            this.logger.error("Error while waiting for termination of executor", e);
+            LOGGER.error("AsynchronousEventProvider: Error while waiting for "
+                    + "termination of executor", e);
         }
     }
 

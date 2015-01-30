@@ -66,6 +66,12 @@
                 <artifactId>compile-testing</artifactId>
                 <version>0.5</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun</groupId>
+                        <artifactId>tools</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.perf4j</groupId>

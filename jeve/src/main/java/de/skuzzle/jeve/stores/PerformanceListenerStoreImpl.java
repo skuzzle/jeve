@@ -124,8 +124,8 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
         final List<Object> targets = this.listenerMap.getOrDefault(listenerClass,
                 Collections.emptyList());
 
-        if (this.optimized) {
-            return targets.stream().map(listener -> listenerClass.cast(listener));
+        if (this.optimized || targets.isEmpty()) {
+            return targets.stream().map(listenerClass::cast);
         } else {
             final int sizeHint = targets.size();
             return copyList(listenerClass, targets.stream(), sizeHint).stream();

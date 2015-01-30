@@ -69,7 +69,7 @@ public abstract class AbstractListenerStore implements ListenerStore {
             return Collections.emptyList();
         }
         return listeners
-                .map(obj -> listenerClass.cast(obj))
+                .map(listenerClass::cast)
                 .collect(Collectors.toCollection(() -> new ArrayList<>(sizeHint)));
     }
 

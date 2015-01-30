@@ -9,12 +9,12 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
 
 /**
  * <p>
- * EventProvider instances are the heart of jeve. They implement the logic of
- * how {@link Listener Listeners} are notified about an {@link Event}. The way
- * in which they are notified is an internal property of the actual
- * EventProvider instance. For example, one kind of EventProvider might create a
- * new thread for notifying the registered listeners or it may simply notify
- * them using the current thread.
+ * EventProvider instances are used to inform clients about certain events. They
+ * implement the logic of how {@link Listener Listeners} are notified about an
+ * {@link Event}. The way in which they are notified is an internal property of
+ * the actual EventProvider instance. For example, one kind of EventProvider
+ * might create a new thread for notifying the registered listeners or it may
+ * simply notify them using the current thread.
  * </p>
  *
  * <p>
@@ -352,6 +352,8 @@ public interface EventProvider<S extends ListenerStore> {
      * will in return call
      * {@link #dispatch(Event, BiConsumer, ExceptionCallback)} on this provider.
      *
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
      * @param event The event to dispatch using its default dispatch method.
      * @throws IllegalArgumentException If the passed event is <code>null</code>
      * @throws AbortionException If a listener threw an AbortionException.

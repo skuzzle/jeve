@@ -26,7 +26,8 @@ import de.skuzzle.jeve.annotation.ListenerKind;
  */
 public abstract class AbstractListenerStore implements ListenerStore {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractListenerStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            AbstractListenerStore.class);
 
     /** The default size hint for {@link #createListenerList()} */
     protected static final int DEFAULT_SIZE_HINT = 8;

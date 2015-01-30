@@ -82,6 +82,7 @@ public abstract class AbstractSynchronizedListenerStore<T extends ListenerStore>
     /**
      * Executes the given supplier within the context of a read lock.
      *
+     * @param <E> The result type.
      * @param sup The supplier.
      * @return The result of {@link Supplier#get()}.
      */

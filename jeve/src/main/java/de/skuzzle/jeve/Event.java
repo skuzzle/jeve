@@ -1,8 +1,5 @@
 package de.skuzzle.jeve;
 
-import java.util.Optional;
-
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
 
 /**
  * <p>
@@ -68,14 +65,6 @@ public class Event<T, L extends Listener> {
     private boolean prevented;
 
     /**
-     * The cause of this event if it was dispatched from within a listening
-     * method.
-     *
-     * @since 3.0.0
-     */
-    private final Optional<Event<?, ?>> cause;
-
-    /**
      * Creates a new event with a given source.
      *
      * @param source The source of this event.
@@ -83,64 +72,15 @@ public class Event<T, L extends Listener> {
      *            event. This value must not be <code>null</code>.
      */
     public Event(T source, Class<L> listenerClass) {
-        this(source, listenerClass, Optional.empty());
-    }
-
-    /**
-     * Creates a new Event with a given source and cause. This constructor might
-     * be used when dispatching a new Event from within a listening method.
-     *
-     * @param source The source of this event.
-     * @param listenerClass The type of the listener which can handle this
-     *            event. This value must not be <code>null</code>.
-     * @param cause The cause of this event. Can be <code>null</code>.
-     */
-    public Event(T source, Class<L> listenerClass, Event<?, ?> cause) {
-        this(source, listenerClass, Optional.ofNullable(cause));
-    }
-
-    /**
-     * Creates a new Event with a given source and cause. When this Event will
-     * be dispatched with a {@link SynchronousEventProvider}, the cause of this
-     * event can be determined by obtaining the peek of the provider's
-     * {@link SynchronousEventProvider#getEventStack() event stack} even if this
-     * event is not directly fired from within a listening method. Consider the
-     * following event implementation:
-     *
-     * <pre>
-     * public class WhatEverEvent extends Event&lt;Source, WhatEverListener&gt; {
-     *     public WhatEverEvent(Source source, Optional&lt;Event&lt;?, ?&gt;&gt; cause) {
-     *         super(source, WhatEverListener.class, cause);
-     *     }
-     * }
-     * </pre>
-     *
-     * The event can then be instantiated like this:
-     *
-     * <pre>
-     * EventStack stack = provider.getEventStack();
-     * WhatEverEvent e = new WhatEverEvent(source, stack.peek());
-     * </pre>
-     *
-     * @param source The source of this event.
-     * @param listenerClass The type of the listener which can handle this
-     *            event. This value must not be <code>null</code>.
-     * @param cause The cause of this event.
-     * @since 3.0.0
-     */
-    public Event(T source, Class<L> listenerClass, Optional<Event<?, ?>> cause) {
         if (source == null) {
             throw new IllegalArgumentException("source is null");
         } else if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass is null");
-        } else if (cause == null) {
-            throw new IllegalArgumentException("cause is null");
         }
 
         this.source = source;
         this.listenerClass = listenerClass;
         this.handled = false;
-        this.cause = cause;
     }
 
     /**
@@ -150,17 +90,6 @@ public class Event<T, L extends Listener> {
      */
     public T getSource() {
         return this.source;
-    }
-
-    /**
-     * Gets the cause of this event. An event has a cause if it was dispatched
-     * from within a listening method.
-     *
-     * @return The cause of this event if it exists.
-     * @since 3.0.0
-     */
-    public Optional<Event<?, ?>> getCause() {
-        return this.cause;
     }
 
     /**

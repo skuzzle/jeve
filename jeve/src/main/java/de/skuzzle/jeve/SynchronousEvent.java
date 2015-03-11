@@ -38,31 +38,11 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
     private EventStack eventStack;
 
     /**
-     * Creates a new Event with a given source and cause. This constructor might
-     * be used when dispatching a new Event from within a listening method.
+     * The cause of this event.
      *
-     * @param source The source of this event.
-     * @param listenerClass The type of the listener which can handle this
-     *            event. This value must not be <code>null</code>.
-     * @param cause The cause of this event. Can be <code>null</code>.
+     * @since 3.0.0
      */
-    public SynchronousEvent(T source, Class<L> listenerClass, Event<?, ?> cause) {
-        super(source, listenerClass, cause);
-    }
-
-    /**
-     * Creates a new Event with a given source and cause. Delegates to the
-     * respective super constructor.
-     *
-     * @param source The source of this event.
-     * @param listenerClass The type of the listener which can handle this
-     *            event. This value must not be <code>null</code>.
-     * @param cause The cause of this event.
-     */
-    public SynchronousEvent(T source, Class<L> listenerClass,
-            Optional<Event<?, ?>> cause) {
-        super(source, listenerClass, cause);
-    }
+    private Optional<Event<?, ?>> cause;
 
     /**
      * Creates a new event with a given source.
@@ -73,6 +53,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      */
     public SynchronousEvent(T source, Class<L> listenerClass) {
         super(source, listenerClass);
+        this.cause = Optional.empty();
     }
 
     /**
@@ -86,7 +67,18 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
     public void setEventStack(EventStack eventStack) {
         if (this.eventStack == null) {
             this.eventStack = eventStack;
+            this.cause = eventStack.peek();
         }
+    }
+
+    /**
+     * Gets the cause of this event. An event has a cause attached if it was
+     * dispatched while another event has been dispatched.
+     *
+     * @return The cause of this event if it exists.
+     */
+    public Optional<Event<?, ?>> getCause() {
+        return this.cause;
     }
 
     /**
@@ -178,6 +170,6 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
         if (this.prevent == null) {
             return Collections.emptySet();
         }
-        return this.prevent;
+        return Collections.unmodifiableSet(this.prevent);
     }
 }

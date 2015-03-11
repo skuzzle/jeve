@@ -263,7 +263,7 @@ public interface ListenerStore {
      * Removes all listeners which have been registered for the provided
      * listener class. Every listner's
      * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will
-     * be called.
+     * be called. The actual order in which listeners are removed is undefined.
      *
      * <p>
      * If listenerClass is <code>null</code> this method returns with no effect.
@@ -284,7 +284,7 @@ public interface ListenerStore {
     /**
      * Removes all registered listeners from this EventProvider. Every listner's
      * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will
-     * be called.
+     * be called. The actual order in which listeners are removed is undefined.
      *
      * <p>
      * <b>Note on concurrency:</b> This method can safely be called from within

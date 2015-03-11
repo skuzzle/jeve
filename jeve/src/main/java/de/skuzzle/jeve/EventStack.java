@@ -46,6 +46,12 @@ public class EventStack {
      * <em>debug</em>.
      */
     public void dumpStack() {
+        LOGGER.debug("jeve event stack:");
+        if (this.stack.isEmpty()) {
+            LOGGER.debug("\t<empty>");
+            return;
+        }
+
         dumpInternal(e -> LOGGER.debug("\t{}:{}:{}", e.getSource(),
                 e.getListenerClass().getSimpleName(), e));
     }
@@ -59,9 +65,21 @@ public class EventStack {
         if (out == null) {
             throw new IllegalArgumentException("out is null");
         }
+        out.println("jeve event stack:");
+        if (this.stack.isEmpty()) {
+            out.println("\t<empty>");
+            return;
+        }
 
         dumpInternal(e -> out.printf("%s:%s:%s%n", e.getSource(),
                 e.getListenerClass().getSimpleName(), e));
+    }
+
+    private void dumpInternal(Consumer<Event<?, ?>> c) {
+        synchronized (this.stack) {
+            final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
+            it.forEachRemaining(c);
+        }
     }
 
     /**
@@ -73,18 +91,6 @@ public class EventStack {
         return this.stack.isEmpty()
                 ? Optional.empty()
                 : Optional.of(this.stack.peek());
-    }
-
-    private void dumpInternal(Consumer<Event<?, ?>> c) {
-        synchronized (this.stack) {
-            LOGGER.debug("jeve event stack:");
-            if (this.stack.isEmpty()) {
-                LOGGER.debug("\t<empty>");
-                return;
-            }
-            final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
-            it.forEachRemaining(c);
-        }
     }
 
     /**

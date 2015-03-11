@@ -1,7 +1,5 @@
 package de.skuzzle.jeve;
 
-import java.util.Optional;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,12 +26,6 @@ public class EventTest {
     @Test(expected = IllegalArgumentException.class)
     public void testListenerClassNull() throws Exception {
         new Event<>(new Object(), null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCauseIsNull() throws Exception {
-        new Event<Object, SampleListener>(new Object(), SampleListener.class,
-                (Optional<Event<?, ?>>) null);
     }
 
     @Test

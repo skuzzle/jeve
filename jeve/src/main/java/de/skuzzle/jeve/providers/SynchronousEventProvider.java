@@ -30,7 +30,7 @@ import de.skuzzle.jeve.SynchronousEvent;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- * 
+ *
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
@@ -46,15 +46,15 @@ import de.skuzzle.jeve.SynchronousEvent;
  *
  * <pre>
  * UserEvent e = new UserEvent(this, user);
- * 
+ *
  * // While dispatching 'e', no UIRefreshEvents shall be dispatched.
  * e.preventCascade(UIRefreshEvent.class);
  * eventProvider.dispatch(e, UserListener::userAdded);
- * 
+ *
  * // Dispatch all suppressed UIRefreshEvents
  * e.getSuppressedEvents().stream()
- *     .filter(suppressed -&gt; suppressed.getListenerClass() == UIRefreshListener.class)
- *     .forEach(suppressed -&gt; suppressed.redispatch(eventProvider);
+ *         .filter(suppressed -&gt; suppressed.getListenerClass() == UIRefreshListener.class)
+ *         .forEach(suppressed -&gt; suppressed.redispatch(eventProvider));
  * </pre>
  *
  * @param <S> The type of the ListenerStore this provider uses.

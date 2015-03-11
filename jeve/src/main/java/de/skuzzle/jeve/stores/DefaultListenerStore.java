@@ -7,8 +7,7 @@ import de.skuzzle.jeve.ListenerStore;
 
 /**
  * Sequential {@link ListenerStore} implementation. This class implements the
- * default semantics of a ListenerStore with no additional features. The public
- * interface to this store is thread safe.
+ * default semantics of a ListenerStore with no additional features.
  *
  * <p>
  * Performance notes: This store uses a {@link HashMap} of {@link ArrayList

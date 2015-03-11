@@ -39,8 +39,6 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
 
     /**
      * The cause of this event.
-     *
-     * @since 3.0.0
      */
     private Optional<Event<?, ?>> cause;
 

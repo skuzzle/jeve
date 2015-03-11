@@ -18,12 +18,17 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.SynchronousEvent;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<ListenerStore>> {
 
-    protected interface SampleListener extends Listener {
+    protected static interface SampleListener extends Listener {
         public void onEvent(Event<?, SampleListener> e);
+    }
+
+    protected static interface SampleListener2 extends Listener {
+        public void onEvent(SynchronousEvent<?, SampleListener2> e);
     }
 
     @Mock

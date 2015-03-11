@@ -77,7 +77,7 @@ public class EventStack {
 
     private void dumpInternal(Consumer<Event<?, ?>> c) {
         synchronized (this.stack) {
-            final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
+            final Iterator<Event<?, ?>> it = this.stack.iterator();
             it.forEachRemaining(c);
         }
     }

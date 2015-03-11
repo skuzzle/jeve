@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
 
 /**
@@ -18,6 +21,8 @@ import de.skuzzle.jeve.providers.SynchronousEventProvider;
  * @since 3.0.0
  */
 public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronousEvent.class);
 
     /**
      * Collects listener classes for which cascade should be prevented. Will be
@@ -128,6 +133,11 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      * is being dispatched. This is only supported when dispatching this event
      * with an EventProvider which supports the {@link EventStack}.
      *
+     * <p>
+     * Note: this method has to be called before this event is being dispatched.
+     * If called during dispatch, it will has no effect.
+     * </p>
+     *
      * @param <E> Type of the listener class.
      * @param listenerClass The listener class to prevent being notified.
      * @see #preventCascade()
@@ -135,6 +145,15 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
     public <E extends Listener> void preventCascade(Class<E> listenerClass) {
         if (listenerClass == null) {
             throw new IllegalArgumentException("listenerClass is null");
+        } else if (this.eventStack != null) {
+            // this event is currently being dispatched, so adding a prevented
+            // class has no effect.
+            LOGGER.warn("'preventCascade' has been called on {} for listener class {} "
+                    + "while the event was being dispatched. prventCascade must be "
+                    + "called before dispatching the event.",
+                    this.getClass().getSimpleName(),
+                    getListenerClass().getSimpleName());
+            return;
         } else if (this.prevent == null) {
             this.prevent = new HashSet<>();
         }

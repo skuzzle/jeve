@@ -82,19 +82,15 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
     }
 
     /**
-     * Gets the current event stack. This method can only be called while this
-     * event is being dispatched by a provider which calls
-     * {@link #setEventStack(EventStack)} before dispatching. If the stack has
-     * not been set, this method will throw an exception.
+     * Gets the current event stack. A stack will only be present if the event
+     * is being dispatched by an event provider which calls
+     * {@link #setEventStack(EventStack)} before dispatching (like
+     * {@link SynchronousEventProvider}).
      *
-     * @return The current event stack.
-     * @throws IllegalStateException If no stack has been set.
+     * @return The current event stack if present.
      */
-    public EventStack getEventStack() {
-        if (this.eventStack == null) {
-            throw new IllegalStateException("Event is not currently dispatched");
-        }
-        return this.eventStack;
+    public Optional<EventStack> getEventStack() {
+        return Optional.ofNullable(this.eventStack);
     }
 
     /**

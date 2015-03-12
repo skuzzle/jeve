@@ -70,8 +70,7 @@ public class EventStack {
             out.println("\t<empty>");
             return;
         }
-
-        dumpInternal(e -> out.printf("%s:%s:%s%n", e.getSource(),
+        dumpInternal(e -> out.printf("\t%s:%s:%s%n", e.getSource(),
                 e.getListenerClass().getSimpleName(), e));
     }
 

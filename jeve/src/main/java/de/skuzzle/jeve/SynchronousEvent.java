@@ -149,7 +149,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
             // this event is currently being dispatched, so adding a prevented
             // class has no effect.
             LOGGER.warn("'preventCascade' has been called on {} for listener class {} "
-                    + "while the event was being dispatched. prventCascade must be "
+                    + "while the event was being dispatched. preventCascade must be "
                     + "called before dispatching the event.",
                     this.getClass().getSimpleName(),
                     getListenerClass().getSimpleName());

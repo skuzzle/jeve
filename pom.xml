@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.skuzzle</groupId>
         <artifactId>skuzzle-parent</artifactId>
-        <version>1.1.1</version>
+        <version>1.2.0</version>
         <relativePath>../skuzzle-parent/pom.xml</relativePath>
     </parent>
 
@@ -38,6 +38,10 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
     </properties>
+
+    <scm>
+        <developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
+    </scm>
 
     <dependencyManagement>
         <dependencies>

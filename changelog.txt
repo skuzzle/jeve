@@ -2,6 +2,7 @@ This is the jeve version history.
 Author: Simon Taddiken
 
 Version 3.0.0 [Released: TODO]
+    * [ADD] EventInvocation as atomic representation of a single listener notification
     * [ADD] PerformanceListenerStore implementation
     * [ADD] UnrollingEventProvider implementation
     * [ADD] SynchronousEvent and EventStack to control cascading events when using 
@@ -11,9 +12,13 @@ Version 3.0.0 [Released: TODO]
     * [CHANGE] Remove 'final' modifier from DefaultListenerStore 
     * [CHANGE] Remove EventProvider.DEFAULT_HANDLER (deprecated since 2.0.1)
     * [CHANGE] Event's source must not be null
+    * [CHANGE] Return type of AbstractEventProvider.notifySingle and 
+               AbstractEventProvider.notifyListeners is now void
+    * [CHANGE] Exception thrown by Executor.execute is no longer handled by the 
+               ExceptionCallback
     * [DEPRECATED] DefaultTargetEvent (use DefaultDispatchable instead)
     * [DEPRECATED] ExceptionCallback.exception(Exception, Listener, Event) (use
-                   ExceptionCallback.exception(EventProvider, Listener, Event) instead)
+                   ExceptionCallback.exception(EventInvocation) instead)
     * [DEPRECATED] EventProvider.dispatch(DefaultTargetEvent) (use 
                    EventProvider.dispatch(DefaultDispatchable) instead)
     * [DEPRECATED] DefaultListenerStore.removeInternal

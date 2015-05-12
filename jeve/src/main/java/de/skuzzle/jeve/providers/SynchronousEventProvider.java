@@ -79,15 +79,14 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
     }
 
     @Override
-    protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
+    protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         if (EventStackHelper.checkPrevent(this.eventStack, event, bc, ec)) {
-            return false;
+            return;
         }
 
         // HINT: getListeners is thread safe
         final Stream<L> listeners = listeners().get(event.getListenerClass());
-        boolean result = true;
 
         try {
             event.setListenerStore(listeners());
@@ -99,14 +98,14 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
             while (it.hasNext()) {
                 final L listener = it.next();
                 if (event.isHandled()) {
-                    return result;
+                    return;
                 }
-                result &= notifySingle(listener, event, bc, ec);
+                notifySingle(listener, event, bc, ec);
             }
         } finally {
             this.eventStack.popEvent(event);
         }
-        return result;
+        return;
     }
 
     /**

@@ -106,5 +106,4 @@ public interface PriorityListenerStore extends ListenerStore {
      */
     public <T extends Listener> void add(Class<T> listenerClass, T listener,
             int priority);
-
 }

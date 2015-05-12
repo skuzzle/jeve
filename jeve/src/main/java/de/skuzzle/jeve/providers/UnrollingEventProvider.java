@@ -52,12 +52,12 @@ public class UnrollingEventProvider<S extends ListenerStore> extends
     }
 
     @Override
-    protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
+    protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
 
         if (this.dispatchInProgress) {
             this.dispatchQueue.add(new QueuedEvent<L, E>(event, ec, bc));
-            return true;
+            return;
         }
 
         try {
@@ -69,7 +69,6 @@ public class UnrollingEventProvider<S extends ListenerStore> extends
                 final QueuedEvent<?, ?> next = this.dispatchQueue.poll();
                 next.dispatch();
             }
-            return true;
         } finally {
             this.dispatchInProgress = false;
         }

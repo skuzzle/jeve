@@ -1,5 +1,8 @@
 package de.skuzzle.jeve;
 
+import de.skuzzle.jeve.invoke.FailedEventInvocation;
+
+
 /**
  * Interface for providing errors which occur during event dispatching to the
  * caller.
@@ -22,12 +25,6 @@ public interface ExceptionCallback {
      * during error handling.
      * </p>
      *
-     * <p>
-     * The default implementation calls
-     * {@link #exception(EventProvider, Exception, Listener, Event)}, passing
-     * <code>null</code> for the EventProvider parameter.
-     * </p>
-     *
      * @param e The exception which occurred during event dispatching.
      * @param source The event listener which caused the exception.
      * @param event The event which is currently being processed.
@@ -37,40 +34,21 @@ public interface ExceptionCallback {
      *             {@link EventProvider#dispatch(Event, java.util.function.BiConsumer)
      *             dispatch} will receive this exception.
      * @deprecated Since 3.0.0 - use
-     *             {@link #exception(EventProvider, Exception, Listener, Event)}
+     *             {@link #exception(FailedEventInvocation)}
      *             instead.
      */
     @Deprecated
     public default void exception(Exception e, Listener source, Event<?, ?> event) {
-        exception(null, e, source, event);
+
     }
 
     /**
-     * Callback method which gets passed an exception. This method will be
-     * called by an {@link EventProvider} if an instance of this interface has
-     * been set as exception callback. This method is generally called within
-     * the same thread in which the attempt to notify the listener has been
-     * made.
      *
-     * <p>
-     * Note: If this method throws any unchecked exceptions other than
-     * {@link AbortionException}, they will be swallowed by the EventProvider
-     * during error handling.
-     * </p>
-     *
-     * @param provider The provider which was dispatching the erroneous event.
-     * @param e The exception which occurred during event dispatching.
-     * @param source The event listener which caused the exception.
-     * @param cause The event which is currently being processed.
-     * @throws AbortionException can be thrown to make event dispatching
-     *             explicitly fail with an exception. No further listeners will
-     *             be notified and the caller of
-     *             {@link EventProvider#dispatch(Event, java.util.function.BiConsumer)
-     *             dispatch} will receive this exception.
+     * @param invocation
      * @since 3.0.0
      */
-    public default void exception(EventProvider<?> provider, Exception e,
-            Listener source, Event<?, ?> cause) {
-        // default: do nothing
+    public default void exception(FailedEventInvocation invocation) {
+        exception(invocation.getException(), invocation.getListener(),
+                invocation.getEvent());
     }
 }

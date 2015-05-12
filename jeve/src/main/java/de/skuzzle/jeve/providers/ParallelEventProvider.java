@@ -83,11 +83,7 @@ public class ParallelEventProvider<S extends ListenerStore> extends
         final Stream<L> listeners = listeners().get(event.getListenerClass());
         event.setListenerStore(listeners());
         listeners.forEach(listener -> {
-            try {
                 this.executor.execute(() -> notifySingle(listener, event, bc, ec));
-            } catch (RuntimeException e) {
-                handleException(ec, e, listener, event);
-            }
         });
     }
 

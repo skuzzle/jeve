@@ -14,6 +14,8 @@ import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.invoke.EventInvocation;
+import de.skuzzle.jeve.invoke.FailedEventInvocation;
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations
@@ -46,18 +48,20 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     protected final ExceptionCallback defaultHandler = new ExceptionCallback() {
 
         @Override
-        public void exception(EventProvider<?> provider, Exception e, Listener source,
-                Event<?, ?> event) {
+        public void exception(FailedEventInvocation invocation) {
             LOGGER.error(
                     "Listener threw an exception while being notified\n" +
                     "Details\n" +
-                            "    Provider: {}\n" +
                     "    Listener: {}\n" +
                     "    Event: {}\n" +
                     "    Message: {}\n" +
                     "    Current Thread: {}\n" +
                     "    Stacktrace:\n",
-                    source, event, e.getMessage(), Thread.currentThread().getName(), e);
+                    invocation.getListener(),
+                    invocation.getEvent(),
+                    invocation.getException().getMessage(),
+                    Thread.currentThread().getName(),
+                    invocation.getException());
         }
     };
 
@@ -154,27 +158,23 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
      * @param event The event to pass to each listener.
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
-     * @return Whether all listeners has been successfully notified.
      * @throws AbortionException If the ExceptionCallback threw an
      *             AbortionException
      */
-    protected <L extends Listener, E extends Event<?, L>> boolean notifyListeners(
+    protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
 
-        // HINT: getListeners is thread safe
         final Stream<L> listeners = listeners().get(event.getListenerClass());
-        boolean result = true;
 
         event.setListenerStore(this.store);
         final Iterator<L> it = listeners.iterator();
         while (it.hasNext()) {
             final L listener = it.next();
             if (event.isHandled()) {
-                return result;
+                return;
             }
-            result &= notifySingle(listener, event, bc, ec);
+            notifySingle(listener, event, bc, ec);
         }
-        return result;
     }
 
     /**
@@ -187,47 +187,32 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
      * @param event The event to pass to the listener.
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
-     * @return Whether the listener has been successfully notified.
      * @throws AbortionException If the {@code ExceptionCallback} or the
      *             {@code listener} threw an {@code AbortionException}.
      * @since 1.1.0
      */
-    protected <L extends Listener, E extends Event<?, L>> boolean notifySingle(
+    protected <L extends Listener, E extends Event<?, L>> void notifySingle(
             L listener, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
-        try {
-            bc.accept(listener, event);
-            return true;
-        } catch (AbortionException e) {
-            // Abortion exceptions should not be handled by the
-            // ExceptionCallback
-            throw e;
-        } catch (RuntimeException e) {
-            handleException(ec, e, listener, event);
-            return false;
-        }
+
+        createInvocation(listener, event, bc, ec).notifyListener();
     }
 
     /**
-     * Internal method for notifying the {@link ExceptionCallback}. This method
-     * swallows every error raised by the passed exception callback.
+     * Creates a new {@link EventInvocation} object for dispatching the given event to
+     * the given listener.
      *
-     * @param ec The ExceptionCallback to handle the exception.
-     * @param e The occurred exception.
-     * @param listener The listener which caused the exception.
-     * @param ev The event which is currently being dispatched.
-     * @throws AbortionException If the {@code ExceptionCallback} threw an
-     *             {@code AbortionException}
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param listener The listener to notify.
+     * @param event The event to pass to the listener
+     * @param bc The method of the listener to call.
+     * @param ec The callback which gets notified about exceptions.
+     * @return The EventInvocation instance.
      */
-    protected void handleException(ExceptionCallback ec, Exception e, Listener listener,
-            Event<?, ?> ev) {
-        try {
-            ec.exception(this, e, listener, ev);
-        } catch (AbortionException abort) {
-            throw abort;
-        } catch (Exception ignore) {
-            LOGGER.error("ExceptionCallback '{}' threw an exception", ec, ignore);
-            // where is your god now?
-        }
+    protected <L extends Listener, E extends Event<?, L>> EventInvocation
+            createInvocation(L listener, E event, BiConsumer<L, E> bc,
+                    ExceptionCallback ec) {
+        return EventInvocation.of(listener, event, bc, ec);
     }
 
     @Override

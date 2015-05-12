@@ -302,7 +302,7 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
         sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(second).onStringEvent(Mockito.eq(e));
-        Mockito.verify(ec).exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.eq(e));
+        Mockito.verify(ec).exception(Mockito.any());
     }
 
     /**
@@ -330,8 +330,8 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
         sleep(); // HACK: give async providers some time to execute
 
         Mockito.verify(globalEc, Mockito.never())
-                .exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(localEc).exception(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+                .exception(Mockito.any());
+        Mockito.verify(localEc).exception(Mockito.any());
     }
 
     /**

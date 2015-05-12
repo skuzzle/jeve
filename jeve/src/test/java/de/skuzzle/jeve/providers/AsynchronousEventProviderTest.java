@@ -51,7 +51,6 @@ public class AsynchronousEventProviderTest extends
             }
         }).when(this.executor).execute(Mockito.any());
 
-        Mockito.doReturn(true).when(spy).notifyListeners(this.event, bc, this.ec);
         spy.dispatch(this.event, bc, this.ec);
         Mockito.verify(spy).notifyListeners(this.event, bc, this.ec);
     }

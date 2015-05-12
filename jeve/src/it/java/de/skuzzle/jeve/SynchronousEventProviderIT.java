@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import de.skuzzle.jeve.invoke.FailedEventInvocation;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -53,8 +54,7 @@ public class SynchronousEventProviderIT extends
     public void testAbortionExceptionInCallback() {
         final ExceptionCallback ec = new ExceptionCallback() {
             @Override
-            public void exception(EventProvider<?> provider, Exception e,
-                    Listener source, Event<?, ?> cause) {
+            public void exception(FailedEventInvocation invocation) {
                 throw new AbortionException();
             }
         };

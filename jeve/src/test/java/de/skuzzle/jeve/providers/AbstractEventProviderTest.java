@@ -19,6 +19,8 @@ import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.SynchronousEvent;
+import de.skuzzle.jeve.invoke.EventInvocation;
+import de.skuzzle.jeve.invoke.FailedEventInvocation;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<ListenerStore>> {
@@ -123,37 +125,11 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         Mockito.doThrow(ex).when(this.listener).onEvent(this.event);
 
         this.subject.notifySingle(this.listener, this.event, bc, this.ec);
-        Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
-    }
 
-    @Test
-    public void testHandleExceptionSuccess() throws Exception {
-        final RuntimeException ex = new RuntimeException();
-
-        this.subject.handleException(this.ec, ex, this.listener, this.event);
-        Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
-    }
-
-    @Test
-    public void testHandleExceptionSwallow() throws Exception {
-        final RuntimeException ex = new RuntimeException();
-        Mockito.doThrow(new RuntimeException()).when(this.ec).exception(this.subject, ex, this.listener, this.event);
-
-        this.subject.handleException(this.ec, ex, this.listener, this.event);
-        Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
-    }
-
-    @Test
-    public void testHandleExceptionDelegateAbortionException() throws Exception {
-        final RuntimeException ex = new RuntimeException();
-        Mockito.doThrow(new AbortionException()).when(this.ec).exception(this.subject, ex, this.listener, this.event);
-
-        try {
-            this.subject.handleException(this.ec, ex, this.listener, this.event);
-            Assert.fail("Expected AbortionException");
-        } catch (AbortionException ex2) {
-            Mockito.verify(this.ec).exception(this.subject, ex, this.listener, this.event);
-        }
+        final FailedEventInvocation expected = EventInvocation
+                .of(this.listener, this.event,SampleListener::onEvent, this.ec)
+                .toFailedInvocation(ex);
+        Mockito.verify(this.ec).exception(expected);
     }
 
     @Test

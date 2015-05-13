@@ -45,7 +45,7 @@ public class EventInvocationImplTest {
                 .of(this.listener, this.event, SampleListener::onEvent, this.ec);
 
         inv.notifyListener();
-        final FailedEventInvocation failed = inv.toFailedInvocation(ex);
+        final FailedEventInvocation failed = inv.fail(ex);
         verify(this.ec).exception(failed);
     }
 
@@ -56,11 +56,11 @@ public class EventInvocationImplTest {
                 .of(this.listener, this.event, SampleListener::onEvent, this.ec);
 
         doThrow(ex).when(this.listener).onEvent(this.event);
-        doThrow(new RuntimeException()).when(this.ec).exception(inv.toFailedInvocation(ex));
+        doThrow(new RuntimeException()).when(this.ec).exception(inv.fail(ex));
 
         inv.notifyListener();
 
-        verify(this.ec).exception(inv.toFailedInvocation(ex));
+        verify(this.ec).exception(inv.fail(ex));
     }
 
     @Test
@@ -68,14 +68,14 @@ public class EventInvocationImplTest {
         final RuntimeException ex = new RuntimeException();
         final EventInvocation inv = EventInvocation
                 .of(this.listener, this.event, SampleListener::onEvent, this.ec);
-        doThrow(new AbortionException()).when(this.ec).exception(inv.toFailedInvocation(ex));
+        doThrow(new AbortionException()).when(this.ec).exception(inv.fail(ex));
         doThrow(ex).when(this.listener).onEvent(this.event);
 
         try {
             inv.notifyListener();
             Assert.fail("Expected AbortionException");
         } catch (AbortionException ex2) {
-            Mockito.verify(this.ec).exception(inv.toFailedInvocation(ex));
+            Mockito.verify(this.ec).exception(inv.fail(ex));
         }
     }
 

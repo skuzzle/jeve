@@ -8,11 +8,11 @@ import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 
 final class FailedEventInvocationImpl<L extends Listener, E extends Event<?, L>> extends
-        AbstractEventInvocation<L, E> implements FailedEventInvocation {
+        EventInvocationImpl<L, E> implements FailedEventInvocation {
 
     private final Exception e;
 
-    protected FailedEventInvocationImpl(E event, L listener, ExceptionCallback ec,
+    FailedEventInvocationImpl(E event, L listener, ExceptionCallback ec,
             BiConsumer<L, E> consumer, Exception e) {
         super(event, listener, ec, consumer);
         this.e = e;
@@ -24,7 +24,7 @@ final class FailedEventInvocationImpl<L extends Listener, E extends Event<?, L>>
     }
 
     @Override
-    public FailedEventInvocation toFailedInvocation(Exception e) {
+    public FailedEventInvocation fail(Exception e) {
         return this;
     }
 

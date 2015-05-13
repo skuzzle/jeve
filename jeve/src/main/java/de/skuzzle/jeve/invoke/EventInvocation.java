@@ -8,13 +8,29 @@ import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 
 /**
- * Represents the action of notifying a single listener about an event.
+ * Represents the action of notifying a single listener about an event. The
+ * notification can be triggered with {@link #notifyListener()}. If the
+ * notification fails because the listener throws an exception, this invocation
+ * will be converted into a {@link FailedEventInvocation} and passed to
+ * {@link ExceptionCallback#exception(FailedEventInvocation)}.
  *
  * @author Simon Taddiken
  * @since 3.0.0
  */
 public interface EventInvocation {
 
+    /**
+     * Creates a new EventInvocation.
+     *
+     * @param <L> The type of the listener.
+     * @param <E> The type of the event.
+     * @param listener The listener to notify.
+     * @param event The event to pass to the listener.
+     * @param method The method of the listener to call.
+     * @param ec The exception handler.
+     * @return A new EventInvocation for notifying the given listener with given
+     *         event.
+     */
     public static <L extends Listener, E extends Event<?, L>> EventInvocation of(
             L listener, E event, BiConsumer<L, E> method, ExceptionCallback ec) {
         return new EventInvocationImpl<>(event, listener, ec, method);
@@ -41,5 +57,11 @@ public interface EventInvocation {
      */
     public void notifyListener();
 
-    public FailedEventInvocation toFailedInvocation(Exception e);
+    /**
+     * Creates a new {@link FailedEventInvocation} holding the given exception.
+     *
+     * @param e The exception which occurred while notifying the listener.
+     * @return A new FailedEventInvocation.
+     */
+    public FailedEventInvocation fail(Exception e);
 }

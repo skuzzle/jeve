@@ -127,8 +127,8 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider<
         this.subject.notifySingle(this.listener, this.event, bc, this.ec);
 
         final FailedEventInvocation expected = EventInvocation
-                .of(this.listener, this.event,SampleListener::onEvent, this.ec)
-                .toFailedInvocation(ex);
+                .of(this.listener, this.event, SampleListener::onEvent, this.ec)
+                .fail(ex);
         Mockito.verify(this.ec).exception(expected);
     }
 

@@ -3,6 +3,7 @@ package de.skuzzle.jeve.invoke;
 import java.util.function.BiConsumer;
 
 import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 
@@ -34,8 +35,9 @@ public interface EventInvocation {
     public Listener getListener();
 
     /**
-     * Notifies the wrapped listener about the wrapped event. This method performs all
-     * the exception handling described
+     * Notifies the wrapped listener about the wrapped event. This method
+     * performs all the exception handling described in {@link EventProvider}
+     * and {@link ExceptionCallback}.
      */
     public void notifyListener();
 

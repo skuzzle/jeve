@@ -29,7 +29,7 @@ import de.skuzzle.jeve.SynchronousEvent;
  * @author Simon Taddiken
  * @since 3.0.0
  */
-public final class EventStackImpl implements EventStack {
+class EventStackImpl implements EventStack {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventStackImpl.class);
 

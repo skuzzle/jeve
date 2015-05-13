@@ -4,6 +4,17 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * Stack class which is used to keep track of currently dispatched {@link Event
+ * Events}. Before an Event is being dispatched, it is pushed onto this stack
+ * and right after it has been dispatched to all listeners it is popped off
+ * again. This allows queries such as which events are currently active.
+ *
+ * <p>
+ * Implementations must be thread safe.
+ * </p>
+ * @author Simon Taddiken
+ */
 public interface EventStack {
 
     /**

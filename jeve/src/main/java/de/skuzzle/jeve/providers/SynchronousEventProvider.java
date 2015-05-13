@@ -25,7 +25,7 @@ import de.skuzzle.jeve.SynchronousEvent;
  * classes to be prevented on the event to dispatch. For this purpose, instead
  * of extending {@link Event}, your events must extend {@link SynchronousEvent}.
  * For example: {@code public class UserEvent extends
- * SynchronousEvent<UserManager, UserListener.class> ...}
+ * SynchronousEvent<UserManager, UserListener> ...}
  * </p>
  *
  * <pre>
@@ -41,7 +41,7 @@ import de.skuzzle.jeve.SynchronousEvent;
  * prevent cascaded events of the same type. During dispatch, all events which
  * have been suppressed using the prevention mechanism, are collected and can be
  * retrieved with {@link SynchronousEvent#getSuppressedEvents()}. This allows
- * you to re-dispatch them afterwards:
+ * you to inspect or re-dispatch them afterwards:
  * </p>
  *
  * <pre>
@@ -59,13 +59,13 @@ import de.skuzzle.jeve.SynchronousEvent;
  *
  * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
- * @since 1.0.0
+ * @since 3.0.0
  * @see SynchronousEvent
  */
 public class SynchronousEventProvider<S extends ListenerStore> extends
         AbstractEventProvider<S> {
 
-    private final EventStack eventStack;
+    private final EventStackImpl eventStack;
 
     /**
      * Creates a new SynchronousEventProvider.
@@ -75,7 +75,7 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
      */
     public SynchronousEventProvider(S store) {
         super(store);
-        this.eventStack = new EventStack();
+        this.eventStack = new EventStackImpl();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package de.skuzzle.jeve;
+package de.skuzzle.jeve.providers;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -9,9 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.SynchronousEvent;
 import de.skuzzle.jeve.annotation.ListenerInterface;
+import de.skuzzle.jeve.providers.EventStackImpl;
 
-public class EventStackTest {
+public class EventStackImplTest {
 
     @ListenerInterface
     private interface SampleListener extends Listener {
@@ -23,11 +27,11 @@ public class EventStackTest {
 
     }
 
-    private EventStack subject;
+    private EventStackImpl subject;
 
     @Before
     public void setup() {
-        this.subject = new EventStack();
+        this.subject = new EventStackImpl();
     }
 
     @Test(expected = NoSuchElementException.class)

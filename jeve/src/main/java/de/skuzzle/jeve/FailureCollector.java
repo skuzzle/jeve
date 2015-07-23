@@ -69,6 +69,11 @@ public final class FailureCollector implements ExceptionCallback,
         return new FailureCollector(null);
     }
 
+    /**
+     * Gets the list of failed invocations that has been collected by this collector.
+     *
+     * @return The failed invocations.
+     */
     public List<FailedEventInvocation> getFailedInvocations() {
         synchronized (this.mutex) {
             if (this.failedEvents == null) {

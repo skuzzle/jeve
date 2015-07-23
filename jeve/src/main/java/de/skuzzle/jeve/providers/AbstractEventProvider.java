@@ -108,6 +108,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
         event.defaultDispatch(this, this.exceptionHandler);
     }
 
+
     /**
      * Helper method which serves for throwing {@link IllegalArgumentException}
      * if any of the passed arguments is null.

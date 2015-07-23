@@ -60,7 +60,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
     }
 
     /**
-     * Sets the EventStackImpl which is used while this event is dispatched. This
+     * Sets the EventStack which is used while this event is dispatched. This
      * method will be called by the {@link SynchronousEventProvider} right
      * before dispatching this event. The stack is only set once, subsequent
      * calls will have no effect.
@@ -135,7 +135,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      *
      * <p>
      * Note: this method has to be called before this event is being dispatched.
-     * If called during dispatch, it will has no effect.
+     * If called during dispatch, it will have no effect.
      * </p>
      *
      * @param <E> Type of the listener class.

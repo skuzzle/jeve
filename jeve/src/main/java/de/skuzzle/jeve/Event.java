@@ -1,5 +1,8 @@
 package de.skuzzle.jeve;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>
@@ -65,6 +68,12 @@ public class Event<T, L extends Listener> {
     private boolean prevented;
 
     /**
+     * Map for assigning further objects to this event. Map is lazily
+     * initialized.
+     */
+    private Map<String, Object> properties;
+
+    /**
      * Creates a new event with a given source.
      *
      * @param source The source of this event.
@@ -81,6 +90,60 @@ public class Event<T, L extends Listener> {
         this.source = source;
         this.listenerClass = listenerClass;
         this.handled = false;
+    }
+
+    /**
+     * Returns the Map that is used to store properties in this event instance.
+     * All modifications to that map are directly reflected to its Event
+     * instance.
+     *
+     * @return The property Map of this event.
+     * @since 3.0.0
+     */
+    public Map<String, Object> getProperties() {
+        if (this.properties == null) {
+            this.properties = new HashMap<>();
+        }
+        return this.properties;
+    }
+
+    /**
+     * Returns a value that has been stored using
+     * {@link #setValue(String, Object)}. As this method is generic, the value
+     * will automatically be casted to the target type of the expression in
+     * which this method is called. So this method has to be used with caution
+     * in respect to type safety.
+     *
+     * @param key The key of the value to retrieve.
+     * @return The value or an empty optional if the value does not exist.
+     * @since 3.0.0
+     */
+    @SuppressWarnings("unchecked")
+    public <E> Optional<E> getValue(String key) {
+        if (this.properties == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((E) getProperties().get(key));
+    }
+
+    /**
+     * Adds the given key-value mapping to this Event. The value can be queried
+     * using {@link #getValue(String)}.
+     * <p>
+     * <b>Note:</b> Storing properties on events is generally discouraged in
+     * favor of creating explicit attributes with getters. However, there might
+     * arise situations in which you must attach further properties to an event
+     * without being able to modify its original source code. In these
+     * situations, storing properties with a String key might be useful.
+     *
+     * @param key The key under which the value is stored.
+     * @param value The value to store.
+     * @since 3.0.0
+     * @see #getValue(String)
+     * @see #getProperties()
+     */
+    public void setValue(String key, Object value) {
+        getProperties().put(key, value);
     }
 
     /**

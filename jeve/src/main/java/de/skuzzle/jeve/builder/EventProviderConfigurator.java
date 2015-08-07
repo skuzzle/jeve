@@ -307,7 +307,8 @@ public interface EventProviderConfigurator {
      *            step.
      * @since 2.0.0
      */
-    interface AsyncProviderConfigurator<S extends ListenerStore, E extends EventProvider<S>> {
+    interface AsyncProviderConfigurator<S extends ListenerStore,
+            E extends EventProvider<S>> {
         /**
          * Configures the {@link ExceptionCallback} to use.
          *

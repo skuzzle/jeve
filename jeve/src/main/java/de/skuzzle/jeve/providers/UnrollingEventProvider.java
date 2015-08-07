@@ -10,6 +10,8 @@ import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 
 /**
+ * Provider which queues events while dispatching. Thus nested dispatch calls are handled
+ * deferred after the previous dispatch action finished.
  *
  * @author Simon Taddiken
  * @param <S> The type of the ListenerStore this provider uses.

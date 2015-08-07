@@ -209,6 +209,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
      * @param bc The method of the listener to call.
      * @param ec The callback which gets notified about exceptions.
      * @return The EventInvocation instance.
+     * @since 3.0.0
      */
     protected <L extends Listener, E extends Event<?, L>> EventInvocation
             createInvocation(L listener, E event, BiConsumer<L, E> bc,

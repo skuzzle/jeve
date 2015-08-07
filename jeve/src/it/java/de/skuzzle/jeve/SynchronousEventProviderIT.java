@@ -15,8 +15,7 @@ import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(Parameterized.class)
-public class SynchronousEventProviderIT extends
-        EventProviderTestBase<ListenerStore> {
+public class SynchronousEventProviderIT extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
@@ -41,8 +40,7 @@ public class SynchronousEventProviderIT extends
                 );
     }
 
-    public SynchronousEventProviderIT(
-            Supplier<? extends EventProvider<ListenerStore>> factory) {
+    public SynchronousEventProviderIT(Supplier<? extends EventProvider> factory) {
         super(factory);
     }
 

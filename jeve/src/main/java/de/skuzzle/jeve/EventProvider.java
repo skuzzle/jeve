@@ -4,7 +4,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.builder.EventProviderConfigurator;
-import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 
 /**
@@ -152,12 +151,11 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * undefined.
  * </p>
  *
- * @param <S> The type of the ListenerStore this EventProvider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  * @version 2.0.0
  */
-public interface EventProvider<S extends ListenerStore> {
+public interface EventProvider {
 
     /**
      * Provides a fluent builder API to construct several kinds of
@@ -218,7 +216,7 @@ public interface EventProvider<S extends ListenerStore> {
      * @see #configure()
      * @since 2.0.0
      */
-    public static EventProvider<DefaultListenerStore> createDefault() {
+    public static EventProvider createDefault() {
         return configure().defaultStore().useSynchronousProvider().create();
     }
 
@@ -228,7 +226,12 @@ public interface EventProvider<S extends ListenerStore> {
      *
      * @return The listener store.
      */
-    public S listeners();
+    public ListenerStore listeners();
+
+
+    public default <S extends ListenerStore> S listenersAs(Class<S> type) {
+        return type.cast(listeners());
+    }
 
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this

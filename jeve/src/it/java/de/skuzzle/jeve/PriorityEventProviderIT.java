@@ -16,8 +16,7 @@ import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
 
 @RunWith(Parameterized.class)
-public class PriorityEventProviderIT extends
-        EventProviderTestBase<PriorityListenerStore> {
+public class PriorityEventProviderIT extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
@@ -34,7 +33,7 @@ public class PriorityEventProviderIT extends
     }
 
     public PriorityEventProviderIT(
-            Supplier<? extends EventProvider<PriorityListenerStore>> factory) {
+            Supplier<? extends EventProvider> factory) {
         super(factory);
     }
 
@@ -44,8 +43,8 @@ public class PriorityEventProviderIT extends
         final StringListener l2 = Mockito.mock(StringListener.class);
 
         // Add l1 before l2, but l2 with lower precedence
-        this.subject.listeners().add(StringListener.class, l1, 2);
-        this.subject.listeners().add(StringListener.class, l2, 1);
+        this.subject.listenersAs(PriorityListenerStore.class).add(StringListener.class, l1, 2);
+        this.subject.listenersAs(PriorityListenerStore.class).add(StringListener.class, l2, 1);
 
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
@@ -61,8 +60,8 @@ public class PriorityEventProviderIT extends
         final StringListener l2 = Mockito.mock(StringListener.class);
 
         // Add l1 before l2, but l2 with lower precedence
-        this.subject.listeners().add(StringListener.class, l1);
-        this.subject.listeners().add(StringListener.class, l2, -1);
+        this.subject.listenersAs(PriorityListenerStore.class).add(StringListener.class, l1);
+        this.subject.listenersAs(PriorityListenerStore.class).add(StringListener.class, l2, -1);
 
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);

@@ -23,8 +23,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class ThreadedEventProviderIT extends
-        EventProviderTestBase<DefaultListenerStore> {
+public class ThreadedEventProviderIT extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
@@ -47,8 +46,7 @@ public class ThreadedEventProviderIT extends
      *
      * @param factory Factory to create a single provider
      */
-    public ThreadedEventProviderIT(
-            Supplier<? extends EventProvider<DefaultListenerStore>> factory) {
+    public ThreadedEventProviderIT(Supplier<? extends EventProvider> factory) {
         super(factory);
     }
 

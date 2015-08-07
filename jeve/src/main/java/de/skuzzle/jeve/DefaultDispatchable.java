@@ -35,5 +35,5 @@ public interface DefaultDispatchable {
      * @param provider The EventProvider to use for dispatching.
      * @param ec The exception call back to use for this dispatch action.
      */
-    public void defaultDispatch(EventProvider<?> provider, ExceptionCallback ec);
+    public void defaultDispatch(EventProvider provider, ExceptionCallback ec);
 }

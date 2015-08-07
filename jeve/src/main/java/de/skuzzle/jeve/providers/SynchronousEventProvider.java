@@ -57,13 +57,11 @@ import de.skuzzle.jeve.SynchronousEvent;
  *         .forEach(suppressed -&gt; suppressed.redispatch(eventProvider));
  * </pre>
  *
- * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 3.0.0
  * @see SynchronousEvent
  */
-public class SynchronousEventProvider<S extends ListenerStore> extends
-        AbstractEventProvider<S> {
+public class SynchronousEventProvider extends AbstractEventProvider {
 
     private final EventStackImpl eventStack;
 
@@ -73,7 +71,7 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
      * @param store Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public SynchronousEventProvider(S store) {
+    public SynchronousEventProvider(ListenerStore store) {
         super(store);
         this.eventStack = new EventStackImpl();
     }

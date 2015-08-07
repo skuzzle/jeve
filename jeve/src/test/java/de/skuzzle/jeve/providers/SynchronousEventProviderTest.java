@@ -15,11 +15,11 @@ import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.SynchronousEvent;
 
 public class SynchronousEventProviderTest extends
-        AbstractEventProviderTest<SynchronousEventProvider<ListenerStore>> {
+        AbstractEventProviderTest<SynchronousEventProvider> {
 
     @Override
-    protected SynchronousEventProvider<ListenerStore> createSubject(ListenerStore store) {
-        return new SynchronousEventProvider<ListenerStore>(store);
+    protected SynchronousEventProvider createSubject(ListenerStore store) {
+        return new SynchronousEventProvider(store);
     }
 
     @SuppressWarnings("unchecked")
@@ -32,7 +32,7 @@ public class SynchronousEventProviderTest extends
                 Arrays.asList(this.listener, listener2).stream());
 
         this.subject.notifyListeners(event, SampleListener::onEvent, this.ec);
-        InOrder inOrder = Mockito.inOrder(event, this.listener, listener2);
+        final InOrder inOrder = Mockito.inOrder(event, this.listener, listener2);
         inOrder.verify(event).setListenerStore(this.store);
         inOrder.verify(event).setEventStack(this.subject.getEventStack());
         inOrder.verify(this.listener).onEvent(event);

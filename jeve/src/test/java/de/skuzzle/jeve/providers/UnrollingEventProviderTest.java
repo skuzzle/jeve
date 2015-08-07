@@ -5,11 +5,11 @@ import org.junit.Test;
 import de.skuzzle.jeve.ListenerStore;
 
 public class UnrollingEventProviderTest extends
-        AbstractEventProviderTest<UnrollingEventProvider<ListenerStore>> {
+        AbstractEventProviderTest<UnrollingEventProvider> {
 
     @Override
-    protected UnrollingEventProvider<ListenerStore> createSubject(ListenerStore store) {
-        return new UnrollingEventProvider<ListenerStore>(store);
+    protected UnrollingEventProvider createSubject(ListenerStore store) {
+        return new UnrollingEventProvider(store);
     }
 
     @Test

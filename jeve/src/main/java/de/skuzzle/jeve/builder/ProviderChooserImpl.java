@@ -15,11 +15,11 @@ import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
 
-class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S> {
+class ProviderChooserImpl implements ProviderChooser {
 
-    private final Supplier<S> storeSupplier;
+    private final Supplier<? extends ListenerStore> storeSupplier;
 
-    ProviderChooserImpl(Supplier<S> storeSupplier) {
+    ProviderChooserImpl(Supplier<? extends ListenerStore> storeSupplier) {
         if (storeSupplier == null) {
             throw new IllegalArgumentException("storeSupplier is null");
         }
@@ -28,8 +28,8 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
     }
 
     @Override
-    public <C, E extends EventProvider<S>> Chainable<C, E> useCustomProvider(
-            CustomConfigurator<S, C, E> configurator) {
+    public <C, E extends EventProvider> Chainable<C, E> useCustomProvider(
+            CustomConfigurator<C, E> configurator) {
         if (configurator == null) {
             throw new IllegalArgumentException("configurator is null");
         }
@@ -54,13 +54,14 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
         };
     }
 
-    private <E extends EventProvider<S>> Chainable<ProviderConfigurator<S, E>, E>
-            synchronAnd(Function<S, E> providerConstructor, Supplier<S> storeSupplier) {
+    private <E extends EventProvider> Chainable<ProviderConfigurator<E>, E>
+            synchronAnd(Function<ListenerStore, E> providerConstructor,
+                    Supplier<? extends ListenerStore> storeSupplier) {
 
-        return new Chainable<ProviderConfigurator<S, E>, E>() {
+        return new Chainable<ProviderConfigurator<E>, E>() {
             @Override
-            public ProviderConfigurator<S, E> and() {
-                return new ProviderConfiguratorImpl<S, E>(providerConstructor,
+            public ProviderConfigurator<E> and() {
+                return new ProviderConfiguratorImpl<E>(providerConstructor,
                         storeSupplier);
             }
 
@@ -76,13 +77,14 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
         };
     }
 
-    private <E extends EventProvider<S>> Chainable<AsyncProviderConfigurator<S, E>, E>
-            asynchronAnd(Function<S, E> providerConstructor, Supplier<S> storeSupplier) {
+    private <E extends EventProvider> Chainable<AsyncProviderConfigurator<E>, E>
+            asynchronAnd(Function<ListenerStore, E> providerConstructor,
+                    Supplier<? extends ListenerStore> storeSupplier) {
 
-        return new Chainable<AsyncProviderConfigurator<S, E>, E>() {
+        return new Chainable<AsyncProviderConfigurator<E>, E>() {
             @Override
-            public AsyncProviderConfigurator<S, E> and() {
-                return new AsyncProviderConfiguratorImpl<S, E>(providerConstructor,
+            public AsyncProviderConfigurator<E> and() {
+                return new AsyncProviderConfiguratorImpl<E>(providerConstructor,
                         storeSupplier);
             }
 
@@ -99,50 +101,50 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
     }
 
     @Override
-    public Chainable<ProviderConfigurator<S, SynchronousEventProvider<S>>,
-            SynchronousEventProvider<S>> useSynchronousProvider() {
-        final Function<S, SynchronousEventProvider<S>> ctor =
-                SynchronousEventProvider<S>::new;
+    public Chainable<ProviderConfigurator<SynchronousEventProvider>,
+            SynchronousEventProvider> useSynchronousProvider() {
+        final Function<ListenerStore, SynchronousEventProvider> ctor =
+                SynchronousEventProvider::new;
         return synchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
-    public Chainable<ProviderConfigurator<S, UnrollingEventProvider<S>>,
-            UnrollingEventProvider<S>> useUnrollingProvider() {
-        final Function<S, UnrollingEventProvider<S>> ctor =
-                UnrollingEventProvider<S>::new;
+    public Chainable<ProviderConfigurator<UnrollingEventProvider>,
+            UnrollingEventProvider> useUnrollingProvider() {
+        final Function<ListenerStore, UnrollingEventProvider> ctor =
+                UnrollingEventProvider::new;
         return synchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
-            AsynchronousEventProvider<S>> useAsynchronousProvider() {
-        final Function<S, AsynchronousEventProvider<S>> ctor =
-                AsynchronousEventProvider<S>::new;
+    public Chainable<AsyncProviderConfigurator<AsynchronousEventProvider>,
+            AsynchronousEventProvider> useAsynchronousProvider() {
+        final Function<ListenerStore, AsynchronousEventProvider> ctor =
+                AsynchronousEventProvider::new;
         return asynchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
-            ParallelEventProvider<S>> useParallelProvider() {
-        final Function<S, ParallelEventProvider<S>> ctor =
-                ParallelEventProvider<S>::new;
+    public Chainable<AsyncProviderConfigurator<ParallelEventProvider>,
+            ParallelEventProvider> useParallelProvider() {
+        final Function<ListenerStore, ParallelEventProvider> ctor =
+                ParallelEventProvider::new;
         return asynchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
-    public Chainable<ProviderConfigurator<S, AWTEventProvider<S>>,
-            AWTEventProvider<S>> useWaitingAWTEventProvider() {
-        final Function<S, AWTEventProvider<S>> ctor =
-                store -> new AWTEventProvider<>(store, true);
+    public Chainable<ProviderConfigurator<AWTEventProvider>,
+            AWTEventProvider> useWaitingAWTEventProvider() {
+        final Function<ListenerStore, AWTEventProvider> ctor =
+                store -> new AWTEventProvider(store, true);
         return synchronAnd(ctor, this.storeSupplier);
     }
 
     @Override
-    public Chainable<ProviderConfigurator<S, AWTEventProvider<S>>,
-            AWTEventProvider<S>> useAsynchronAWTEventProvider() {
-        final Function<S, AWTEventProvider<S>> ctor =
-                store -> new AWTEventProvider<>(store, false);
+    public Chainable<ProviderConfigurator<AWTEventProvider>,
+            AWTEventProvider> useAsynchronAWTEventProvider() {
+        final Function<ListenerStore, AWTEventProvider> ctor =
+                store -> new AWTEventProvider(store, false);
         return synchronAnd(ctor, this.storeSupplier);
     }
 }

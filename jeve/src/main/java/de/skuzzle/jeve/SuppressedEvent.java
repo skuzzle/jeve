@@ -43,5 +43,5 @@ public interface SuppressedEvent {
      *
      * @param provider The EventProvider to dispatch the event with.
      */
-    public void redispatch(EventProvider<?> provider);
+    public void redispatch(EventProvider provider);
 }

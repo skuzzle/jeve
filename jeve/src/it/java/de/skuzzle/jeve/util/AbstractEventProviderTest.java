@@ -8,7 +8,6 @@ import org.junit.Before;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.EventProviderTestBase;
-import de.skuzzle.jeve.ListenerStore;
 
 /**
  * Base class for setting up an EventProvider testing area.
@@ -17,7 +16,7 @@ import de.skuzzle.jeve.ListenerStore;
  * @since 1.1.0
  * @version 2.0.0
  */
-public class AbstractEventProviderTest<S extends ListenerStore> {
+public class AbstractEventProviderTest {
 
     /**
      * Time to wait to give threaded handlers some time to finish one dispatch
@@ -26,17 +25,17 @@ public class AbstractEventProviderTest<S extends ListenerStore> {
     private static final long THREAD_WAIT_TIME = 150; // ms
 
     /** The factory to create EventProvider instances for testing */
-    protected final Supplier<? extends EventProvider<S>> factory;
+    protected final Supplier<? extends EventProvider> factory;
 
     /** The provider being used in a single test case */
-    protected EventProvider<S> subject;
+    protected EventProvider subject;
 
     /**
      * Creates a new Test class instance.
      *
      * @param factory A factory for creating event providers
      */
-    public AbstractEventProviderTest(Supplier<? extends EventProvider<S>> factory) {
+    public AbstractEventProviderTest(Supplier<? extends EventProvider> factory) {
         this.factory = factory;
     }
 
@@ -98,7 +97,7 @@ public class AbstractEventProviderTest<S extends ListenerStore> {
     protected void sleep() {
         try {
             Thread.sleep(THREAD_WAIT_TIME);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             throw new RuntimeException(e);
 
         }

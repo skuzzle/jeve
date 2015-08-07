@@ -25,12 +25,11 @@ import de.skuzzle.jeve.ListenerStore;
  * the {@link EventProvider} interface.
  * </p>
  *
- * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.1.0
  */
-public class ParallelEventProvider<S extends ListenerStore> extends
-        AbstractEventProvider<S> implements ExecutorAware {
+public class ParallelEventProvider extends AbstractEventProvider
+        implements ExecutorAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
     private static final long TERMINATION_TIMEOUT = 2000;
@@ -43,7 +42,7 @@ public class ParallelEventProvider<S extends ListenerStore> extends
      * @param store Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public ParallelEventProvider(S store) {
+    public ParallelEventProvider(ListenerStore store) {
         this(store, Executors.newCachedThreadPool());
     }
 
@@ -54,7 +53,7 @@ public class ParallelEventProvider<S extends ListenerStore> extends
      *            provider.
      * @param executor The executor to use.
      */
-    public ParallelEventProvider(S store, ExecutorService executor) {
+    public ParallelEventProvider(ListenerStore store, ExecutorService executor) {
         super(store);
         if (executor == null) {
             throw new IllegalArgumentException("executor is null");
@@ -98,7 +97,7 @@ public class ParallelEventProvider<S extends ListenerStore> extends
         this.executor.shutdownNow();
         try {
             this.executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("ParallelEventProvider: Error while waiting for termination "
                     + "of executor", e);
         }

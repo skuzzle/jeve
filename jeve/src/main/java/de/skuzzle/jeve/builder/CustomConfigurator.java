@@ -39,12 +39,11 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderChooser;
  * </pre>
  *
  * @author Simon Taddiken
- * @param <S> The type of the ListenerStore to use.
  * @param <C> The type of your own fluent API interface.
  * @param <E> The type of the EventProvider this configurator will create.
  * @since 2.0.0
  */
-public interface CustomConfigurator<S extends ListenerStore, C, E extends EventProvider<S>> {
+public interface CustomConfigurator<C, E extends EventProvider> {
 
     /**
      * Creates the object which will be returned by
@@ -54,7 +53,7 @@ public interface CustomConfigurator<S extends ListenerStore, C, E extends EventP
      *            configured in the first step.
      * @return Your custom fluent API interface object.
      */
-    C getConfigurator(Supplier<S> storeSupplier);
+    C getConfigurator(Supplier<? extends ListenerStore> storeSupplier);
 
     /**
      * Creates a new EventProvider with the ListenerStore configured in the
@@ -64,5 +63,5 @@ public interface CustomConfigurator<S extends ListenerStore, C, E extends EventP
      *            configured in the first step.
      * @return A new EventProvider.
      */
-    E createNow(Supplier<S> storeSupplier);
+    E createNow(Supplier<? extends ListenerStore> storeSupplier);
 }

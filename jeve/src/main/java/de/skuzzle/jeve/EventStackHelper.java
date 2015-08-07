@@ -72,7 +72,7 @@ public final class EventStackHelper {
         }
 
         @Override
-        public void redispatch(EventProvider<?> provider) {
+        public void redispatch(EventProvider provider) {
             if (!this.dispatched) {
                 this.dispatched = true;
                 provider.dispatch(this.event, this.consumer, this.ec);

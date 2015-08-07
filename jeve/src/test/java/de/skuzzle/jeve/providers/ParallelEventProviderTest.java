@@ -9,16 +9,16 @@ import org.mockito.Mockito;
 import de.skuzzle.jeve.ListenerStore;
 
 public class ParallelEventProviderTest extends
-        AbstractExecutorAwareEventProviderTest<ParallelEventProvider<ListenerStore>> {
+        AbstractExecutorAwareEventProviderTest<ParallelEventProvider> {
 
     @Override
-    protected ParallelEventProvider<ListenerStore> createSubject(ListenerStore store) {
-        return new ParallelEventProvider<ListenerStore>(store, this.executor);
+    protected ParallelEventProvider createSubject(ListenerStore store) {
+        return new ParallelEventProvider(store, this.executor);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorExecutorNull() {
-        new ParallelEventProvider<>(Mockito.mock(ListenerStore.class), null);
+        new ParallelEventProvider(Mockito.mock(ListenerStore.class), null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -32,11 +32,12 @@ public class ParallelEventProviderTest extends
         Assert.assertFalse(this.subject.isSequential());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void testCanNotDispatch() {
         Mockito.when(this.executor.isTerminated()).thenReturn(true);
         this.subject.dispatch(this.event, SampleListener::onEvent, this.ec);
-        Mockito.verify(this.store, Mockito.never()).get(Mockito.any());
+        Mockito.verify(this.store, Mockito.never()).get(Mockito.<Class>any());
     }
 
     @Test

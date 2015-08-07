@@ -102,7 +102,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * @author Simon Taddiken
  * @since 2.0.0
  */
-public interface ListenerStore {
+public interface ListenerStore extends ListenerSource {
 
     /**
      * <p>
@@ -257,6 +257,7 @@ public interface ListenerStore {
      *         represented by the given listener class.
      * @throws IllegalArgumentException If listenerClass is <code>null</code>.
      */
+    @Override
     public <L extends Listener> Stream<L> get(Class<L> listenerClass);
 
     /**

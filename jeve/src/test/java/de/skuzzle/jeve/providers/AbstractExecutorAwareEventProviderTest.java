@@ -9,9 +9,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import de.skuzzle.jeve.DefaultDispatchable;
-import de.skuzzle.jeve.ListenerStore;
 
-public abstract class AbstractExecutorAwareEventProviderTest<E extends AbstractEventProvider<ListenerStore>>
+public abstract class AbstractExecutorAwareEventProviderTest<E extends AbstractEventProvider>
         extends AbstractEventProviderTest<E> {
 
     @Mock

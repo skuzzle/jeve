@@ -27,7 +27,7 @@ import de.skuzzle.jeve.util.StringListener;
  * @author Simon Taddiken
  */
 @RunWith(Parameterized.class)
-public class AWTEventProviderIT extends EventProviderTestBase<ListenerStore> {
+public class AWTEventProviderIT extends EventProviderTestBase {
 
     /**
      * Parameterizes the test instances.
@@ -68,8 +68,7 @@ public class AWTEventProviderIT extends EventProviderTestBase<ListenerStore> {
      *
      * @param factory Factory to create a single provider
      */
-    public AWTEventProviderIT(
-            Supplier<? extends EventProvider<ListenerStore>> factory) {
+    public AWTEventProviderIT(Supplier<? extends EventProvider> factory) {
         super(factory);
     }
 
@@ -103,7 +102,7 @@ public class AWTEventProviderIT extends EventProviderTestBase<ListenerStore> {
     @Test
     public void testInvokeFromEventThread() throws InvocationTargetException, InterruptedException {
         Assume.assumeTrue(this.subject instanceof AWTEventProvider);
-        final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
+        final AWTEventProvider eventProvider = (AWTEventProvider) this.subject;
         Assume.assumeTrue(eventProvider.isInvokeNow());
 
         final boolean[] isEventThread = new boolean[1];
@@ -125,7 +124,7 @@ public class AWTEventProviderIT extends EventProviderTestBase<ListenerStore> {
     @Ignore
     public void testInterrupt() {
         Assume.assumeTrue(this.subject instanceof AWTEventProvider);
-        final AWTEventProvider<?> eventProvider = (AWTEventProvider<?>) this.subject;
+        final AWTEventProvider eventProvider = (AWTEventProvider) this.subject;
         if (!eventProvider.isInvokeNow()) {
             System.out.println("Skipping test for AWTEventProvider because its not set to 'invokeNow'");
         }

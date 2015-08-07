@@ -64,11 +64,9 @@ public interface EventProviderConfigurator {
      * ListenerStore.
      *
      * @author Simon Taddiken
-     * @param <S> The type of the {@link ListenerStore} configured in the first
-     *            step.
      * @since 2.0.0
      */
-    interface ProviderChooser<S extends ListenerStore> {
+    interface ProviderChooser {
 
         /**
          * Entry point method for incorporating the fluent API to create custom
@@ -80,8 +78,8 @@ public interface EventProviderConfigurator {
          * @param configurator The custom fluent API entry point.
          * @return Fluent API object for further configuration.
          */
-        <C, E extends EventProvider<S>> Chainable<C, E> useCustomProvider(
-                CustomConfigurator<S, C, E> configurator);
+        <C, E extends EventProvider> Chainable<C, E> useCustomProvider(
+                CustomConfigurator<C, E> configurator);
 
         /**
          * Creates a new {@link UnrollingEventProvider}. This provider fires
@@ -92,8 +90,8 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          * @since 3.0.0
          */
-        Chainable<ProviderConfigurator<S, UnrollingEventProvider<S>>,
-                UnrollingEventProvider<S>> useUnrollingProvider();
+        Chainable<ProviderConfigurator<UnrollingEventProvider>,
+                UnrollingEventProvider> useUnrollingProvider();
 
         /**
          * Configures a synchronous EventProvider which will dispatch all events
@@ -105,8 +103,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Chainable<ProviderConfigurator<S, SynchronousEventProvider<S>>,
-                SynchronousEventProvider<S>> useSynchronousProvider();
+        Chainable<ProviderConfigurator<SynchronousEventProvider>,
+                SynchronousEventProvider> useSynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which fires each event in a
@@ -132,8 +130,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Chainable<AsyncProviderConfigurator<S, AsynchronousEventProvider<S>>,
-                AsynchronousEventProvider<S>> useAsynchronousProvider();
+        Chainable<AsyncProviderConfigurator<AsynchronousEventProvider>,
+                AsynchronousEventProvider> useAsynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which notifies each listener
@@ -153,8 +151,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Chainable<AsyncProviderConfigurator<S, ParallelEventProvider<S>>,
-                ParallelEventProvider<S>> useParallelProvider();
+        Chainable<AsyncProviderConfigurator<ParallelEventProvider>,
+                ParallelEventProvider> useParallelProvider();
 
         /**
          * Configures an {@link EventProvider} which dispatches all events in
@@ -170,7 +168,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Chainable<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
+        Chainable<ProviderConfigurator<AWTEventProvider>, AWTEventProvider>
                 useWaitingAWTEventProvider();
 
         /**
@@ -187,7 +185,7 @@ public interface EventProviderConfigurator {
          *
          * @return A new EventProvider instance.
          */
-        Chainable<ProviderConfigurator<S, AWTEventProvider<S>>, AWTEventProvider<S>>
+        Chainable<ProviderConfigurator<AWTEventProvider>, AWTEventProvider>
                 useAsynchronAWTEventProvider();
     }
 
@@ -250,13 +248,11 @@ public interface EventProviderConfigurator {
      * Provides configuration mostly for non-threaded EventProviders.
      *
      * @author Simon Taddiken
-     * @param <S> The type of the {@link ListenerStore} configured in the first
-     *            step.
      * @param <E> The type of the {@link EventProvider} configured in the second
      *            step.
      * @since 2.0.0
      */
-    interface ProviderConfigurator<S extends ListenerStore, E extends EventProvider<S>> {
+    interface ProviderConfigurator<E extends EventProvider> {
 
         /**
          * Configures the {@link ExceptionCallback} to use.
@@ -264,7 +260,7 @@ public interface EventProviderConfigurator {
          * @param ec The ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Chainable<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec);
+        Chainable<ProviderConfigurator<E>, E> exceptionCallBack(ExceptionCallback ec);
 
         /**
          * Instruct the provider to use the synchronized (thread-safe) version
@@ -273,7 +269,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          * @see ListenerStore#synchronizedView()
          */
-        Chainable<ProviderConfigurator<S, E>, E> synchronizeStore();
+        Chainable<ProviderConfigurator<E>, E> synchronizeStore();
 
         /**
          * Configures the {@link ExceptionCallback} to use as a supplier.
@@ -282,7 +278,7 @@ public interface EventProviderConfigurator {
          *            ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Chainable<ProviderConfigurator<S, E>, E> exceptionCallBack(
+        Chainable<ProviderConfigurator<E>, E> exceptionCallBack(
                 Supplier<ExceptionCallback> callBackSupplier);
 
         /**
@@ -293,7 +289,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<StatisticsEventProvider<S, E>> statistics();
+        Final<StatisticsEventProvider<E>> statistics();
     }
 
     /**
@@ -301,21 +297,18 @@ public interface EventProviderConfigurator {
      * {@link ExecutorService} for dispatching Events using multi threading.
      *
      * @author Simon Taddiken
-     * @param <S> The type of the {@link ListenerStore} configured in the first
-     *            step.
      * @param <E> The type of the {@link EventProvider} configured in the second
      *            step.
      * @since 2.0.0
      */
-    interface AsyncProviderConfigurator<S extends ListenerStore,
-            E extends EventProvider<S>> {
+    interface AsyncProviderConfigurator<E extends EventProvider> {
         /**
          * Configures the {@link ExceptionCallback} to use.
          *
          * @param ec The ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Chainable<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+        Chainable<AsyncProviderConfigurator<E>, E> exceptionCallBack(
                 ExceptionCallback ec);
 
         /**
@@ -325,7 +318,7 @@ public interface EventProviderConfigurator {
          *            ExceptionCallback.
          * @return Fluent API object for further configuration.
          */
-        Chainable<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+        Chainable<AsyncProviderConfigurator<E>, E> exceptionCallBack(
                 Supplier<ExceptionCallback> callBackSupplier);
 
         /**
@@ -334,7 +327,7 @@ public interface EventProviderConfigurator {
          * @param executor The ExecutorService
          * @return Fluent API object for further configuration.
          */
-        Chainable<AsyncProviderConfigurator<S, E>, E> executor(ExecutorService executor);
+        Chainable<AsyncProviderConfigurator<E>, E> executor(ExecutorService executor);
 
         /**
          * Instruct the provider to use the synchronized (thread-safe) version
@@ -343,7 +336,7 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          * @see ListenerStore#synchronizedView()
          */
-        Chainable<AsyncProviderConfigurator<S, E>, E> synchronizeStore();
+        Chainable<AsyncProviderConfigurator<E>, E> synchronizeStore();
 
         /**
          * Configures the {@link ExecutorService} to use as a supplier.
@@ -351,7 +344,7 @@ public interface EventProviderConfigurator {
          * @param executorSupplier Supplier which supplies the ExecutorService.
          * @return Fluent API object for further configuration.
          */
-        Chainable<AsyncProviderConfigurator<S, E>, E> executor(
+        Chainable<AsyncProviderConfigurator<E>, E> executor(
                 Supplier<ExecutorService> executorSupplier);
 
         /**
@@ -362,7 +355,7 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Final<StatisticsEventProvider<S, E>> statistics();
+        Final<StatisticsEventProvider<E>> statistics();
     }
 
     /**
@@ -371,7 +364,7 @@ public interface EventProviderConfigurator {
      *
      * @return The EventProvider.
      */
-    public SynchronousEventProvider<DefaultListenerStore> createInstantly();
+    public SynchronousEventProvider createInstantly();
 
     /**
      * Chooses a {@link DefaultListenerStore} to manage {@link Listener
@@ -379,18 +372,16 @@ public interface EventProviderConfigurator {
      *
      * @return Fluent API object for further configuration.
      */
-    ProviderChooser<DefaultListenerStore> defaultStore();
+    ProviderChooser defaultStore();
 
     /**
      * Use the provided supplier to lazily create the {@link ListenerStore} to
      * use.
      *
-     * @param <S> The type of the ListenerStore.
      * @param storeSupplier Supplier which supplies the ListenerStore.
      * @return Fluent API object for further configuration.
      */
-    <S extends ListenerStore> ProviderChooser<S> store(
-            Supplier<S> storeSupplier);
+    ProviderChooser store(Supplier<? extends ListenerStore> storeSupplier);
 
     /**
      * Chooses the provided {@code store} to manage {@link Listener Listeners}
@@ -400,5 +391,5 @@ public interface EventProviderConfigurator {
      * @param store The ListenerStore to use.
      * @return Fluent API object for further configuration.
      */
-    <S extends ListenerStore> ProviderChooser<S> store(S store);
+    <S extends ListenerStore> ProviderChooser store(S store);
 }

@@ -14,11 +14,9 @@ import de.skuzzle.jeve.ListenerStore;
  * deferred after the previous dispatch action finished.
  *
  * @author Simon Taddiken
- * @param <S> The type of the ListenerStore this provider uses.
  * @since 3.0.0
  */
-public class UnrollingEventProvider<S extends ListenerStore> extends
-        AbstractEventProvider<S> {
+public class UnrollingEventProvider extends AbstractEventProvider {
 
     private class QueuedEvent<L extends Listener, E extends Event<?, L>> {
 
@@ -48,7 +46,7 @@ public class UnrollingEventProvider<S extends ListenerStore> extends
      *
      * @param store the store which supplies listeners to this provider.
      */
-    public UnrollingEventProvider(S store) {
+    public UnrollingEventProvider(ListenerStore store) {
         super(store);
         this.dispatchQueue = new ArrayDeque<>();
     }

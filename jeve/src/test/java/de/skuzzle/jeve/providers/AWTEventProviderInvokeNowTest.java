@@ -7,11 +7,11 @@ import org.mockito.Mockito;
 import de.skuzzle.jeve.ListenerStore;
 
 public class AWTEventProviderInvokeNowTest extends
-        AbstractEventProviderTest<AWTEventProvider<ListenerStore>> {
+        AbstractEventProviderTest<AWTEventProvider> {
 
     @Override
-    protected AWTEventProvider<ListenerStore> createSubject(ListenerStore store) {
-        return new AWTEventProvider<ListenerStore>(store, true);
+    protected AWTEventProvider createSubject(ListenerStore store) {
+        return new AWTEventProvider(store, true);
     }
 
     @Test

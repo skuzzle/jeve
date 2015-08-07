@@ -13,18 +13,18 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
 import de.skuzzle.jeve.providers.ExecutorAware;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 
-class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<S>>
-        implements AsyncProviderConfigurator<S, E> {
+class AsyncProviderConfiguratorImpl<E extends EventProvider>
+        implements AsyncProviderConfigurator<E> {
 
-    private final Function<S, E> providerConstructor;
-    private final Supplier<S> storeSupplier;
+    private final Function<ListenerStore, E> providerConstructor;
+    private final Supplier<? extends ListenerStore> storeSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<ExecutorService> executorSupplier;
     private boolean synchStore;
 
-    AsyncProviderConfiguratorImpl(Function<S, E> providerConstructor,
-            Supplier<S> storeSupplier) {
+    AsyncProviderConfiguratorImpl(Function<ListenerStore, E> providerConstructor,
+            Supplier<? extends ListenerStore> storeSupplier) {
         if (providerConstructor == null) {
             throw new IllegalArgumentException("providerSupplier is null");
         } else if (storeSupplier == null) {
@@ -35,10 +35,9 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
         this.storeSupplier = storeSupplier;
     }
 
-    @SuppressWarnings("unchecked")
     private E create() {
-        final S store = this.synchStore
-                ? (S) this.storeSupplier.get().synchronizedView()
+        final ListenerStore store = this.synchStore
+                ? this.storeSupplier.get().synchronizedView()
                 : this.storeSupplier.get();
         final E result = this.providerConstructor.apply(store);
         if (this.ecSupplier != null) {
@@ -58,13 +57,13 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+    public Chainable<AsyncProviderConfigurator<E>, E> exceptionCallBack(
             ExceptionCallback ec) {
         this.ecSupplier = () -> ec;
-        return new Chainable<AsyncProviderConfigurator<S, E>, E>() {
+        return new Chainable<AsyncProviderConfigurator<E>, E>() {
 
             @Override
-            public AsyncProviderConfigurator<S, E> and() {
+            public AsyncProviderConfigurator<E> and() {
                 return AsyncProviderConfiguratorImpl.this;
             }
 
@@ -77,16 +76,16 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, E>, E> exceptionCallBack(
+    public Chainable<AsyncProviderConfigurator<E>, E> exceptionCallBack(
             Supplier<ExceptionCallback> callBackSupplier) {
         if (callBackSupplier == null) {
             throw new IllegalArgumentException("callBackSupplier is null");
         }
         this.ecSupplier = callBackSupplier;
-        return new Chainable<AsyncProviderConfigurator<S, E>, E>() {
+        return new Chainable<AsyncProviderConfigurator<E>, E>() {
 
             @Override
-            public AsyncProviderConfigurator<S, E> and() {
+            public AsyncProviderConfigurator<E> and() {
                 return AsyncProviderConfiguratorImpl.this;
             }
 
@@ -99,12 +98,12 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, E>, E> synchronizeStore() {
+    public Chainable<AsyncProviderConfigurator<E>, E> synchronizeStore() {
         this.synchStore = true;
-        return new Chainable<AsyncProviderConfigurator<S, E>, E>() {
+        return new Chainable<AsyncProviderConfigurator<E>, E>() {
 
             @Override
-            public AsyncProviderConfigurator<S, E> and() {
+            public AsyncProviderConfigurator<E> and() {
                 return AsyncProviderConfiguratorImpl.this;
             }
 
@@ -116,21 +115,21 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Final<StatisticsEventProvider<S, E>> statistics() {
-        final Function<S, StatisticsEventProvider<S, E>> ctor = store -> {
+    public Final<StatisticsEventProvider<E>> statistics() {
+        final Function<ListenerStore, StatisticsEventProvider<E>> ctor = store -> {
             // XXX: passed store will be null here!
             final E provider = AsyncProviderConfiguratorImpl.this.create();
-            return new StatisticsEventProvider<S, E>(provider);
+            return new StatisticsEventProvider<E>(provider);
         };
 
-        return new Final<StatisticsEventProvider<S, E>>() {
+        return new Final<StatisticsEventProvider<E>>() {
             @Override
-            public Supplier<StatisticsEventProvider<S, E>> createSupplier() {
+            public Supplier<StatisticsEventProvider<E>> createSupplier() {
                 return this::create;
             }
 
             @Override
-            public StatisticsEventProvider<S, E> create() {
+            public StatisticsEventProvider<E> create() {
                 // XXX: store parameter is not needed here, because the store is
                 // already created for the wrapped provider
                 return ctor.apply(null);
@@ -140,7 +139,7 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, E>, E> executor(ExecutorService executor) {
+    public Chainable<AsyncProviderConfigurator<E>, E> executor(ExecutorService executor) {
         if (executor == null) {
             throw new IllegalArgumentException("executor is null");
         }
@@ -148,16 +147,16 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, E>, E> executor(
+    public Chainable<AsyncProviderConfigurator<E>, E> executor(
             Supplier<ExecutorService> executorSupplier) {
         if (executorSupplier == null) {
             throw new IllegalArgumentException("executorSupplier is null");
         }
         this.executorSupplier = executorSupplier;
-        return new Chainable<AsyncProviderConfigurator<S, E>, E>() {
+        return new Chainable<AsyncProviderConfigurator<E>, E>() {
 
             @Override
-            public AsyncProviderConfigurator<S, E> and() {
+            public AsyncProviderConfigurator<E> and() {
                 return AsyncProviderConfiguratorImpl.this;
             }
 

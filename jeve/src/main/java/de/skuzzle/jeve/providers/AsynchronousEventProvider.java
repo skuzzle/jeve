@@ -18,12 +18,11 @@ import de.skuzzle.jeve.ListenerStore;
  * This EventProvider fires events asynchronously using an
  * {@link ExecutorService} for managing the creation of threads.
  *
- * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  */
-public class AsynchronousEventProvider<S extends ListenerStore> extends
-        AbstractEventProvider<S> implements ExecutorAware {
+public class AsynchronousEventProvider extends AbstractEventProvider
+        implements ExecutorAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
 
@@ -39,7 +38,7 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
      * @param store Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public AsynchronousEventProvider(S store) {
+    public AsynchronousEventProvider(ListenerStore store) {
         this(store, Executors.newFixedThreadPool(1));
     }
 
@@ -51,7 +50,7 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
      *            provider.
      * @param executor ExecutorService to use.
      */
-    public AsynchronousEventProvider(S store, ExecutorService executor) {
+    public AsynchronousEventProvider(ListenerStore store, ExecutorService executor) {
         super(store);
         if (executor == null) {
             throw new IllegalArgumentException("dispatcher is null");
@@ -89,7 +88,7 @@ public class AsynchronousEventProvider<S extends ListenerStore> extends
         this.executor.shutdownNow();
         try {
             this.executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("AsynchronousEventProvider: Error while waiting for "
                     + "termination of executor", e);
         }

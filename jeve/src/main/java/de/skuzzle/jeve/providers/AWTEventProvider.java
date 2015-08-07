@@ -16,11 +16,10 @@ import de.skuzzle.jeve.ListenerStore;
  * {@link EventProvider} implementation that dispatches all events in the AWT
  * event thread.
  *
- * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  */
-public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProvider<S> {
+public class AWTEventProvider extends AbstractEventProvider {
 
     private final boolean invokeNow;
 
@@ -39,7 +38,7 @@ public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProv
      *            dispatch} uses <code>invokeAndWait</code>, otherwise
      *            <code>invokeLater</code>.
      */
-    public AWTEventProvider(S store, boolean invokeNow) {
+    public AWTEventProvider(ListenerStore store, boolean invokeNow) {
         super(store);
         this.invokeNow = invokeNow;
     }
@@ -69,7 +68,7 @@ public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProv
                 try {
                     SwingUtilities.invokeAndWait(
                             () -> notifyListeners(event, bc, ec));
-                } catch (InvocationTargetException e) {
+                } catch (final InvocationTargetException e) {
                     if (e.getTargetException() instanceof AbortionException) {
                         throw (AbortionException) e.getTargetException();
                     }
@@ -77,7 +76,7 @@ public class AWTEventProvider<S extends ListenerStore> extends AbstractEventProv
                     // this should not be reachable, as notifyListeners can not
                     // throw any other exceptions
                     throw new IllegalStateException(e);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     throw new AbortionException(e);
                 }
             }

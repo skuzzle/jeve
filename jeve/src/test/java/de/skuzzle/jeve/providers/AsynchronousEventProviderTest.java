@@ -16,11 +16,11 @@ import de.skuzzle.jeve.ListenerStore;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AsynchronousEventProviderTest extends
-        AbstractExecutorAwareEventProviderTest<AsynchronousEventProvider<ListenerStore>> {
+        AbstractExecutorAwareEventProviderTest<AsynchronousEventProvider> {
 
     @Override
-    protected AsynchronousEventProvider<ListenerStore> createSubject(ListenerStore store) {
-        return new AsynchronousEventProvider<ListenerStore>(store, this.executor);
+    protected AsynchronousEventProvider createSubject(ListenerStore store) {
+        return new AsynchronousEventProvider(store, this.executor);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class AsynchronousEventProviderTest extends
     @Override
     @Test
     public void testDispatch() {
-        final AsynchronousEventProvider<ListenerStore> spy = Mockito.spy(this.subject);
+        final AsynchronousEventProvider spy = Mockito.spy(this.subject);
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
 
         final BiConsumer<SampleListener, Event<?, SampleListener>> bc =

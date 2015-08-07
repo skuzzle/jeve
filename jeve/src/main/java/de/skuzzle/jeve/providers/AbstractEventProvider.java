@@ -26,17 +26,15 @@ import de.skuzzle.jeve.invoke.FailedEventInvocation;
  * safe, internal and protected helper methods are not thread safe.
  * </p>
  *
- * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 1.0.0
  */
-public abstract class AbstractEventProvider<S extends ListenerStore> implements
-        EventProvider<S> {
+public abstract class AbstractEventProvider implements EventProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
 
     /** The listener store associated with this provider */
-    private final S store;
+    private final ListenerStore store;
 
     /** Callback to handle event handler exceptions. */
     protected ExceptionCallback exceptionHandler;
@@ -71,7 +69,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
      * @param store Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public AbstractEventProvider(S store) {
+    public AbstractEventProvider(ListenerStore store) {
         if (store == null) {
             throw new IllegalArgumentException("listenerStore is null");
         }
@@ -81,7 +79,7 @@ public abstract class AbstractEventProvider<S extends ListenerStore> implements
     }
 
     @Override
-    public S listeners() {
+    public ListenerStore listeners() {
         return this.store;
     }
 

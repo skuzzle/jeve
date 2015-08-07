@@ -21,11 +21,9 @@ import de.skuzzle.jeve.util.StringListener;
  * This class contains basic tests for all event providers
  *
  * @author Simon Taddiken
- * @param <S> Type of the listener store being used
  */
 @Ignore
-public abstract class EventProviderTestBase<S extends ListenerStore> extends
-        AbstractEventProviderTest<S> {
+public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
     protected static class SampleExceptionCallback implements ExceptionCallback {
 
@@ -36,7 +34,7 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
      *
      * @param factory A factory for creating event providers
      */
-    public EventProviderTestBase(Supplier<? extends EventProvider<S>> factory) {
+    public EventProviderTestBase(Supplier<? extends EventProvider> factory) {
         super(factory);
     }
 
@@ -404,7 +402,7 @@ public abstract class EventProviderTestBase<S extends ListenerStore> extends
 
         try {
             this.subject.dispatch(e, StringListener::onStringEvent);
-        } catch (AbortionException abort) {
+        } catch (final AbortionException abort) {
         }
         Mockito.verify(listener2, Mockito.never()).onStringEvent(Mockito.any());
     }

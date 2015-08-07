@@ -15,14 +15,13 @@ import de.skuzzle.jeve.util.StringListener;
 public class StatisticsEventProviderIT {
 
     @Mock
-    private EventProvider<ListenerStore> eventProvider;
+    private EventProvider eventProvider;
 
-    private StatisticsEventProvider<ListenerStore, EventProvider<ListenerStore>> subject;
+    private StatisticsEventProvider<EventProvider> subject;
 
     @Before
     public void setup() {
-        this.subject = new StatisticsEventProvider<ListenerStore,
-                EventProvider<ListenerStore>>(this.eventProvider);
+        this.subject = new StatisticsEventProvider<EventProvider>(this.eventProvider);
     }
 
     @Test

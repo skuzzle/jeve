@@ -15,28 +15,26 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
 class EventProviderConfiguratorImpl implements EventProviderConfigurator {
 
     @Override
-    public SynchronousEventProvider<DefaultListenerStore> createInstantly() {
-        return new SynchronousEventProvider<DefaultListenerStore>(
-                DefaultListenerStore.create());
+    public SynchronousEventProvider createInstantly() {
+        return new SynchronousEventProvider(DefaultListenerStore.create());
     }
 
     @Override
-    public ProviderChooser<DefaultListenerStore> defaultStore() {
-        final Supplier<DefaultListenerStore> supplier = DefaultListenerStore::create;
-        return new ProviderChooserImpl<DefaultListenerStore>(supplier);
+    public ProviderChooser defaultStore() {
+        final Supplier<ListenerStore> supplier = DefaultListenerStore::create;
+        return new ProviderChooserImpl(supplier);
     }
 
     @Override
-    public <S extends ListenerStore> ProviderChooser<S> store(
-            Supplier<S> storeSupplier) {
+    public ProviderChooser store(Supplier<? extends ListenerStore> storeSupplier) {
         if (storeSupplier == null) {
             throw new IllegalArgumentException("storeSupplier is null");
         }
-        return new ProviderChooserImpl<S>(storeSupplier);
+        return new ProviderChooserImpl(storeSupplier);
     }
 
     @Override
-    public <S extends ListenerStore> ProviderChooser<S> store(S store) {
+    public <S extends ListenerStore> ProviderChooser store(S store) {
         if (store == null) {
             throw new IllegalArgumentException("store is null");
         }

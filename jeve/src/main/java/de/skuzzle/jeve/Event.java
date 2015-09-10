@@ -208,4 +208,23 @@ public class Event<T, L extends Listener> {
     public void setHandled(boolean isHandled) {
         this.handled = isHandled;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder b = new StringBuilder();
+        b.append(getClass().getSimpleName());
+        b.append("[")
+            .append("source=")
+            .append(getSource())
+            .append(", handled=")
+            .append(this.isHandled())
+            .append(", prevented=")
+            .append(isPrevented());
+        if (this.properties != null && !this.properties.isEmpty()) {
+            b.append(", properties=")
+                .append(this.properties.toString());
+        }
+        b.append("]");
+        return b.toString();
+    }
 }

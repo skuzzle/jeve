@@ -54,7 +54,7 @@ class EventStackImpl implements EventStack {
             return;
         }
 
-        dumpInternal(e -> LOGGER.debug("\t{}:{}:{}", e.getSource(),
+        dumpInternal(e -> LOGGER.debug("\t{}:{}",
                 e.getListenerClass().getSimpleName(), e));
     }
 
@@ -68,7 +68,7 @@ class EventStackImpl implements EventStack {
             out.println("\t<empty>");
             return;
         }
-        dumpInternal(e -> out.printf("\t%s:%s:%s%n", e.getSource(),
+        dumpInternal(e -> out.printf("\t%s:%s%n",
                 e.getListenerClass().getSimpleName(), e));
     }
 
@@ -156,7 +156,7 @@ class EventStackImpl implements EventStack {
             while (it.hasNext()) {
                 final Event<?, ?> event = it.next();
                 if (event instanceof SynchronousEvent<?, ?>) {
-                    SynchronousEvent<?, ?> synchEvent = (SynchronousEvent<?, ?>) event;
+                    final SynchronousEvent<?, ?> synchEvent = (SynchronousEvent<?, ?>) event;
                     if (synchEvent.getPrevented().contains(listenerClass)) {
                         return Optional.of(synchEvent);
                     }

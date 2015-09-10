@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.util;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.After;
@@ -8,6 +9,8 @@ import org.junit.Before;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.EventProviderTestBase;
+import de.skuzzle.jeve.ListenerSource;
+import de.skuzzle.jeve.ListenerStore;
 
 /**
  * Base class for setting up an EventProvider testing area.
@@ -25,18 +28,27 @@ public class AbstractEventProviderTest {
     private static final long THREAD_WAIT_TIME = 150; // ms
 
     /** The factory to create EventProvider instances for testing */
-    protected final Supplier<? extends EventProvider> factory;
+    protected final Function<ListenerSource, ? extends EventProvider> factory;
+
+    protected final Supplier<? extends ListenerStore> sourceFactory;
 
     /** The provider being used in a single test case */
     protected EventProvider subject;
+
+    /** The store which supplies listeners to the tested subject */
+    protected ListenerStore store;
 
     /**
      * Creates a new Test class instance.
      *
      * @param factory A factory for creating event providers
+     * @param sourceFactory A factory for creating listener stores
      */
-    public AbstractEventProviderTest(Supplier<? extends EventProvider> factory) {
+    public AbstractEventProviderTest(
+            Function<ListenerSource, ? extends EventProvider> factory,
+            Supplier<? extends ListenerStore> sourceFactory) {
         this.factory = factory;
+        this.sourceFactory = sourceFactory;
     }
 
     /**
@@ -45,7 +57,8 @@ public class AbstractEventProviderTest {
      */
     @Before
     public void setUp() {
-        this.subject = this.factory.get();
+        this.store = this.sourceFactory.get();
+        this.subject = this.factory.apply(this.store);
     }
 
     /**

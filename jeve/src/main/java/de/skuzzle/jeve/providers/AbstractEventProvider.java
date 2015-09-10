@@ -13,6 +13,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.invoke.EventInvocation;
 import de.skuzzle.jeve.invoke.FailedEventInvocation;
@@ -78,8 +79,7 @@ public abstract class AbstractEventProvider implements EventProvider {
         this.exceptionHandler = this.defaultHandler;
     }
 
-    @Override
-    public ListenerStore listeners() {
+    protected final ListenerSource getSource() {
         return this.store;
     }
 
@@ -163,7 +163,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
 
-        final Stream<L> listeners = listeners().get(event.getListenerClass());
+        final Stream<L> listeners = getSource().get(event.getListenerClass());
 
         final Iterator<L> it = listeners.iterator();
         while (it.hasNext()) {

@@ -39,21 +39,13 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <h2>Managing and Notifying Listeners</h2>
  * <p>
- * Listeners are managed by a {@link ListenerStore}. An instance of such a store
- * is typically supplied to the EventProvider at construction time. It is
- * allowed that multiple providers share a single ListenerStore. Listeners are
- * registered and unregistered by calling the respective methods on the
- * ListenerStore which belongs to this provider. The store can be obtained by
- * calling {@link #listeners()}.
+ * Listeners are supplied to the EventProvider by a {@link ListenerSource}. An instance
+ * of such a source is typically supplied to the EventProvider at construction time. It is
+ * allowed that multiple providers share a single source.
+ * When using the sub interface {@link ListenerStore}, listeners can be dynamically
+ * registered and unregistered by calling the respective methods on the store.
  * </p>
- *
- * <pre>
- * <code>
- * eventProvider.listeners().add(UserListener.class, myUserListener);
- * eventProvider.listeners().remove(UserListener.class, myUserListener);
- * </code>
- * </pre>
- *
+
  * <p>
  * The same listener object can be registered for distinct listener classes if
  * it implements different listeners. The {@link Listener} interface has two
@@ -218,19 +210,6 @@ public interface EventProvider {
      */
     public static EventProvider createDefault() {
         return configure().defaultStore().useSynchronousProvider().create();
-    }
-
-    /**
-     * Retrieves the {@link ListenerStore} which supplies {@link Listener
-     * Listeners} to this EventProvider.
-     *
-     * @return The listener store.
-     */
-    public ListenerStore listeners();
-
-
-    public default <S extends ListenerStore> S listenersAs(Class<S> type) {
-        return type.cast(listeners());
     }
 
     /**

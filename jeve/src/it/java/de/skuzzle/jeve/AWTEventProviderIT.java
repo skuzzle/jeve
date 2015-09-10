@@ -3,6 +3,7 @@ package de.skuzzle.jeve;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.swing.SwingUtilities;
@@ -16,6 +17,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.providers.AWTEventProvider;
+import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.stores.PerformanceListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -38,28 +40,22 @@ public class AWTEventProviderIT extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure()
-                        .store(PerformanceListenerStore.create())
-                        .useWaitingAWTEventProvider().and()
-                        .synchronizeStore()
-                        .createSupplier() },
-                new Object[] { EventProvider.configure()
-                        .store(PriorityListenerStore.create())
-                        .useAsynchronAWTEventProvider().and()
-                        .synchronizeStore()
-                        .createSupplier() },
-                new Object[] { EventProvider.configure()
-                        .defaultStore()
-                        .useWaitingAWTEventProvider().and()
-                        .synchronizeStore().and()
-                        .statistics()
-                        .createSupplier() },
-                new Object[] { EventProvider.configure()
-                        .defaultStore()
-                        .useAsynchronAWTEventProvider().and()
-                        .synchronizeStore().and()
-                        .statistics()
-                        .createSupplier() }
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store -> new AWTEventProvider(store, true),
+                        (Supplier<ListenerStore>) () -> PerformanceListenerStore.create().synchronizedView()
+                    },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store -> new AWTEventProvider(store, false),
+                        (Supplier<ListenerStore>) () -> PriorityListenerStore.create().synchronizedView()
+                    },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store -> new StatisticsEventProvider<>(new AWTEventProvider(store, true)),
+                        (Supplier<ListenerStore>) () -> PriorityListenerStore.create().synchronizedView()
+                    },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store -> new StatisticsEventProvider<>(new AWTEventProvider(store, true)),
+                        (Supplier<ListenerStore>) () -> PriorityListenerStore.create().synchronizedView()
+                    }
                 );
     }
 
@@ -67,9 +63,12 @@ public class AWTEventProviderIT extends EventProviderTestBase {
      * Creates new AWTEventProviderTests
      *
      * @param factory Factory to create a single provider
+     * @param sourceFactory Factory to create a listener store
      */
-    public AWTEventProviderIT(Supplier<? extends EventProvider> factory) {
-        super(factory);
+    public AWTEventProviderIT(
+            Function<ListenerSource, ? extends EventProvider> factory,
+            Supplier<? extends ListenerStore> sourceFactory) {
+        super(factory, sourceFactory);
     }
 
     /**
@@ -82,7 +81,7 @@ public class AWTEventProviderIT extends EventProviderTestBase {
         final StringListener l = event -> Assert.assertTrue(
                 getFailString("Not invoked on AWT thread"),
                 SwingUtilities.isEventDispatchThread());
-        this.subject.listeners().add(StringListener.class, l);
+        this.store.add(StringListener.class, l);
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);
     }
@@ -107,7 +106,7 @@ public class AWTEventProviderIT extends EventProviderTestBase {
 
         final boolean[] isEventThread = new boolean[1];
         final StringListener listener = se -> isEventThread[0] = SwingUtilities.isEventDispatchThread();
-        this.subject.listeners().add(StringListener.class, listener);
+        this.store.add(StringListener.class, listener);
         final StringEvent event = new StringEvent(this.subject, "");
 
         // dispatch from the awt thread
@@ -131,7 +130,7 @@ public class AWTEventProviderIT extends EventProviderTestBase {
 
         final Thread mainThread = Thread.currentThread();
         final StringListener listener = se -> mainThread.interrupt();
-        this.subject.listeners().add(StringListener.class, listener);
+        this.store.add(StringListener.class, listener);
         final StringEvent event = new StringEvent(this.subject, "");
         this.subject.dispatch(event, StringListener::onStringEvent);
     }

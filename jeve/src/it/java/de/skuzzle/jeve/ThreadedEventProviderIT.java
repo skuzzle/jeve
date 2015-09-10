@@ -3,6 +3,7 @@ package de.skuzzle.jeve;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.Assume;
@@ -12,7 +13,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.ExecutorAware;
+import de.skuzzle.jeve.providers.ParallelEventProvider;
+import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -34,20 +38,34 @@ public class ThreadedEventProviderIT extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useParallelProvider().createSupplier() },
-                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useAsynchronousProvider().createSupplier() },
-                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useParallelProvider().and().statistics().createSupplier() },
-                new Object[] { EventProvider.configure().store(DefaultListenerStore.create().synchronizedView()).useAsynchronousProvider().and().statistics().createSupplier() }
-                );
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) ParallelEventProvider::new,
+                        (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
+                },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) AsynchronousEventProvider::new,
+                        (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
+                },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store-> new StatisticsEventProvider<>(new ParallelEventProvider(store)),
+                        (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
+                },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store-> new StatisticsEventProvider<>(new AsynchronousEventProvider(store)),
+                        (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
+                });
     }
 
     /**
      * Creates new BasicEventProviderTests
      *
      * @param factory Factory to create a single provider
+     * @param sourceFactory Factory to create a listener store
      */
-    public ThreadedEventProviderIT(Supplier<? extends EventProvider> factory) {
-        super(factory);
+    public ThreadedEventProviderIT(
+            Function<ListenerSource, ? extends EventProvider> factory,
+            Supplier<? extends ListenerStore> sourceFactory) {
+        super(factory, sourceFactory);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -64,7 +82,7 @@ public class ThreadedEventProviderIT extends EventProviderTestBase {
         final ExecutorService executor = Mockito.mock(ExecutorService.class);
         ea.setExecutorService(executor);
         final StringListener listener = Mockito.mock(StringListener.class);
-        this.subject.listeners().add(StringListener.class, listener);
+        this.store.add(StringListener.class, listener);
 
         this.subject.dispatch(new StringEvent(this.subject, ""),
                 StringListener::onStringEvent);

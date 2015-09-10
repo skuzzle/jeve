@@ -2,6 +2,7 @@ package de.skuzzle.jeve;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.invoke.FailedEventInvocation;
+import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -26,22 +29,21 @@ public class SynchronousEventProviderIT extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { EventProvider.configure()
-                        .defaultStore()
-                        .useSynchronousProvider().and()
-                        .exceptionCallBack(SampleExceptionCallback::new)
-                        .createSupplier() },
-                new Object[] { EventProvider.configure()
-                        .store(PriorityListenerStore.create())
-                        .useSynchronousProvider().and()
-                        .synchronizeStore().and()
-                        .statistics()
-                        .createSupplier() }
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) SynchronousEventProvider::new,
+                        (Supplier<ListenerStore>) DefaultListenerStore::create
+                    },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) SynchronousEventProvider::new,
+                        (Supplier<ListenerStore>) PriorityListenerStore::create
+                    }
                 );
     }
 
-    public SynchronousEventProviderIT(Supplier<? extends EventProvider> factory) {
-        super(factory);
+    public SynchronousEventProviderIT(
+            Function<ListenerSource, ? extends EventProvider> factory,
+            Supplier<? extends ListenerStore> sourceFactory) {
+        super(factory, sourceFactory);
     }
 
     /**
@@ -60,7 +62,7 @@ public class SynchronousEventProviderIT extends EventProviderTestBase {
             throw new RuntimeException();
         };
         this.subject.setExceptionCallback(ec);
-        this.subject.listeners().add(StringListener.class, l);
+        this.store.add(StringListener.class, l);
 
         final StringEvent e = new StringEvent(this.subject, "");
         this.subject.dispatch(e, StringListener::onStringEvent);

@@ -91,7 +91,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider>
 
     @Test
     public void testGetStore() throws Exception {
-        Assert.assertSame(this.store, this.subject.listeners());
+        Assert.assertSame(this.store, this.subject.getSource());
     }
 
     @Test

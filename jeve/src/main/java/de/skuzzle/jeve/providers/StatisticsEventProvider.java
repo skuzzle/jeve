@@ -76,7 +76,6 @@ public class StatisticsEventProvider<P extends EventProvider>
         }
 
         increment(this.notifications, event.getListenerClass());
-        event.setListenerStore(listeners());
         this.wrapped.dispatch(event, bc);
     }
 
@@ -88,7 +87,6 @@ public class StatisticsEventProvider<P extends EventProvider>
         }
 
         increment(this.notifications, event.getListenerClass());
-        event.setListenerStore(listeners());
         this.wrapped.dispatch(event, bc, ec);
     }
 

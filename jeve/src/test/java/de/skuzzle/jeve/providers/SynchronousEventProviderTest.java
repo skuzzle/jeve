@@ -33,7 +33,6 @@ public class SynchronousEventProviderTest extends
 
         this.subject.notifyListeners(event, SampleListener::onEvent, this.ec);
         final InOrder inOrder = Mockito.inOrder(event, this.listener, listener2);
-        inOrder.verify(event).setListenerStore(this.store);
         inOrder.verify(event).setEventStack(this.subject.getEventStack());
         inOrder.verify(this.listener).onEvent(event);
         inOrder.verify(listener2).onEvent(event);

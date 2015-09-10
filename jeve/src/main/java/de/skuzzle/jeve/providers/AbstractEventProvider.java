@@ -165,7 +165,6 @@ public abstract class AbstractEventProvider implements EventProvider {
 
         final Stream<L> listeners = listeners().get(event.getListenerClass());
 
-        event.setListenerStore(this.store);
         final Iterator<L> it = listeners.iterator();
         while (it.hasNext()) {
             final L listener = it.next();

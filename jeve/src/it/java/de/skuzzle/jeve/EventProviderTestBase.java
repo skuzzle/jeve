@@ -171,21 +171,6 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
     }
 
     /**
-     * Tests whether the event provider registered itself at the event before
-     * dispatching
-     *
-     * @throws InterruptedException
-     */
-    @Test
-    public void testListenerStoreSet() throws InterruptedException {
-        final StringEvent event = new StringEvent(this.subject, "");
-        this.subject.dispatch(event, StringListener::onStringEvent);
-
-        sleep(); // HACK: give async providers some time to execute
-        Assert.assertEquals(this.subject.listeners(), event.getListenerStore());
-    }
-
-    /**
      * Tests whether listeners are notified in order they are added.
      *
      * <p>

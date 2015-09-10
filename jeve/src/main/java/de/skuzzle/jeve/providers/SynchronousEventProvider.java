@@ -87,7 +87,6 @@ public class SynchronousEventProvider extends AbstractEventProvider {
         final Stream<L> listeners = listeners().get(event.getListenerClass());
 
         try {
-            event.setListenerStore(listeners());
             if (event instanceof SynchronousEvent<?, ?>) {
                 ((SynchronousEvent<?, ?>) event).setEventStack(this.eventStack);
             }

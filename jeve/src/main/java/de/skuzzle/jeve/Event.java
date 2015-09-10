@@ -56,9 +56,6 @@ public class Event<T, L extends Listener> {
     /** The class of the listener which can handle this event */
     private final Class<L> listenerClass;
 
-    /** The store from which this listener is currently being notified. */
-    private ListenerStore store;
-
     /**
      * Whether this event was prevented the last time it was passed to any
      * dispatch method.
@@ -183,72 +180,6 @@ public class Event<T, L extends Listener> {
      */
     public Class<L> getListenerClass() {
         return this.listenerClass;
-    }
-
-    /**
-     * Removes the provided listener from the {@link ListenerStore} from which
-     * it was supplied to the EventProvider which is currently dispatching this
-     * event. Hence this method can only be called from within a listening
-     * method while the event is being dispatched. Calling this method on an
-     * Event instance which is not currently dispatched will raise an exception.
-     *
-     * <pre>
-     * <code>
-     * public class OneTimeUserListener extends UserListener {
-     *     &#64;Override
-     *     public void userAdded(UserEvent e) {
-     *         // logic goes here
-     *         // ...
-     *
-     *         // this listener should not be notified any more about this kind of
-     *         // event.
-     *         e.stopNotifying(this);
-     *     }
-     * }
-     * </code>
-     * </pre>
-     *
-     * Removing the listener will have no effect on the current dispatch action.
-     * Even if you remove a different listener than {@code this}, it will be
-     * notified anyway during this run, because the EventProvider collects the
-     * Listeners before starting to dispatch the event.
-     *
-     * @param listener The listener to remove from the currently dispatching
-     *            {@link EventProvider}
-     * @since 2.0.0
-     */
-    public void stopNotifying(L listener) {
-        this.getListenerStore().remove(this.getListenerClass(), listener);
-    }
-
-    /**
-     * Gets the {@link ListenerStore} from which the currently notified listener
-     * has been retrieved. If this Event is not currently dispatched, an
-     * exception will be thrown.
-     *
-     * @return The ListenerStore
-     */
-    protected ListenerStore getListenerStore() {
-        if (this.store == null) {
-            throw new IllegalStateException("Event is not currently dispatched");
-        }
-        return this.store;
-    }
-
-    /**
-     * Sets the ListenerStore from which the currently dispatching EventProvider
-     * retrieves its Listeners. The method will only set the store once. A
-     * second call to this method on the same event instance has no effect. This
-     * is to allow wrapping EventProviders so that the store set by the
-     * outermost provider is not overridden by an inner (wrapped) provider.
-     *
-     * @param store The listener store.
-     * @since 2.0.0
-     */
-    public void setListenerStore(ListenerStore store) {
-        if (this.store == null) {
-            this.store = store;
-        }
     }
 
     /**

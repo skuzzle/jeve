@@ -141,7 +141,6 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider>
 
         this.subject.notifyListeners(this.event, SampleListener::onEvent, this.ec);
         final InOrder inOrder = Mockito.inOrder(this.event, this.listener, listener2);
-        inOrder.verify(this.event).setListenerStore(this.store);
         inOrder.verify(this.listener).onEvent(this.event);
         inOrder.verify(listener2).onEvent(this.event);
     }
@@ -156,7 +155,6 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider>
 
         this.subject.notifyListeners(this.event, SampleListener::onEvent, this.ec);
         final InOrder inOrder = Mockito.inOrder(this.event, this.listener, listener2);
-        inOrder.verify(this.event).setListenerStore(this.store);
         inOrder.verify(this.listener, Mockito.never()).onEvent(Mockito.any());
         inOrder.verify(listener2, Mockito.never()).onEvent(Mockito.any());
     }

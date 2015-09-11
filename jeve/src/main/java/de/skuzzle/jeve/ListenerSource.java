@@ -52,7 +52,7 @@ public interface ListenerSource {
 
 
     /**
-     * States whether this ListenerStore implementation is sequential. This is
+     * States whether this ListenerSource implementation is sequential. This is
      * the case if, and only if the Stream returned by {@link #get(Class)}
      * returns the registered Listeners in FIFO order regarding their time of
      * registration.
@@ -62,15 +62,7 @@ public interface ListenerSource {
     public boolean isSequential();
 
     /**
-     * Removes all registered Listeners from this store (
-     * {@link Listener#onUnregister(RegistrationEvent)} will be called on each
-     * Listener). Implementors may also release additional resource held by
-     * their implementations.
-     *
-     * <p>
-     * <b>Note:</b> This method is automatically called upon closing an
-     * {@link EventProvider} which uses this store.
-     * </p>
+     * Releases resources held by this source.
      */
     public void close();
 }

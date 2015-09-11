@@ -88,7 +88,7 @@ import de.skuzzle.jeve.EventProvider;
 
 public class UserManager {
     // Dispatches events sequentially within the current thread
-    private final EventProvider<?> events = EventProvider.createDefault();
+    private final EventProvider events = EventProvider.createDefault();
 }
 ```
 

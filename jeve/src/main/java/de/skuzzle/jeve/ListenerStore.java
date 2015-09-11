@@ -269,4 +269,13 @@ public interface ListenerStore extends ListenerSource {
      * </p>
      */
     public void clearAll();
+
+    /**
+     * Removes all registered Listeners from this store (
+     * {@link Listener#onUnregister(RegistrationEvent)} will be called on each
+     * Listener). Implementors may also release additional resource held by
+     * their implementations.
+     */
+    @Override
+    public void close();
 }

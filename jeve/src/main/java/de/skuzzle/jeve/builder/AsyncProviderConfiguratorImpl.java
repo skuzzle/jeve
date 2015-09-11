@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.AsyncProviderConfigurator;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.Chainable;
@@ -16,30 +17,30 @@ import de.skuzzle.jeve.providers.StatisticsEventProvider;
 class AsyncProviderConfiguratorImpl<E extends EventProvider>
         implements AsyncProviderConfigurator<E> {
 
-    private final Function<ListenerStore, E> providerConstructor;
-    private final Supplier<? extends ListenerStore> storeSupplier;
+    private final Function<ListenerSource, E> providerConstructor;
+    private final Supplier<? extends ListenerSource> sourceSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<ExecutorService> executorSupplier;
     private boolean synchStore;
 
-    AsyncProviderConfiguratorImpl(Function<ListenerStore, E> providerConstructor,
-            Supplier<? extends ListenerStore> storeSupplier) {
+    AsyncProviderConfiguratorImpl(Function<ListenerSource, E> providerConstructor,
+            Supplier<? extends ListenerSource> sourceSupplier) {
         if (providerConstructor == null) {
             throw new IllegalArgumentException("providerSupplier is null");
-        } else if (storeSupplier == null) {
-            throw new IllegalArgumentException("storeSupplier is null");
+        } else if (sourceSupplier == null) {
+            throw new IllegalArgumentException("sourceSupplier is null");
         }
 
         this.providerConstructor = providerConstructor;
-        this.storeSupplier = storeSupplier;
+        this.sourceSupplier = sourceSupplier;
     }
 
     private E create() {
-        final ListenerStore store = this.synchStore
-                ? this.storeSupplier.get().synchronizedView()
-                : this.storeSupplier.get();
-        final E result = this.providerConstructor.apply(store);
+        final ListenerSource source = this.synchStore
+                ? this.sourceSupplier.get().synchronizedView()
+                : this.sourceSupplier.get();
+        final E result = this.providerConstructor.apply(source);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
         }

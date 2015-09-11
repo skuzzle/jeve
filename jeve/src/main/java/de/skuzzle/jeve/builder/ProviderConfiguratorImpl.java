@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.Chainable;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
@@ -14,41 +15,41 @@ import de.skuzzle.jeve.providers.StatisticsEventProvider;
 class ProviderConfiguratorImpl<E extends EventProvider>
         implements ProviderConfigurator<E> {
 
-    private final Function<ListenerStore, E> providerConstructor;
-    private final Supplier<? extends ListenerStore> storeSupplier;
+    private final Function<ListenerSource, E> providerConstructor;
+    private final Supplier<? extends ListenerSource> sourceSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
     private boolean synchStore;
 
-    ProviderConfiguratorImpl(Function<ListenerStore, E> providerConstructor,
-            Supplier<? extends ListenerStore> storeSupplier) {
+    ProviderConfiguratorImpl(Function<ListenerSource, E> providerConstructor,
+            Supplier<? extends ListenerSource> sourceSupplier) {
         if (providerConstructor == null) {
             throw new IllegalArgumentException("providerSupplier is null");
-        } else if (storeSupplier == null) {
-            throw new IllegalArgumentException("storeSupplier is null");
+        } else if (sourceSupplier == null) {
+            throw new IllegalArgumentException("sourceSupplier is null");
         }
 
         this.providerConstructor = providerConstructor;
-        this.storeSupplier = storeSupplier;
+        this.sourceSupplier = sourceSupplier;
     }
 
-    ProviderConfiguratorImpl(Function<ListenerStore, E> providerConstructor,
+    ProviderConfiguratorImpl(Function<ListenerSource, E> providerConstructor,
             Supplier<? extends ListenerStore> storeSupplier,
             Supplier<ExceptionCallback> ecSupplier,
             boolean synchronizeStore) {
 
         this.providerConstructor = providerConstructor;
-        this.storeSupplier = storeSupplier;
+        this.sourceSupplier = storeSupplier;
         this.ecSupplier = ecSupplier;
         this.synchStore = synchronizeStore;
     }
 
     private E create() {
-        final ListenerStore store = this.synchStore
-                ? this.storeSupplier.get().synchronizedView()
-                : this.storeSupplier.get();
+        final ListenerSource source = this.synchStore
+                ? this.sourceSupplier.get().synchronizedView()
+                : this.sourceSupplier.get();
 
-        final E result = this.providerConstructor.apply(store);
+        final E result = this.providerConstructor.apply(source);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
         }

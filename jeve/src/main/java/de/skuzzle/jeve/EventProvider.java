@@ -25,7 +25,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <pre>
  * <code>
- * EventProvider&lt;?&gt; eventProvider = EventProvider.configure()
+ * EventProvider eventProvider = EventProvider.configure()
  *         .defaultStore()
  *         .useSynchronousProvider()
  *         .create();

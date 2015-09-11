@@ -3,7 +3,7 @@ package de.skuzzle.jeve.builder;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.EventProvider;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderChooser;
 
 /**
@@ -49,19 +49,19 @@ public interface CustomConfigurator<C, E extends EventProvider> {
      * Creates the object which will be returned by
      * {@link ProviderChooser#useCustomProvider(CustomConfigurator)}.
      *
-     * @param storeSupplier A supplier for the ListenerStore which has been
+     * @param sourceSupplier A supplier for the ListenerSource which has been
      *            configured in the first step.
      * @return Your custom fluent API interface object.
      */
-    C getConfigurator(Supplier<? extends ListenerStore> storeSupplier);
+    C getConfigurator(Supplier<? extends ListenerSource> sourceSupplier);
 
     /**
      * Creates a new EventProvider with the ListenerStore configured in the
      * first step.
      *
-     * @param storeSupplier A supplier for the ListenerStore which has been
+     * @param sourceSupplier A supplier for the ListenerSource which has been
      *            configured in the first step.
      * @return A new EventProvider.
      */
-    E createNow(Supplier<? extends ListenerStore> storeSupplier);
+    E createNow(Supplier<? extends ListenerSource> sourceSupplier);
 }

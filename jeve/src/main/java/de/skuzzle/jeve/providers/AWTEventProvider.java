@@ -10,7 +10,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 
 /**
  * {@link EventProvider} implementation that dispatches all events in the AWT
@@ -31,15 +31,15 @@ public class AWTEventProvider extends AbstractEventProvider {
      * {@link SwingUtilities#invokeAndWait(Runnable)} to run notify the
      * listeners).
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      * @param invokeNow If <code>true</code>,
      *            {@link #dispatch(Event, BiConsumer, ExceptionCallback)
      *            dispatch} uses <code>invokeAndWait</code>, otherwise
      *            <code>invokeLater</code>.
      */
-    public AWTEventProvider(ListenerStore store, boolean invokeNow) {
-        super(store);
+    public AWTEventProvider(ListenerSource source, boolean invokeNow) {
+        super(source);
         this.invokeNow = invokeNow;
     }
 

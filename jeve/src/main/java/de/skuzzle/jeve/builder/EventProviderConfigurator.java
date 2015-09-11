@@ -9,6 +9,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
@@ -16,7 +17,6 @@ import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
-import de.skuzzle.jeve.stores.DefaultListenerStore;
 
 /**
  * This interface and its nested interfaces define the fluent builder API for
@@ -359,37 +359,21 @@ public interface EventProviderConfigurator {
     }
 
     /**
-     * Create a synchronous EventProvider with a {@link DefaultListenerStore}
-     * without options to further configure it.
-     *
-     * @return The EventProvider.
-     */
-    public SynchronousEventProvider createInstantly();
-
-    /**
-     * Chooses a {@link DefaultListenerStore} to manage {@link Listener
-     * Listeners} for the EventProvider instance to be created.
-     *
-     * @return Fluent API object for further configuration.
-     */
-    ProviderChooser defaultStore();
-
-    /**
-     * Use the provided supplier to lazily create the {@link ListenerStore} to
+     * Use the provided supplier to lazily create the {@link ListenerSource} to
      * use.
      *
-     * @param storeSupplier Supplier which supplies the ListenerStore.
+     * @param sourceSupplier Supplier which supplies the ListenerSource.
      * @return Fluent API object for further configuration.
      */
-    ProviderChooser store(Supplier<? extends ListenerStore> storeSupplier);
+    ProviderChooser store(Supplier<? extends ListenerSource> sourceSupplier);
 
     /**
      * Chooses the provided {@code store} to manage {@link Listener Listeners}
      * for the EventProvider instance to be created.
      *
-     * @param <S> The type of the ListenerStore.
-     * @param store The ListenerStore to use.
+     * @param <S> The type of the ListenerSource.
+     * @param source The ListenerSource to use.
      * @return Fluent API object for further configuration.
      */
-    <S extends ListenerStore> ProviderChooser store(S store);
+    <S extends ListenerSource> ProviderChooser store(S source);
 }

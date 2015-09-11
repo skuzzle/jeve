@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 
 /**
  * Provider which queues events while dispatching. Thus nested dispatch calls are handled
@@ -44,10 +44,10 @@ public class UnrollingEventProvider extends AbstractEventProvider {
     /**
      * Creates a new UnrollingEventProvider using the given ListenerStore.
      *
-     * @param store the store which supplies listeners to this provider.
+     * @param source the source which supplies listeners to this provider.
      */
-    public UnrollingEventProvider(ListenerStore store) {
-        super(store);
+    public UnrollingEventProvider(ListenerSource source) {
+        super(source);
         this.dispatchQueue = new ArrayDeque<>();
     }
 

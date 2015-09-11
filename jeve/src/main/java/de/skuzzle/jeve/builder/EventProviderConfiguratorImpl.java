@@ -2,9 +2,7 @@ package de.skuzzle.jeve.builder;
 
 import java.util.function.Supplier;
 
-import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
-import de.skuzzle.jeve.stores.DefaultListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 
 /**
  * Default implementation of jeve's fluent builder API.
@@ -15,30 +13,19 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
 class EventProviderConfiguratorImpl implements EventProviderConfigurator {
 
     @Override
-    public SynchronousEventProvider createInstantly() {
-        return new SynchronousEventProvider(DefaultListenerStore.create());
-    }
-
-    @Override
-    public ProviderChooser defaultStore() {
-        final Supplier<ListenerStore> supplier = DefaultListenerStore::create;
-        return new ProviderChooserImpl(supplier);
-    }
-
-    @Override
-    public ProviderChooser store(Supplier<? extends ListenerStore> storeSupplier) {
-        if (storeSupplier == null) {
-            throw new IllegalArgumentException("storeSupplier is null");
+    public ProviderChooser store(Supplier<? extends ListenerSource> sourceSupplier) {
+        if (sourceSupplier == null) {
+            throw new IllegalArgumentException("sourceSupplier is null");
         }
-        return new ProviderChooserImpl(storeSupplier);
+        return new ProviderChooserImpl(sourceSupplier);
     }
 
     @Override
-    public <S extends ListenerStore> ProviderChooser store(S store) {
-        if (store == null) {
-            throw new IllegalArgumentException("store is null");
+    public <S extends ListenerSource> ProviderChooser store(S source) {
+        if (source == null) {
+            throw new IllegalArgumentException("source is null");
         }
-        final Supplier<S> supplier = () -> store;
+        final Supplier<S> supplier = () -> source;
         return store(supplier);
     }
 

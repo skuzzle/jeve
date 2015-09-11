@@ -14,7 +14,6 @@ import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerSource;
-import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.invoke.EventInvocation;
 import de.skuzzle.jeve.invoke.FailedEventInvocation;
 
@@ -35,7 +34,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
 
     /** The listener store associated with this provider */
-    private final ListenerStore store;
+    private final ListenerSource source;
 
     /** Callback to handle event handler exceptions. */
     protected ExceptionCallback exceptionHandler;
@@ -67,20 +66,20 @@ public abstract class AbstractEventProvider implements EventProvider {
     /**
      * Creates a new {@link AbstractEventProvider}.
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public AbstractEventProvider(ListenerStore store) {
-        if (store == null) {
-            throw new IllegalArgumentException("listenerStore is null");
+    public AbstractEventProvider(ListenerSource source) {
+        if (source == null) {
+            throw new IllegalArgumentException("source is null");
         }
 
-        this.store = store;
+        this.source = source;
         this.exceptionHandler = this.defaultHandler;
     }
 
     protected final ListenerSource getSource() {
-        return this.store;
+        return this.source;
     }
 
     @Override
@@ -216,14 +215,14 @@ public abstract class AbstractEventProvider implements EventProvider {
 
     @Override
     public final boolean isSequential() {
-        return this.store.isSequential() && isImplementationSequential();
+        return this.source.isSequential() && isImplementationSequential();
     }
 
     /**
      * Whether this EventProvider implementation is sequential. The
      * {@link #isSequential()} method considers the result of this method and
      * the result of the current ListenerStore's
-     * {@link ListenerStore#isSequential() isSequential} method for determining
+     * {@link ListenerSource#isSequential() isSequential} method for determining
      * whether dispatch events of this provider are sequential.
      *
      * @return Whether this EventProvider implementation is sequential.
@@ -232,11 +231,11 @@ public abstract class AbstractEventProvider implements EventProvider {
 
     @Override
     public void close() {
-        this.store.close();
+        this.source.close();
     }
 
     @Override
     public String toString() {
-        return this.store.toString();
+        return this.source.toString();
     }
 }

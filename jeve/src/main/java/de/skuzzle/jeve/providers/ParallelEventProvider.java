@@ -13,7 +13,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 
 /**
  * EventProvider implementation which uses an {@link ExecutorService} to notify
@@ -39,22 +39,22 @@ public class ParallelEventProvider extends AbstractEventProvider
     /**
      * Creates a new ParallelEventProvider using the provided store.
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public ParallelEventProvider(ListenerStore store) {
-        this(store, Executors.newCachedThreadPool());
+    public ParallelEventProvider(ListenerSource source) {
+        this(source, Executors.newCachedThreadPool());
     }
 
     /**
      * Creates a new ParallelEventPRovider.
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      * @param executor The executor to use.
      */
-    public ParallelEventProvider(ListenerStore store, ExecutorService executor) {
-        super(store);
+    public ParallelEventProvider(ListenerSource source, ExecutorService executor) {
+        super(source);
         if (executor == null) {
             throw new IllegalArgumentException("executor is null");
         }

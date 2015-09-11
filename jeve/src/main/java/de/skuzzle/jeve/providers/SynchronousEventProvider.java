@@ -10,7 +10,7 @@ import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.EventStackHelper;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.SynchronousEvent;
 
 /**
@@ -68,11 +68,11 @@ public class SynchronousEventProvider extends AbstractEventProvider {
     /**
      * Creates a new SynchronousEventProvider.
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public SynchronousEventProvider(ListenerStore store) {
-        super(store);
+    public SynchronousEventProvider(ListenerSource source) {
+        super(source);
         this.eventStack = new EventStackImpl();
     }
 

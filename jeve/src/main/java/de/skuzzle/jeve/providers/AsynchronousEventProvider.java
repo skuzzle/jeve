@@ -12,7 +12,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 
 /**
  * This EventProvider fires events asynchronously using an
@@ -35,23 +35,23 @@ public class AsynchronousEventProvider extends AbstractEventProvider
      * Creates a new {@link AsynchronousEventProvider} which uses a single
      * threaded {@link ExecutorService}.
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public AsynchronousEventProvider(ListenerStore store) {
-        this(store, Executors.newFixedThreadPool(1));
+    public AsynchronousEventProvider(ListenerSource source) {
+        this(source, Executors.newFixedThreadPool(1));
     }
 
     /**
      * Creates a new {@link AsynchronousEventProvider} which uses the provided
      * {@link ExecutorService} for event dispatching.
      *
-     * @param store Responsible for storing and retrieving listeners of this
+     * @param source Responsible for storing and retrieving listeners of this
      *            provider.
      * @param executor ExecutorService to use.
      */
-    public AsynchronousEventProvider(ListenerStore store, ExecutorService executor) {
-        super(store);
+    public AsynchronousEventProvider(ListenerSource source, ExecutorService executor) {
+        super(source);
         if (executor == null) {
             throw new IllegalArgumentException("dispatcher is null");
         }

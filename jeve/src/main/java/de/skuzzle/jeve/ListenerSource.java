@@ -33,13 +33,16 @@ public interface ListenerSource {
      * MyListenerSource source = new MyListenerSource().synchronizedView();
      * </pre>
      *
-     * @return A thread safe view of this store.
+     * @return A thread safe view of this source.
      * @since 3.0.0
      */
     public ListenerSource synchronizedView();
 
     /**
      * Gets all listeners that should be notified for the given listenerClass.
+     * The returned Stream must NOT be backed by the source's internal
+     * collection which holds the listeners unless this source's collection of
+     * listeners is unmodifiable.
      *
      * @param <L> Type of the listeners to return.
      * @param listenerClass The class representing the event for which the
@@ -49,7 +52,6 @@ public interface ListenerSource {
      * @throws IllegalArgumentException If listenerClass is <code>null</code>.
      */
     <L extends Listener> Stream<L> get(Class<L> listenerClass);
-
 
     /**
      * States whether this ListenerSource implementation is sequential. This is

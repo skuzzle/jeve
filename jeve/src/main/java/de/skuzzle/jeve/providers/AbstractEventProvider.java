@@ -4,18 +4,15 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.skuzzle.jeve.AbortionException;
 import de.skuzzle.jeve.DefaultDispatchable;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
+import de.skuzzle.jeve.ExceptionCallbacks;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.invoke.EventInvocation;
-import de.skuzzle.jeve.invoke.FailedEventInvocation;
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations
@@ -31,8 +28,6 @@ import de.skuzzle.jeve.invoke.FailedEventInvocation;
  */
 public abstract class AbstractEventProvider implements EventProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
-
     /** The listener store associated with this provider */
     private final ListenerSource source;
 
@@ -43,25 +38,7 @@ public abstract class AbstractEventProvider implements EventProvider {
      * The default {@link ExceptionCallback} which prints some information about
      * the occurred error to logger. The exact format is not specified.
      */
-    protected final ExceptionCallback defaultHandler = new ExceptionCallback() {
-
-        @Override
-        public void exception(FailedEventInvocation invocation) {
-            LOGGER.error(
-                    "Listener threw an exception while being notified\n" +
-                    "Details\n" +
-                    "    Listener: {}\n" +
-                    "    Event: {}\n" +
-                    "    Message: {}\n" +
-                    "    Current Thread: {}\n" +
-                    "    Stacktrace:\n",
-                    invocation.getListener(),
-                    invocation.getEvent(),
-                    invocation.getException().getMessage(),
-                    Thread.currentThread().getName(),
-                    invocation.getException());
-        }
-    };
+    protected final ExceptionCallback defaultHandler = ExceptionCallbacks.ignore();
 
     /**
      * Creates a new {@link AbstractEventProvider}.
@@ -78,7 +55,8 @@ public abstract class AbstractEventProvider implements EventProvider {
         this.exceptionHandler = this.defaultHandler;
     }
 
-    protected final ListenerSource getSource() {
+    @Override
+    public final ListenerSource getListenerSource() {
         return this.source;
     }
 
@@ -162,7 +140,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
 
-        final Stream<L> listeners = getSource().get(event.getListenerClass());
+        final Stream<L> listeners = getListenerSource().get(event.getListenerClass());
 
         final Iterator<L> it = listeners.iterator();
         while (it.hasNext()) {
@@ -230,9 +208,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected abstract boolean isImplementationSequential();
 
     @Override
-    public void close() {
-        this.source.close();
-    }
+    public void close() {}
 
     @Override
     public String toString() {

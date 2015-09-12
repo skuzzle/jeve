@@ -25,8 +25,9 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <pre>
  * <code>
+ * ListenerSource source = DefaultListenerSource.create();
  * EventProvider eventProvider = EventProvider.configure()
- *         .defaultStore()
+ *         .source(source)
  *         .useSynchronousProvider()
  *         .create();
  * </code>
@@ -39,23 +40,22 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  *
  * <h2>Managing and Notifying Listeners</h2>
  * <p>
- * Listeners are supplied to the EventProvider by a {@link ListenerSource}. An instance
- * of such a source is typically supplied to the EventProvider at construction time. It is
- * allowed that multiple providers share a single source.
- * When using the sub interface {@link ListenerStore}, listeners can be dynamically
- * registered and unregistered by calling the respective methods on the store.
+ * Listeners are supplied to the EventProvider by a {@link ListenerSource}. An
+ * instance of such a source is typically supplied to the EventProvider at
+ * construction time. It is allowed that multiple providers share a single
+ * source. When using the sub interface {@link ListenerStore}, listeners can be
+ * dynamically registered and unregistered by calling the respective methods on
+ * the store.
  * </p>
-
+ *
  * <p>
  * The same listener object can be registered for distinct listener classes if
- * it implements different listeners. The {@link Listener} interface has two
- * default methods which are called when a listener is registered or removed
- * respectively. Client code should never query the registered listeners
- * directly from a ListenerStore. The reason is, that EventProviders use
- * <em>internal iteration</em> when notifying listeners. This reduces the use
- * cases where client code explicitly needs a list of listeners. The logic of
- * how listeners are iterated is moved into the framework, reducing duplicated
- * and error prone code on the client side.
+ * it implements different listeners. Client code should never query the
+ * registered listeners directly from a {@link ListenerSource}. The reason is,
+ * that EventProviders use <em>internal iteration</em> when notifying listeners.
+ * This reduces the use cases where client code explicitly needs a list of
+ * listeners. The logic of how listeners are iterated is moved into the
+ * framework, reducing duplicated and error prone code on the client side.
  * </p>
  *
  * <p>
@@ -101,7 +101,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * about any exception. After notifying the callback, event delegation continues
  * with the next listener. {@link AbortionException} can be thrown from within
  * the callback method to explicitly stop event delegation with an exception.
- * All other exceptions thrown by the callback will be swallowed.
+ * All other exceptions thrown by the callback will be swallowed and logged.
  * </p>
  *
  * <p>
@@ -115,15 +115,14 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * <h2>Sequential EventProviders</h2>
  * <p>
  * An EventProvider is said to be <em>sequential</em>, if it guarantees that
- * listeners are notified in the order in which they were registered for a
- * certain listener class. EventProviders report this property with
+ * listeners are notified in the order in which they are supplied by the
+ * listener source. EventProviders report this property with
  * {@link #isSequential()}. Whether an EventProvider actually is sequential
- * depends on its implementation of the dispatch method and the currently used
- * {@link ListenerStore}. For example, a provider which notifies each listener
- * within a separate thread is not sequential. Likewise, a provider which
- * notifies listeners sequentially within one thread, but uses a ListenerStore
- * which re-orders listeners (like {@link PriorityListenerStore}), is not
- * sequential.
+ * depends on its implementation of the dispatch method. For example, a provider
+ * which notifies each listener within a separate thread is not sequential.
+ * Likewise, a provider which notifies listeners sequentially within one thread,
+ * but uses a ListenerStore which re-orders listeners (like
+ * {@link PriorityListenerStore}), is not sequential.
  * </p>
  *
  * <h2>Aborting Event Delegation</h2>
@@ -156,7 +155,7 @@ public interface EventProvider {
      *
      * <p>
      * Configuring an EventProvider always starts with choosing an appropriate
-     * {@link ListenerStore}. In most cases, the default store is sufficient,
+     * {@link ListenerSource}. In most cases, the default source is sufficient,
      * but you could also use a store which provides listener prioritization
      * like in:
      * </p>
@@ -165,7 +164,7 @@ public interface EventProvider {
      * <code>
      * EventProvider&lt;PriorityListenerStore&gt; eventProvider = EventProvider
      *          .configure()
-     *          .store(PriorityListenerStore::new)
+     *          .source(PriorityListenerStore::new)
      *          .useSynchronousEventProvider()
      *          .create();
      * </code>
@@ -186,9 +185,9 @@ public interface EventProvider {
      * <code>
      * Supplier&lt;EventProvider&lt;?&gt;&gt; eventProvider = EventProvider
      *          .configure()
-     *          .defaultStore()
+     *          .source(mySource)
      *          .useSynchronousEventProvider().and()
-     *          .exceptionCallBack(myCallback)
+     *          .exceptionCallBack(ExceptionCallbacks.stopOnError())
      *          .asSupplier();
      * </code>
      * </pre>
@@ -201,16 +200,25 @@ public interface EventProvider {
     }
 
     /**
-     * Convenience method for creating a synchronous event provider which uses a
-     * default listener store.
+     * Convenience method for creating a synchronous event provider which uses
+     * the given {@link ListenerSource}.
      *
+     * @param source
      * @return A ready to use event provider.
      * @see #configure()
-     * @since 2.0.0
+     * @since 4.0.0
      */
-    public static EventProvider createDefault() {
-        return configure().defaultStore().useSynchronousProvider().create();
+    public static EventProvider createDefault(ListenerSource source) {
+        return configure().source(source).useSynchronousProvider().create();
     }
+
+    /**
+     * Returns the source which supplies listeners to this provider.
+     *
+     * @return The ListenerSource.
+     * @since 4.0.0
+     */
+    ListenerSource getListenerSource();
 
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this
@@ -416,11 +424,14 @@ public interface EventProvider {
     public boolean isSequential();
 
     /**
-     * Closes this EventProvider and its {@link ListenerStore} (thus, removes
-     * all registered Listeners from the store). Depending on the actual
-     * implementation, the EventProvider might not be able to dispatch further
-     * events after closing. On some implementations closing might have no
-     * additional effect.
+     * Closes this EventProvider to release any unused resources. Depending on
+     * the actual implementation, the EventProvider might not be able to
+     * dispatch further events after closing. On some implementations closing
+     * might have no additional effect.
+     * <p>
+     * Prior to jeve 4.0.0 this method used to close the underlying
+     * {@link ListenerSource} too. As sources may be shared among multiple
+     * providers, this behavior has been changed.
      */
     public void close();
 }

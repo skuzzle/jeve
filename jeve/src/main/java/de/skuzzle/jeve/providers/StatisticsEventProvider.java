@@ -10,6 +10,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
+import de.skuzzle.jeve.ListenerSource;
 
 /**
  * EventProvider which delegates all method calls to a wrapped instance and
@@ -53,6 +54,11 @@ public class StatisticsEventProvider<P extends EventProvider>
      */
     public P getWrapped() {
         return this.wrapped;
+    }
+
+    @Override
+    public ListenerSource getListenerSource() {
+        return this.wrapped.getListenerSource();
     }
 
     /**

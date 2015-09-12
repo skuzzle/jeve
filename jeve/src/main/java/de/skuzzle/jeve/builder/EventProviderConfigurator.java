@@ -365,7 +365,7 @@ public interface EventProviderConfigurator {
      * @param sourceSupplier Supplier which supplies the ListenerSource.
      * @return Fluent API object for further configuration.
      */
-    ProviderChooser store(Supplier<? extends ListenerSource> sourceSupplier);
+    ProviderChooser source(Supplier<? extends ListenerSource> sourceSupplier);
 
     /**
      * Chooses the provided {@code store} to manage {@link Listener Listeners}
@@ -375,5 +375,5 @@ public interface EventProviderConfigurator {
      * @param source The ListenerSource to use.
      * @return Fluent API object for further configuration.
      */
-    <S extends ListenerSource> ProviderChooser store(S source);
+    <S extends ListenerSource> ProviderChooser source(S source);
 }

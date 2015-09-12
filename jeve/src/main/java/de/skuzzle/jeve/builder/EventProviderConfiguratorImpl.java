@@ -13,7 +13,7 @@ import de.skuzzle.jeve.ListenerSource;
 class EventProviderConfiguratorImpl implements EventProviderConfigurator {
 
     @Override
-    public ProviderChooser store(Supplier<? extends ListenerSource> sourceSupplier) {
+    public ProviderChooser source(Supplier<? extends ListenerSource> sourceSupplier) {
         if (sourceSupplier == null) {
             throw new IllegalArgumentException("sourceSupplier is null");
         }
@@ -21,12 +21,12 @@ class EventProviderConfiguratorImpl implements EventProviderConfigurator {
     }
 
     @Override
-    public <S extends ListenerSource> ProviderChooser store(S source) {
+    public <S extends ListenerSource> ProviderChooser source(S source) {
         if (source == null) {
             throw new IllegalArgumentException("source is null");
         }
         final Supplier<S> supplier = () -> source;
-        return store(supplier);
+        return source(supplier);
     }
 
 }

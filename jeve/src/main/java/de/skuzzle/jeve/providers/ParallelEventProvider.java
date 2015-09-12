@@ -79,7 +79,7 @@ public class ParallelEventProvider extends AbstractEventProvider
             return;
         }
 
-        final Stream<L> listeners = getSource().get(event.getListenerClass());
+        final Stream<L> listeners = getListenerSource().get(event.getListenerClass());
         listeners.forEach(listener -> {
                 this.executor.execute(() -> notifySingle(listener, event, bc, ec));
         });

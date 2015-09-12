@@ -70,7 +70,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * parameterized with the type of the store it uses. This is to make API
  * extensions to the {@link ListenerStore} interface (like for example the
  * {@link PriorityListenerStore} does) accessible to the caller of
- * {@link EventProvider#getSource()}.
+ * {@link EventProvider#getListenerSource()}.
  * </p>
  * <p>
  * In order to be able to create an EventProvider with a certain ListenerStore

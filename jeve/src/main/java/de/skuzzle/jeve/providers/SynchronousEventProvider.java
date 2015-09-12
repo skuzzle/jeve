@@ -84,7 +84,7 @@ public class SynchronousEventProvider extends AbstractEventProvider {
         }
 
         // HINT: getListeners is thread safe
-        final Stream<L> listeners = getSource().get(event.getListenerClass());
+        final Stream<L> listeners = getListenerSource().get(event.getListenerClass());
 
         try {
             if (event instanceof SynchronousEvent<?, ?>) {

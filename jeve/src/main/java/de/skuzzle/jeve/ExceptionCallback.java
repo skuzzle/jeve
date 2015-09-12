@@ -8,6 +8,7 @@ import de.skuzzle.jeve.invoke.FailedEventInvocation;
  *
  * @author Simon Taddiken
  * @since 1.0.0
+ * @see ExceptionCallbacks
  */
 public interface ExceptionCallback {
 

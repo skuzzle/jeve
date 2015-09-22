@@ -11,6 +11,7 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderChooser;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderConfigurator;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
+import de.skuzzle.jeve.providers.BlockingParallelEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
@@ -129,6 +130,14 @@ class ProviderChooserImpl implements ProviderChooser {
             ParallelEventProvider> useParallelProvider() {
         final Function<ListenerSource, ParallelEventProvider> ctor =
                 ParallelEventProvider::new;
+        return asynchronAnd(ctor, this.sourceSupplier);
+    }
+
+    @Override
+    public Chainable<AsyncProviderConfigurator<BlockingParallelEventProvider>,
+            BlockingParallelEventProvider> useBlockingParallelProvider() {
+        final Function<ListenerSource, BlockingParallelEventProvider> ctor =
+                BlockingParallelEventProvider::new;
         return asynchronAnd(ctor, this.sourceSupplier);
     }
 

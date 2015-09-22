@@ -13,6 +13,7 @@ import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
+import de.skuzzle.jeve.providers.BlockingParallelEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.providers.SynchronousEventProvider;
@@ -153,6 +154,31 @@ public interface EventProviderConfigurator {
          */
         Chainable<AsyncProviderConfigurator<ParallelEventProvider>,
                 ParallelEventProvider> useParallelProvider();
+
+        /**
+         * Configures an {@link EventProvider} which notifies each listener
+         * within an own thread but blocks the thread that started event
+         * dispatching until all listeners have been notified. This means that
+         * for a single event, multiple threads might get created to notify all
+         * listeners concurrently. The internal thread creation is by default
+         * handled by an {@link Executors#newCachedThreadPool() cached thread
+         * pool}. The returned EventProvider instance is not sequential and does
+         * not support aborting of event delegation, as the correct order of
+         * delegation can not be guaranteed.
+         *
+         * <p>
+         * When closing the returned {@link EventProvider}, its internal
+         * {@link ExecutorService} instance will be shut down. Its not possible
+         * to reuse the provider after closing it.
+         * </p>
+         *
+         * @return Fluent API object for further configuration.
+         * @see #useParallelProvider()
+         * @see BlockingParallelEventProvider
+         * @since 4.0.0
+         */
+        Chainable<AsyncProviderConfigurator<BlockingParallelEventProvider>,
+                BlockingParallelEventProvider> useBlockingParallelProvider();
 
         /**
          * Configures an {@link EventProvider} which dispatches all events in

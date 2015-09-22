@@ -1,5 +1,7 @@
 package de.skuzzle.jeve;
 
+import static org.mockito.Mockito.doAnswer;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
@@ -12,8 +14,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
+import de.skuzzle.jeve.providers.BlockingParallelEventProvider;
 import de.skuzzle.jeve.providers.ExecutorAware;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
@@ -47,7 +52,15 @@ public class ThreadedEventProviderIT extends EventProviderTestBase {
                         (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
                 },
                 new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) BlockingParallelEventProvider::new,
+                        (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
+                },
+                new Object[] {
                         (Function<ListenerStore, ? extends EventProvider>) store-> new StatisticsEventProvider<>(new ParallelEventProvider(store)),
+                        (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
+                },
+                new Object[] {
+                        (Function<ListenerStore, ? extends EventProvider>) store-> new StatisticsEventProvider<>(new BlockingParallelEventProvider(store)),
                         (Supplier<ListenerStore>) () -> DefaultListenerStore.create().synchronizedView()
                 },
                 new Object[] {
@@ -81,6 +94,14 @@ public class ThreadedEventProviderIT extends EventProviderTestBase {
         final ExecutorAware ea = (ExecutorAware) this.subject;
         final ExecutorService executor = Mockito.mock(ExecutorService.class);
         ea.setExecutorService(executor);
+        doAnswer(new Answer<Object>() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                final Runnable r = (Runnable) invocation.getArguments()[0];
+                r.run();
+                return null;
+            }}).when(executor).execute(Mockito.any());
         final StringListener listener = Mockito.mock(StringListener.class);
         this.store.add(StringListener.class, listener);
 

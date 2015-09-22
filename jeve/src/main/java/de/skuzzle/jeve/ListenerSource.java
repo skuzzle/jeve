@@ -54,6 +54,22 @@ public interface ListenerSource {
     <L extends Listener> Stream<L> get(Class<L> listenerClass);
 
     /**
+     * Gets all listeners that should be notified for the given event. This is
+     * short hand for {@code ListenerSource.get(event.getListenerClass)}.
+     *
+     * @param event The event to get the listeners to be notified for.
+     * @return A Stream of listeners that should be notified about the event
+     *         represented by the given listener class.
+     * @throws IllegalArgumentException If the event is <code>null</code>.
+     */
+    default <L extends Listener> Stream<L> get(Event<?, L> event) {
+        if (event == null) {
+            throw new IllegalArgumentException("event is null");
+        }
+        return get(event.getListenerClass());
+    }
+
+    /**
      * States whether this ListenerSource implementation is sequential. This is
      * the case if, and only if the Stream returned by {@link #get(Class)}
      * returns the registered Listeners in FIFO order regarding their time of

@@ -77,6 +77,7 @@ public class AWTEventProvider extends AbstractEventProvider {
                     // throw any other exceptions
                     throw new IllegalStateException(e);
                 } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     throw new AbortionException(e);
                 }
             }

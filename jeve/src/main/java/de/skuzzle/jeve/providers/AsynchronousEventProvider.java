@@ -53,7 +53,7 @@ public class AsynchronousEventProvider extends AbstractEventProvider
     public AsynchronousEventProvider(ListenerSource source, ExecutorService executor) {
         super(source);
         if (executor == null) {
-            throw new IllegalArgumentException("dispatcher is null");
+            throw new IllegalArgumentException("executor is null");
         }
         this.executor = executor;
     }
@@ -91,6 +91,7 @@ public class AsynchronousEventProvider extends AbstractEventProvider
         } catch (final InterruptedException e) {
             LOGGER.error("AsynchronousEventProvider: Error while waiting for "
                     + "termination of executor", e);
+            Thread.currentThread().interrupt();
         }
     }
 

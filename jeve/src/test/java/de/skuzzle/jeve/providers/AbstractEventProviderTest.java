@@ -166,12 +166,6 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider>
     }
 
     @Test
-    public void testClose() throws Exception {
-        this.subject.close();
-        Mockito.verify(this.store).close();
-    }
-
-    @Test
     public void testSetExceptionCallback() throws Exception {
         this.subject.setExceptionCallback(this.ec);
         Assert.assertSame(this.ec, this.subject.exceptionHandler);

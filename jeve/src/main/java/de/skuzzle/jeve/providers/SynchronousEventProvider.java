@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.Event;
+import de.skuzzle.jeve.EventPredicates;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.EventStackHelper;
@@ -53,13 +54,14 @@ import de.skuzzle.jeve.SynchronousEvent;
  *
  * // Dispatch all suppressed UIRefreshEvents
  * e.getSuppressedEvents().stream()
- *         .filter(suppressed -&gt; suppressed.getListenerClass() == UIRefreshListener.class)
+ *         .filter(EventPredicates.withListenerClass(UIRefreshListener.class))
  *         .forEach(suppressed -&gt; suppressed.redispatch(eventProvider));
  * </pre>
  *
  * @author Simon Taddiken
  * @since 3.0.0
  * @see SynchronousEvent
+ * @see EventPredicates
  */
 public class SynchronousEventProvider extends AbstractEventProvider {
 

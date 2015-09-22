@@ -31,10 +31,11 @@ import de.skuzzle.jeve.ListenerSource;
 public class ParallelEventProvider extends AbstractEventProvider
         implements ExecutorAware {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(EventProvider.class);
     private static final long TERMINATION_TIMEOUT = 2000;
 
-    private ExecutorService executor;
+    /** The executor to use for parallel dispatch. */
+    protected ExecutorService executor;
 
     /**
      * Creates a new ParallelEventProvider using the provided store.
@@ -81,7 +82,7 @@ public class ParallelEventProvider extends AbstractEventProvider
 
         final Stream<L> listeners = getListenerSource().get(event.getListenerClass());
         listeners.forEach(listener -> {
-                this.executor.execute(() -> notifySingle(listener, event, bc, ec));
+            this.executor.execute(() -> notifySingle(listener, event, bc, ec));
         });
     }
 
@@ -98,7 +99,8 @@ public class ParallelEventProvider extends AbstractEventProvider
             this.executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException e) {
             LOGGER.error("ParallelEventProvider: Error while waiting for termination "
-                    + "of executor", e);
+                + "of executor", e);
+            Thread.currentThread().interrupt();
         }
     }
 

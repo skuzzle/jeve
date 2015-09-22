@@ -44,7 +44,7 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetListenerClassNull() {
-        this.store.get(null);
+        this.store.get((Event<?, ?>) null);
     }
 
     /**
@@ -546,26 +546,5 @@ public abstract class EventProviderTestBase extends AbstractEventProviderTest {
 
         Mockito.verify(string1).onUnregister(Mockito.any());
         Mockito.verify(diffString1).onUnregister(Mockito.any());
-    }
-
-    /**
-     * Tests whether no listener is notified after EventProvider has been
-     * closed.
-     *
-     * @throws Exception If an exception occurs during testing.
-     */
-    @Test
-    public void testClose() throws Exception {
-        final StringListener l = Mockito.mock(StringListener.class);
-        this.store.add(StringListener.class, l);
-        this.subject.close();
-        final StringEvent e = new StringEvent(this.subject, "");
-        this.subject.dispatch(e, StringListener::onStringEvent);
-
-        sleep(); // HACK: give async providers some time to execute
-
-        Mockito.verify(l, Mockito.never()).onStringEvent(Mockito.any());
-        Assert.assertTrue(getFailString("Listener not removed"),
-                this.store.get(StringListener.class).count() == 0);
     }
 }

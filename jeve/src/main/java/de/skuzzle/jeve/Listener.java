@@ -8,7 +8,7 @@ import java.util.EventListener;
  * {@link ListenerStore}.
  *
  * Normally, you create an interface extending {@code Listener} and add some
- * <em>listening methods</em>. By default, those methods must adhere to the
+ * <em>listening methods</em>. By convention, those methods must adhere to the
  * signature:
  *
  * <pre>

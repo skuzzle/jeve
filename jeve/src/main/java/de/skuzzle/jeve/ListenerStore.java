@@ -215,27 +215,6 @@ public interface ListenerStore extends ListenerSource {
     public <L extends Listener> void remove(Class<L> listenerClass, L listener);
 
     /**
-     * Gets all listeners that have been registered using
-     * {@link #add(Class, Listener)} for the given listener class.
-     *
-     * <p>
-     * <b>Note on concurrency:</b> The returned Stream will not be backed by the
-     * internal list which is also modified via {@link #add(Class, Listener)} or
-     * {@link #remove(Class, Listener)}. This allows to add or remove listeners
-     * to this store while the Stream is being iterated.
-     * </p>
-     *
-     * @param <L> Type of the listeners to return.
-     * @param listenerClass The class representing the event for which the
-     *            listeners should be retrieved.
-     * @return A collection of listeners that should be notified about the event
-     *         represented by the given listener class.
-     * @throws IllegalArgumentException If listenerClass is <code>null</code>.
-     */
-    @Override
-    public <L extends Listener> Stream<L> get(Class<L> listenerClass);
-
-    /**
      * Removes all listeners which have been registered for the provided
      * listener class. Every listner's
      * {@link Listener#onUnregister(RegistrationEvent) onUnregister} method will

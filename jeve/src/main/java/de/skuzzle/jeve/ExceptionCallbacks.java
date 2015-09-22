@@ -37,7 +37,7 @@ public final class ExceptionCallbacks {
     /**
      * The callback will set the Event's {@link Event#isHandled() handled} flag
      * to <code>true</code> to gracefully stop the delegation process when an
-     * exception occurs.
+     * exception occurs. Like {@link #ignore()}, the exception will be logged.
      *
      * @return The callback.
      */

@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
 
@@ -54,7 +55,12 @@ public abstract class AbstractListenerStoreTest<T extends ListenerStore> {
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalGet() {
-        this.subject.get(null);
+        this.subject.get((Event<?, ?>) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalGet2() throws Exception {
+        this.subject.get((Class<? extends Listener>) null);
     }
 
     @Test(expected = IllegalArgumentException.class)

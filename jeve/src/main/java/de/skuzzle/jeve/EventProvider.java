@@ -431,7 +431,8 @@ public interface EventProvider {
      * <p>
      * Prior to jeve 4.0.0 this method used to close the underlying
      * {@link ListenerSource} too. As sources may be shared among multiple
-     * providers, this behavior has been changed.
+     * providers, this behavior has been changed to <em>not</em> closing the
+     * store anymore.
      */
     public void close();
 }

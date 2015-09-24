@@ -17,7 +17,10 @@ import de.skuzzle.jeve.RegistrationEvent;
  * class. When using the normal {@link #add(Class, Listener) add} method, the
  * Listener is assigned a default priority which may be specified in the
  * constructor. The public interface to this store is thread safe.
- *
+ * <p>
+ * If you are tempted to use this store you might also have a look at
+ * {@link ChainOfResponsibility} which offers a clearer way of notifying
+ * listeners in a certain order.
  * <p>
  * Performance notes: This store uses a {@link HashMap} of {@link LinkedList
  * LinkedLists} to manage the Listeners and inserts Listeners sorted by priority

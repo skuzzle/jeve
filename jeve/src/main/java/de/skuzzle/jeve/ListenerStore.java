@@ -59,8 +59,7 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * <h2>Closing</h2>
  * <p>
  * {@link #close() Closing} the ListenerStore will remove all registered
- * Listeners. Implementations may perform additional tasks. The ListenerStore is
- * automatically closed when an EventProvider which uses the store is closed.
+ * Listeners. Implementations may perform additional tasks.
  * </p>
  *
  * <h2>General Implementation Note</h2>

@@ -88,15 +88,16 @@ before starting to use jeve.
 * jeve also decouples the knowledge of how to handle an error from the knowledge of how to
   notify a listener
   
-These are the main abstractions that jeve use:
+These are the main abstractions that jeve uses:
 
 | Class    | Description |
 | -------- | ----------- |
-| Listener       | An object that is notified about a certain `Event`          |
-| Event          | Object that is passed to a `Listener` by being 'dispatched' |
-| ListenerSource | Supplies listeners to be notified to an `EventProvider`     |
-| ListenerStore  | Modifiable extension to `ListenerSource` to which listeners can be added and removed |
-| EventProvider  | Notifies listeners supplied by a `ListenerSource` about an `Event`
+| Listener        | An object that is notified about a certain `Event`          |
+| Event           | Object that is passed to a `Listener` by being 'dispatched' |
+| ListenerSource  | Supplies listeners to be notified to an `EventProvider`     |
+| ListenerStore   | Modifiable extension to `ListenerSource` to which listeners can be added and removed |
+| EventProvider   | Notifies listeners supplied by a `ListenerSource` about an `Event` |
+| EventInvocation | Represents the action of notifying a single listener including all kind of error handling |
 
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating

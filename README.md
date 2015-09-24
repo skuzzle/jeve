@@ -89,6 +89,7 @@ before starting to use jeve.
   notify a listener
   
 These are the main abstractions that jeve use:
+
 | Class    | Description |
 | -------- | ----------- |
 | Listener       | An object that is notified about a certain `Event`          |

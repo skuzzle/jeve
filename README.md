@@ -79,6 +79,24 @@ Most of these weaknesses can be solved by using *internal iteration*. That is,
 moving iteration **into** the framework, making it transparent for the caller.
 See the quick start guid below to learn how jeve addresses these issues.
 
+# Design Principles
+jeve is built around some design principles and abstractions that should be heard of 
+before starting to use jeve.
+
+* jeve decouples the knowledge of where listener come from from the knowledge of how to 
+  notify a listener
+* jeve also decouples the knowledge of how to handle an error from the knowledge of how to
+  notify a listener
+  
+These are the main abstractions that jeve use:
+| Class    | Description |
+| -------- | ----------- |
+| Listener       | An object that is notified about a certain `Event`          |
+| Event          | Object that is passed to a `Listener` by being 'dispatched' |
+| ListenerSource | Supplies listeners to be notified to an `EventProvider`     |
+| ListenerStore  | Modifiable extension to `ListenerSource` to which listeners can be added and removed |
+| EventProvider  | Notifies listeners supplied by a `ListenerSource` about an `Event`
+
 # Quickstart
 Using jeve for simple event dispatching is rather simple. It involves creating
 an `EventProvider` as first step:

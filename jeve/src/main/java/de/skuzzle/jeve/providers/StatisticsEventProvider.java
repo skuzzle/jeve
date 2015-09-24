@@ -11,6 +11,7 @@ import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerSource;
+import de.skuzzle.jeve.invoke.EventInvocationFactory;
 
 /**
  * EventProvider which delegates all method calls to a wrapped instance and
@@ -114,6 +115,11 @@ public class StatisticsEventProvider<P extends EventProvider>
     @Override
     public void setExceptionCallback(ExceptionCallback ec) {
         this.wrapped.setExceptionCallback(ec);
+    }
+
+    @Override
+    public void setInvocationFactory(EventInvocationFactory factory) {
+        this.wrapped.setInvocationFactory(factory);
     }
 
     @Override

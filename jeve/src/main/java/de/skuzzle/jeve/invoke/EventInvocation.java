@@ -20,7 +20,8 @@ import de.skuzzle.jeve.Listener;
 public interface EventInvocation {
 
     /**
-     * Creates a new EventInvocation.
+     * Creates a new EventInvocation. This method also serves as default
+     * {@link EventInvocationFactory} when used as a method reference.
      *
      * @param <L> The type of the listener.
      * @param <E> The type of the event.
@@ -56,6 +57,14 @@ public interface EventInvocation {
      * and {@link ExceptionCallback}.
      */
     public void notifyListener();
+
+    /**
+     * Gets the {@link ExceptionCallback} to be notified when invocation fails.
+     *
+     * @return The callback.
+     * @since 4.0.0
+     */
+    public ExceptionCallback getExceptionCallback();
 
     /**
      * Creates a new {@link FailedEventInvocation} holding the given exception.

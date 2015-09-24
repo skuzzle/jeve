@@ -13,6 +13,7 @@ import de.skuzzle.jeve.ExceptionCallbacks;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.invoke.EventInvocation;
+import de.skuzzle.jeve.invoke.EventInvocationFactory;
 
 /**
  * Implementation of basic {@link EventProvider} methods. All implementations
@@ -35,10 +36,11 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected ExceptionCallback exceptionHandler;
 
     /**
-     * The default {@link ExceptionCallback} which prints some information about
-     * the occurred error to logger. The exact format is not specified.
+     * Factory that creates {@link EventInvocation} objects for notifying a
+     * single listener.
+     * @since 4.0.0
      */
-    protected final ExceptionCallback defaultHandler = ExceptionCallbacks.ignore();
+    protected EventInvocationFactory invocationFactory;
 
     /**
      * Creates a new {@link AbstractEventProvider}.
@@ -52,7 +54,8 @@ public abstract class AbstractEventProvider implements EventProvider {
         }
 
         this.source = source;
-        this.exceptionHandler = this.defaultHandler;
+        this.exceptionHandler = ExceptionCallbacks.ignore();
+        this.invocationFactory = EventInvocation::of;
     }
 
     @Override
@@ -83,7 +86,6 @@ public abstract class AbstractEventProvider implements EventProvider {
         event.defaultDispatch(this, this.exceptionHandler);
     }
 
-
     /**
      * Helper method which serves for throwing {@link IllegalArgumentException}
      * if any of the passed arguments is null.
@@ -110,11 +112,22 @@ public abstract class AbstractEventProvider implements EventProvider {
     public synchronized void setExceptionCallback(ExceptionCallback callBack) {
         final ExceptionCallback ec;
         if (callBack == null) {
-            ec = this.defaultHandler;
+            ec = ExceptionCallbacks.ignore();
         } else {
             ec = callBack;
         }
         this.exceptionHandler = ec;
+    }
+
+    @Override
+    public synchronized void setInvocationFactory(EventInvocationFactory factory) {
+        final EventInvocationFactory f;
+        if (factory == null) {
+            f = EventInvocation::of;
+        } else {
+            f = factory;
+        }
+        this.invocationFactory = f;
     }
 
     /**
@@ -173,8 +186,8 @@ public abstract class AbstractEventProvider implements EventProvider {
     }
 
     /**
-     * Creates a new {@link EventInvocation} object for dispatching the given event to
-     * the given listener.
+     * Creates a new {@link EventInvocation} object for dispatching the given
+     * event to the given listener.
      *
      * @param <L> Type of the listeners which will be notified.
      * @param <E> Type of the event which will be passed to a listener.
@@ -188,7 +201,7 @@ public abstract class AbstractEventProvider implements EventProvider {
     protected <L extends Listener, E extends Event<?, L>> EventInvocation
             createInvocation(L listener, E event, BiConsumer<L, E> bc,
                     ExceptionCallback ec) {
-        return EventInvocation.of(listener, event, bc, ec);
+        return this.invocationFactory.create(listener, event, bc, ec);
     }
 
     @Override

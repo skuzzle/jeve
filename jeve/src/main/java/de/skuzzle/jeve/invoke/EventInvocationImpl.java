@@ -48,6 +48,11 @@ class EventInvocationImpl<L extends Listener, E extends Event<?, L>>
     }
 
     @Override
+    public ExceptionCallback getExceptionCallback() {
+        return this.ec;
+    }
+
+    @Override
     public L getListener() {
         return this.listener;
     }
@@ -56,9 +61,9 @@ class EventInvocationImpl<L extends Listener, E extends Event<?, L>>
     public final void notifyListener() {
         try {
             this.consumer.accept(this.listener, this.event);
-        } catch (AbortionException e) {
+        } catch (final AbortionException e) {
             throw e;
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             handleException(fail(e));
         }
     }
@@ -72,11 +77,12 @@ class EventInvocationImpl<L extends Listener, E extends Event<?, L>>
     private void handleException(FailedEventInvocation inv) {
         try {
             this.ec.exception(inv);
-        } catch (AbortionException abort) {
+        } catch (final AbortionException abort) {
             throw abort;
-        } catch (Exception ignore) {
-            LOG.error("ExceptionCallback '{}' threw an exception", this.ec, ignore);
+        } catch (final Exception ignore) {
             // where is your god now?
+            LOG.error("ExceptionCallback '{}' threw an exception other than " +
+                "AbortionException", this.ec, ignore);
         }
     }
 

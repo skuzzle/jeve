@@ -1,5 +1,7 @@
 package de.skuzzle.jeve.providers;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 
@@ -174,7 +176,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider>
     @Test
     public void testResetExceptionCallback() throws Exception {
         this.subject.setExceptionCallback(null);
-        Assert.assertSame(this.subject.defaultHandler, this.subject.exceptionHandler);
+        assertNotNull(this.subject.exceptionHandler);
     }
 
     @Test

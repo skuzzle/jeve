@@ -10,6 +10,7 @@ import de.skuzzle.jeve.ListenerStore;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.Chainable;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.Final;
 import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderConfigurator;
+import de.skuzzle.jeve.invoke.EventInvocationFactory;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
 
 class ProviderConfiguratorImpl<E extends EventProvider>
@@ -19,6 +20,7 @@ class ProviderConfiguratorImpl<E extends EventProvider>
     private final Supplier<? extends ListenerSource> sourceSupplier;
 
     private Supplier<ExceptionCallback> ecSupplier;
+    private Supplier<EventInvocationFactory> factorySupplier;
     private boolean synchStore;
 
     ProviderConfiguratorImpl(Function<ListenerSource, E> providerConstructor,
@@ -33,17 +35,6 @@ class ProviderConfiguratorImpl<E extends EventProvider>
         this.sourceSupplier = sourceSupplier;
     }
 
-    ProviderConfiguratorImpl(Function<ListenerSource, E> providerConstructor,
-            Supplier<? extends ListenerStore> storeSupplier,
-            Supplier<ExceptionCallback> ecSupplier,
-            boolean synchronizeStore) {
-
-        this.providerConstructor = providerConstructor;
-        this.sourceSupplier = storeSupplier;
-        this.ecSupplier = ecSupplier;
-        this.synchStore = synchronizeStore;
-    }
-
     private E create() {
         final ListenerSource source = this.synchStore
                 ? this.sourceSupplier.get().synchronizedView()
@@ -53,12 +44,35 @@ class ProviderConfiguratorImpl<E extends EventProvider>
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
         }
+        if (this.factorySupplier != null) {
+            result.setInvocationFactory(this.factorySupplier.get());
+        }
+
         return result;
     }
 
     @Override
     public Chainable<ProviderConfigurator<E>, E> exceptionCallBack(ExceptionCallback ec) {
         this.ecSupplier = () -> ec;
+        return new Chainable<ProviderConfigurator<E>, E>() {
+
+            @Override
+            public ProviderConfigurator<E> and() {
+                return ProviderConfiguratorImpl.this;
+            }
+
+            @Override
+            public E create() {
+                return ProviderConfiguratorImpl.this.create();
+            }
+
+        };
+    }
+
+    @Override
+    public Chainable<ProviderConfigurator<E>, E> invocationFactory(
+            EventInvocationFactory f) {
+        this.factorySupplier = () -> f;
         return new Chainable<ProviderConfigurator<E>, E>() {
 
             @Override

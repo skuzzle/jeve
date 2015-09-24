@@ -11,6 +11,7 @@ import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.invoke.EventInvocationFactory;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.BlockingParallelEventProvider;
@@ -287,6 +288,14 @@ public interface EventProviderConfigurator {
          * @return Fluent API object for further configuration.
          */
         Chainable<ProviderConfigurator<E>, E> exceptionCallBack(ExceptionCallback ec);
+
+        /**
+         * Configures the {@link EventInvocationFactory} to use.
+         *
+         * @param f The invocation factory.
+         * @return Fluent API object for further configuration.
+         */
+        Chainable<ProviderConfigurator<E>, E> invocationFactory(EventInvocationFactory f);
 
         /**
          * Instruct the provider to use the synchronized (thread-safe) version

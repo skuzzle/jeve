@@ -4,6 +4,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.builder.EventProviderConfigurator;
+import de.skuzzle.jeve.invoke.EventInvocation;
+import de.skuzzle.jeve.invoke.EventInvocationFactory;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 
 /**
@@ -396,16 +398,26 @@ public interface EventProvider {
      * exceptions when dispatching events without explicitly specifying an
      * ExceptionCallback. The ExceptionCallback which is installed by default
      * simply prints the stack traces to the error console.
-     *
      * <p>
      * You can reset the ExceptionCallback to the default handler by providing
      * <code>null</code> as parameter.
-     * </p>
      *
      * @param ec The ExceptionCallback for handling event handler exceptions, or
      *            <code>null</code> to use the default behavior.
      */
     public void setExceptionCallback(ExceptionCallback ec);
+
+    /**
+     * Sets the {@link EventInvocationFactory} that will be used to create
+     * {@link EventInvocation} objects for each listener that will be notified.
+     * <p>
+     * You can reset the invocation factory to the default implementation by providing
+     * <code>null</code> as parameter.
+     *
+     * @param factory The factory to use.
+     * @since 4.0.0
+     */
+    public void setInvocationFactory(EventInvocationFactory factory);
 
     /**
      * Returns whether this EventProvider is sequential, which means it strictly

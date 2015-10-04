@@ -111,7 +111,8 @@ import de.skuzzle.jeve.stores.PriorityListenerStore;
  * {@link #setExceptionCallback(ExceptionCallback)}. Additionally, you can set a
  * callback for a single dispatch action by using an override of
  * {@link #dispatch(Event, BiConsumer, ExceptionCallback) dispatch}. If you do
- * not specify a callback, a default instance will be used.
+ * not specify a callback, a default instance will be used. Sell also
+ * {@link ExceptionCallbacks} class.
  * </p>
  *
  * <h2>Sequential EventProviders</h2>
@@ -189,7 +190,9 @@ public interface EventProvider {
      *          .configure()
      *          .source(mySource)
      *          .useSynchronousEventProvider().and()
-     *          .exceptionCallBack(ExceptionCallbacks.stopOnError())
+     *          .exceptionCallBack(ExceptionCallbacks.stopOnError()).and()
+     *          .interruptAware().and()
+     *          .invocationFactory(MyInvocationFactory.create())
      *          .asSupplier();
      * </code>
      * </pre>
@@ -221,6 +224,26 @@ public interface EventProvider {
      * @since 4.0.0
      */
     ListenerSource getListenerSource();
+
+    /**
+     * Whether the provider should take the thread's interrupted state into
+     * account to prematurely stop the dispatching process.
+     * <p>
+     * If this flag is set to <code>true</code> event delegation <b>might</b>
+     * stop prematurely if the thread dedicated to notify listeners is
+     * interrupted. Depending on the implemented dispatching strategy, interrupt
+     * awareness might not be possible to implement. Implementors are advised to
+     * use a best effort strategy to prematurely stop the event delegation.
+     * <p>
+     * Note: if the flag is <code>true</code>, event delegation might not even
+     * start if the thread is interrupted prior to calling any dispatch method.
+     * <p>
+     * Per default this flag is set to be <code>false</code>.
+     *
+     * @param interruptAware Whether the provider should check the thread's
+     *            interrupted state before notifying the next listener.
+     */
+    void setInterruptAware(boolean interruptAware);
 
     /**
      * Notifies all listeners of a certain kind about an occurred event. If this
@@ -411,8 +434,8 @@ public interface EventProvider {
      * Sets the {@link EventInvocationFactory} that will be used to create
      * {@link EventInvocation} objects for each listener that will be notified.
      * <p>
-     * You can reset the invocation factory to the default implementation by providing
-     * <code>null</code> as parameter.
+     * You can reset the invocation factory to the default implementation by
+     * providing <code>null</code> as parameter.
      *
      * @param factory The factory to use.
      * @since 4.0.0

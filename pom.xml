@@ -48,7 +48,7 @@
             <dependency>
                 <groupId>de.skuzzle</groupId>
                 <artifactId>jeve</artifactId>
-                <version>3.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
@@ -58,6 +58,12 @@
                 <scope>compile</scope>
             </dependency>
 
+            <!-- Guice -->
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>4.0</version>
+            </dependency>
             <!-- Tests -->
             <dependency>
                 <groupId>org.truth0</groupId>
@@ -88,6 +94,7 @@
 
     <modules>
         <module>jeve</module>
+        <module>juice</module>
         <module>annotationTest</module>
     </modules>
 

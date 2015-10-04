@@ -86,6 +86,11 @@ public class StatisticsEventProvider<P extends EventProvider>
     }
 
     @Override
+    public void setInterruptAware(boolean interruptAware) {
+        this.wrapped.setInterruptAware(interruptAware);
+    }
+
+    @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(E event,
             BiConsumer<L, E> bc, ExceptionCallback ec) {
         if (event == null) {

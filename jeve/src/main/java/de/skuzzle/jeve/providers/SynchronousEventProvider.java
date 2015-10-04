@@ -94,11 +94,8 @@ public class SynchronousEventProvider extends AbstractEventProvider {
             }
             this.eventStack.pushEvent(event);
             final Iterator<L> it = listeners.iterator();
-            while (it.hasNext()) {
+            while (it.hasNext() && checkInterrupt()) {
                 final L listener = it.next();
-                if (event.isHandled()) {
-                    return;
-                }
                 notifySingle(listener, event, bc, ec);
             }
         } finally {

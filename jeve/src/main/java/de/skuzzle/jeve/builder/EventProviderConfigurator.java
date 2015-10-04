@@ -317,6 +317,16 @@ public interface EventProviderConfigurator {
                 Supplier<ExceptionCallback> callBackSupplier);
 
         /**
+         * Sets whether the EventProvider should take the thread's interrupted
+         * state into account before notifying the next listener.
+         *
+         * @param interruptAware Whether event dispatching should stop early if
+         *            the thread is interrupted.
+         * @return Fluent API object for further configuration.
+         */
+        Chainable<ProviderConfigurator<E>, E> interruptAware(boolean interruptAware);
+
+        /**
          * Wraps the so far configured provider with a
          * {@link StatisticsEventProvider} which counts all dispatch actions.
          * The nested EventProvider can be accessed using the

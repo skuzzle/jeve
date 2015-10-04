@@ -1,7 +1,9 @@
 package de.skuzzle.jeve.providers;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
@@ -30,6 +32,8 @@ public class AsynchronousEventProvider extends AbstractEventProvider
 
     /** Service which serves for creating and reusing threads. */
     protected ExecutorService executor;
+
+    private boolean blocking;
 
     /**
      * Creates a new {@link AsynchronousEventProvider} which uses a single
@@ -67,13 +71,33 @@ public class AsynchronousEventProvider extends AbstractEventProvider
         this.executor = executor;
     }
 
+    protected ExecutorService getExecutor() {
+        return this.executor;
+    }
+
     @Override
     public <L extends Listener, E extends Event<?, L>> void dispatch(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
 
         checkDispatchArgs(event, bc, ec);
         if (canDispatch()) {
-            this.executor.execute(() -> notifyListeners(event, bc, ec));
+            final Future<?> future = this.executor.submit(
+                    () -> notifyListeners(event, bc, ec));
+
+            waitIfNecessary(future);
+        }
+    }
+
+    private void waitIfNecessary(Future<?> future) {
+        if (this.blocking) {
+            try {
+                future.get();
+            } catch (final InterruptedException e) {
+                LOGGER.error("Error while waiting for all listeners to be notified.", e);
+                Thread.currentThread().interrupt();
+            } catch (final ExecutionException e) {
+                LOGGER.error("Error while waiting for all listeners to be notified.", e);
+            }
         }
     }
 

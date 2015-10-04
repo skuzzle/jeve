@@ -60,7 +60,9 @@ class EventInvocationImpl<L extends Listener, E extends Event<?, L>>
     @Override
     public final void notifyListener() {
         try {
-            this.consumer.accept(this.listener, this.event);
+            if (!this.event.isHandled()) {
+                this.consumer.accept(this.listener, this.event);
+            }
         } catch (final AbortionException e) {
             throw e;
         } catch (final RuntimeException e) {

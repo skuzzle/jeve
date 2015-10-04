@@ -101,13 +101,13 @@ public class ThreadedEventProviderIT extends EventProviderTestBase {
                 final Runnable r = (Runnable) invocation.getArguments()[0];
                 r.run();
                 return null;
-            }}).when(executor).execute(Mockito.any());
+            }}).when(executor).submit(Mockito.<Runnable>any());
         final StringListener listener = Mockito.mock(StringListener.class);
         this.store.add(StringListener.class, listener);
 
         this.subject.dispatch(new StringEvent(this.subject, ""),
                 StringListener::onStringEvent);
 
-        Mockito.verify(executor).execute(Mockito.any());
+        Mockito.verify(executor).submit(Mockito.<Runnable>any());
     }
 }

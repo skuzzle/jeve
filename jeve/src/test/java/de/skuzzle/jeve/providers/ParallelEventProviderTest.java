@@ -48,6 +48,6 @@ public class ParallelEventProviderTest extends
                 Arrays.asList(this.listener, listener2).stream());
         Mockito.when(this.event.getListenerClass()).thenReturn(SampleListener.class);
         this.subject.dispatch(this.event, SampleListener::onEvent);
-        Mockito.verify(this.executor, Mockito.times(2)).execute(Mockito.any());
+        Mockito.verify(this.executor, Mockito.times(2)).submit(Mockito.<Runnable>any());
     }
 }

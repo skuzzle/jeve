@@ -65,7 +65,7 @@ public class UnrollingEventProvider extends AbstractEventProvider {
 
             super.notifyListeners(event, bc, ec);
 
-            while (!this.dispatchQueue.isEmpty()) {
+            while (!this.dispatchQueue.isEmpty() && checkInterrupt()) {
                 final QueuedEvent<?, ?> next = this.dispatchQueue.poll();
                 next.dispatch();
             }

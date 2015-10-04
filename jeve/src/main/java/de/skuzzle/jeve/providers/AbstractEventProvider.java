@@ -38,9 +38,18 @@ public abstract class AbstractEventProvider implements EventProvider {
     /**
      * Factory that creates {@link EventInvocation} objects for notifying a
      * single listener.
+     *
      * @since 4.0.0
      */
     protected EventInvocationFactory invocationFactory;
+
+    /**
+     * Whether the listener loop will break if the notifying thread is
+     * interrupted.
+     *
+     * @since 4.0.0
+     */
+    protected boolean interruptAware;
 
     /**
      * Creates a new {@link AbstractEventProvider}.
@@ -130,6 +139,11 @@ public abstract class AbstractEventProvider implements EventProvider {
         this.invocationFactory = f;
     }
 
+    @Override
+    public void setInterruptAware(boolean interruptAware) {
+        this.interruptAware = interruptAware;
+    }
+
     /**
      * Notifies all listeners registered for the provided class with the
      * provided event. This method is failure tolerant and will continue
@@ -152,17 +166,53 @@ public abstract class AbstractEventProvider implements EventProvider {
      */
     protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
             E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
+        notifyListeners(getListenerSource(), event, bc, ec);
+    }
 
-        final Stream<L> listeners = getListenerSource().get(event.getListenerClass());
+    /**
+     * Notifies all listeners registered for the provided class with the
+     * provided event. This method is failure tolerant and will continue
+     * notifying listeners even if one of them threw an exception. Exceptions
+     * are passed to the provided {@link ExceptionCallback}.
+     *
+     * <p>
+     * This method does not check whether this provider is ready for dispatching
+     * and might thus throw an exception when trying to dispatch an event while
+     * the provider is not ready.
+     * </p>
+     *
+     * @param <L> Type of the listeners which will be notified.
+     * @param <E> Type of the event which will be passed to a listener.
+     * @param source The source to get listeners from.
+     * @param event The event to pass to each listener.
+     * @param bc The method of the listener to call.
+     * @param ec The callback which gets notified about exceptions.
+     * @throws AbortionException If the ExceptionCallback threw an
+     *             AbortionException
+     */
+    protected <L extends Listener, E extends Event<?, L>> void notifyListeners(
+            ListenerSource source, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
+
+        final Stream<L> listeners = source.get(event.getListenerClass());
 
         final Iterator<L> it = listeners.iterator();
-        while (it.hasNext()) {
+        while (it.hasNext() && checkInterrupt()) {
             final L listener = it.next();
-            if (event.isHandled()) {
-                return;
-            }
             notifySingle(listener, event, bc, ec);
         }
+    }
+
+    /**
+     * Checks whether the next listener should be notified, taking the
+     * {@link EventProvider#setInterruptAware(boolean) interrupt aware flag} and
+     * the thread's interrupted state into account.
+     *
+     * @return Whether the next listener should be notified.
+     * @since 4.0.0
+     * @see EventProvider#setInterruptAware(boolean)
+     */
+    protected boolean checkInterrupt() {
+        return !(this.interruptAware && !Thread.currentThread().isInterrupted());
     }
 
     /**

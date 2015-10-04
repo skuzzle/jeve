@@ -22,6 +22,7 @@ class ProviderConfiguratorImpl<E extends EventProvider>
     private Supplier<ExceptionCallback> ecSupplier;
     private Supplier<EventInvocationFactory> factorySupplier;
     private boolean synchStore;
+    private boolean interruptAware;
 
     ProviderConfiguratorImpl(Function<ListenerSource, E> providerConstructor,
             Supplier<? extends ListenerSource> sourceSupplier) {
@@ -41,6 +42,7 @@ class ProviderConfiguratorImpl<E extends EventProvider>
                 : this.sourceSupplier.get();
 
         final E result = this.providerConstructor.apply(source);
+        result.setInterruptAware(this.interruptAware);
         if (this.ecSupplier != null) {
             result.setExceptionCallback(this.ecSupplier.get());
         }
@@ -49,6 +51,24 @@ class ProviderConfiguratorImpl<E extends EventProvider>
         }
 
         return result;
+    }
+
+    @Override
+    public Chainable<ProviderConfigurator<E>, E> interruptAware(boolean interruptAware) {
+        this.interruptAware = interruptAware;
+        return new Chainable<ProviderConfigurator<E>, E>() {
+
+            @Override
+            public E create() {
+                return ProviderConfiguratorImpl.this.create();
+            }
+
+            @Override
+            public ProviderConfigurator<E> and() {
+                return ProviderConfiguratorImpl.this;
+            }
+
+        };
     }
 
     @Override

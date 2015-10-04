@@ -1,5 +1,6 @@
 package de.skuzzle.jeve.providers;
 
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -63,12 +64,17 @@ public class ParallelEventProvider extends AbstractEventProvider
     }
 
     @Override
-    public void setExecutorService(ExecutorService executor) {
+    public synchronized void setExecutorService(ExecutorService executor) {
         if (executor == null) {
             throw new IllegalArgumentException("executor is null");
         }
 
         this.executor = executor;
+    }
+
+    @Override
+    public synchronized void setInterruptAware(boolean interruptAware) {
+        super.setInterruptAware(interruptAware);
     }
 
     @Override
@@ -81,9 +87,15 @@ public class ParallelEventProvider extends AbstractEventProvider
         }
 
         final Stream<L> listeners = getListenerSource().get(event.getListenerClass());
-        listeners.forEach(listener -> {
-            this.executor.execute(() -> notifySingle(listener, event, bc, ec));
-        });
+        final Iterator<L> it = listeners.iterator();
+        while (it.hasNext() && checkInterrupt()) {
+            final L listener = it.next();
+            this.executor.submit(() -> {
+                if (checkInterrupt()) {
+                    notifySingle(listener, event, bc, ec);
+                }
+            });
+        }
     }
 
     @Override

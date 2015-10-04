@@ -10,10 +10,11 @@ import de.skuzzle.jeve.ListenerSource;
  * listeners in a statically defined order. The order in which listeners are
  * notified is made explicit at creation time of this source. The creator of
  * this source must know the types of the Listeners that must be notified in
- * certain order. It must not know where they come from as they are supplied by
- * the wrapped source. The creator of the chain may also choose to only notify
- * the listeners that participate in the chain. Otherwise, the participating
- * listener are notified first and then the remaining in arbitrary order.
+ * certain order. It must needs not to know where they come from as they are
+ * supplied by the wrapped source. The creator of the chain may also choose to
+ * only notify the listeners that participate in the chain. Otherwise, the
+ * participating listener are notified first and then the remaining in arbitrary
+ * order.
  * <p>
  * To create a chain use the builder method {@link #basedOn(ListenerSource)}
  * like in the following example:

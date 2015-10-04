@@ -1,9 +1,12 @@
 package de.skuzzle.jeve.providers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -30,7 +33,8 @@ public class BlockingParallelEventProvider extends ParallelEventProvider {
      *            provider.
      * @param executor The executor to use.
      */
-    public BlockingParallelEventProvider(ListenerSource source, ExecutorService executor) {
+    public BlockingParallelEventProvider(ListenerSource source,
+            ExecutorService executor) {
         super(source, executor);
     }
 
@@ -59,12 +63,14 @@ public class BlockingParallelEventProvider extends ParallelEventProvider {
         final Collection<L> c = getListenerSource()
                 .get(event)
                 .collect(Collectors.toList());
+
+        final List<Future<?>> futures = new ArrayList<>(c.size());
         final CountDownLatch latch = new CountDownLatch(c.size());
         final Iterator<L> listeners = c.iterator();
 
-        while (listeners.hasNext() && !Thread.currentThread().isInterrupted()) {
+        while (listeners.hasNext() && checkInterrupt()) {
             final L listener = listeners.next();
-            this.executor.execute(() -> {
+            final Future<?> future = this.executor.submit(() -> {
                 try {
                     notifySingle(listener, event, bc, ec);
                 } finally {
@@ -73,12 +79,16 @@ public class BlockingParallelEventProvider extends ParallelEventProvider {
                     latch.countDown();
                 }
             });
+            futures.add(future);
         }
 
         try {
             latch.await();
         } catch (final InterruptedException e) {
             LOGGER.error("Interrupted while waiting for listeners to be notified", e);
+            for (final Future<?> future : futures) {
+                future.cancel(true);
+            }
             Thread.currentThread().interrupt();
         }
     }

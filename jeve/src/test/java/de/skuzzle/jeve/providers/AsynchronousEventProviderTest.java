@@ -49,7 +49,7 @@ public class AsynchronousEventProviderTest extends
                 r.run();
                 return null;
             }
-        }).when(this.executor).execute(Mockito.any());
+        }).when(this.executor).submit(Mockito.<Runnable>any());
 
         spy.dispatch(this.event, bc, this.ec);
         Mockito.verify(spy).notifyListeners(this.event, bc, this.ec);

@@ -20,7 +20,7 @@ import de.skuzzle.jeve.ListenerSource;
  */
 public interface GuiceListenerSource extends ListenerSource {
 
-    public static ListenerSource create(Injector injector) {
+    public static GuiceListenerSource create(Injector injector) {
         if (injector == null) {
             throw new IllegalArgumentException("injector is null");
         }

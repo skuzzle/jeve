@@ -11,7 +11,7 @@ import com.google.inject.Key;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.guice.JeveModule.TestToken;
 
-final class GuiceListenerSourceImpl implements GuiceListenerSource{
+final class GuiceListenerSourceImpl implements GuiceListenerSource {
 
     private final Injector injector;
     private final TypeIndex typeIndex;

@@ -18,7 +18,7 @@ final class TypeIndexer implements TypeListener {
     public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
         final Class<?> raw = type.getRawType();
         for (final Class<?> intf : raw.getInterfaces()) {
-            if (Listener.class.isAssignableFrom(intf)) {
+            if (intf != Listener.class && Listener.class.isAssignableFrom(intf)) {
                 this.index.addImplementor(intf, raw);
             }
         }

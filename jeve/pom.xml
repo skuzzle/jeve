@@ -10,7 +10,7 @@
     <artifactId>jeve</artifactId>
     <packaging>jar</packaging>
     <name>jeve</name>
-    
+
     <properties>
         <!-- Activate Coveralls here -->
         <coveralls.skip>false</coveralls.skip>
@@ -44,11 +44,6 @@
                 <configuration>
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
-            </plugin>
-            <!-- Mutation Coverage -->
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
             </plugin>
             <!-- Add Integration Test source folder -->
             <plugin>

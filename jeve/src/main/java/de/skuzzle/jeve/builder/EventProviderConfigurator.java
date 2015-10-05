@@ -14,7 +14,7 @@ import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 
@@ -105,8 +105,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Chainable<ProviderConfigurator<S, SynchronousEventProvider<S>>,
-                SynchronousEventProvider<S>> useSynchronousProvider();
+        Chainable<ProviderConfigurator<S, SequentialEventProvider<S>>,
+                SequentialEventProvider<S>> useSynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which fires each event in a
@@ -371,7 +371,7 @@ public interface EventProviderConfigurator {
      *
      * @return The EventProvider.
      */
-    public SynchronousEventProvider<DefaultListenerStore> createInstantly();
+    public SequentialEventProvider<DefaultListenerStore> createInstantly();
 
     /**
      * Chooses a {@link DefaultListenerStore} to manage {@link Listener

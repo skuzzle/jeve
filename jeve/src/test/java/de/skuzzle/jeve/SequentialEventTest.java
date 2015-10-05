@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 
-public class SynchronousEventTest {
+public class SequentialEventTest {
     private interface SampleListener extends Listener {
 
     }
@@ -15,11 +15,11 @@ public class SynchronousEventTest {
 
     }
 
-    private SynchronousEvent<Object, SampleListener> subject;
+    private SequentialEvent<Object, SampleListener> subject;
 
     @Before
     public void setUp() throws Exception {
-        this.subject = new SynchronousEvent<>(new Object(), SampleListener.class);
+        this.subject = new SequentialEvent<>(new Object(), SampleListener.class);
     }
 
     @Test

@@ -57,7 +57,8 @@ class ProviderConfiguratorImpl<S extends ListenerStore, E extends EventProvider<
     }
 
     @Override
-    public Chainable<ProviderConfigurator<S, E>, E> exceptionCallBack(ExceptionCallback ec) {
+    public Chainable<ProviderConfigurator<S, E>, E> exceptionCallBack(
+            ExceptionCallback ec) {
         this.ecSupplier = () -> ec;
         return new Chainable<ProviderConfigurator<S, E>, E>() {
 

@@ -35,7 +35,7 @@ public final class EventStackHelper {
             EventStack eventStack, E event, BiConsumer<L, E> bc, ExceptionCallback ec) {
         // check if any of the currently dispatched events marked the target
         // listener class to be prevented.
-        final Optional<SynchronousEvent<?, ?>> cause = eventStack.preventDispatch(
+        final Optional<SequentialEvent<?, ?>> cause = eventStack.preventDispatch(
                 event.getListenerClass());
         if (cause.isPresent()) {
             event.setPrevented(true);

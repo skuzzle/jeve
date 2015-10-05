@@ -11,7 +11,7 @@ import de.skuzzle.jeve.EventStackHelper;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.SynchronousEvent;
+import de.skuzzle.jeve.SequentialEvent;
 
 /**
  * {@link EventProvider} implementation which is always ready for dispatching
@@ -23,9 +23,9 @@ import de.skuzzle.jeve.SynchronousEvent;
  * cascaded dispatch action for the same type, or for another type Y is
  * triggered. If you want to prevent cascaded events, you may register listener
  * classes to be prevented on the event to dispatch. For this purpose, instead
- * of extending {@link Event}, your events must extend {@link SynchronousEvent}.
+ * of extending {@link Event}, your events must extend {@link SequentialEvent}.
  * For example: {@code public class UserEvent extends
- * SynchronousEvent<UserManager, UserListener> ...}
+ * SequentialEvent<UserManager, UserListener> ...}
  * </p>
  *
  * <pre>
@@ -37,10 +37,10 @@ import de.skuzzle.jeve.SynchronousEvent;
  * </pre>
  *
  * <p>
- * With {@link SynchronousEvent#preventCascade()} comes a convenience method to
+ * With {@link SequentialEvent#preventCascade()} comes a convenience method to
  * prevent cascaded events of the same type. During dispatch, all events which
  * have been suppressed using the prevention mechanism, are collected and can be
- * retrieved with {@link SynchronousEvent#getSuppressedEvents()}. This allows
+ * retrieved with {@link SequentialEvent#getSuppressedEvents()}. This allows
  * you to inspect or re-dispatch them afterwards:
  * </p>
  *
@@ -60,9 +60,9 @@ import de.skuzzle.jeve.SynchronousEvent;
  * @param <S> The type of the ListenerStore this provider uses.
  * @author Simon Taddiken
  * @since 3.0.0
- * @see SynchronousEvent
+ * @see SequentialEvent
  */
-public class SynchronousEventProvider<S extends ListenerStore> extends
+public class SequentialEventProvider<S extends ListenerStore> extends
         AbstractEventProvider<S> {
 
     private final EventStackImpl eventStack;
@@ -73,7 +73,7 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
      * @param store Responsible for storing and retrieving listeners of this
      *            provider.
      */
-    public SynchronousEventProvider(S store) {
+    public SequentialEventProvider(S store) {
         super(store);
         this.eventStack = new EventStackImpl();
     }
@@ -90,8 +90,8 @@ public class SynchronousEventProvider<S extends ListenerStore> extends
 
         try {
             event.setListenerStore(listeners());
-            if (event instanceof SynchronousEvent<?, ?>) {
-                ((SynchronousEvent<?, ?>) event).setEventStack(this.eventStack);
+            if (event instanceof SequentialEvent<?, ?>) {
+                ((SequentialEvent<?, ?>) event).setEventStack(this.eventStack);
             }
             this.eventStack.pushEvent(event);
             final Iterator<L> it = listeners.iterator();

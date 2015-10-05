@@ -140,7 +140,8 @@ class AsyncProviderConfiguratorImpl<S extends ListenerStore, E extends EventProv
     }
 
     @Override
-    public Chainable<AsyncProviderConfigurator<S, E>, E> executor(ExecutorService executor) {
+    public Chainable<AsyncProviderConfigurator<S, E>, E> executor(
+            ExecutorService executor) {
         if (executor == null) {
             throw new IllegalArgumentException("executor is null");
         }

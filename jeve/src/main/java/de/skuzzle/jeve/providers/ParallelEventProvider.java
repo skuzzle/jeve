@@ -82,9 +82,9 @@ public class ParallelEventProvider<S extends ListenerStore> extends
 
         final Stream<L> listeners = listeners().get(event.getListenerClass());
         event.setListenerStore(listeners());
-        listeners.forEach(listener -> {
-                this.executor.execute(() -> notifySingle(listener, event, bc, ec));
-        });
+        listeners.forEach(listener ->
+                this.executor.execute(() -> notifySingle(listener, event, bc, ec))
+        );
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ParallelEventProvider<S extends ListenerStore> extends
         this.executor.shutdownNow();
         try {
             this.executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("ParallelEventProvider: Error while waiting for termination "
                     + "of executor", e);
         }

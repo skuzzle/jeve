@@ -69,34 +69,33 @@ public interface EventStack {
 
     /**
      * Checks whether dispatch of the given event should be prevented. This is
-     * the case if there is at least one {@link SynchronousEvent} currently
-     * being dispatched, on which {@link SynchronousEvent#preventCascade(Class)}
+     * the case if there is at least one {@link SequentialEvent} currently
+     * being dispatched, on which {@link SequentialEvent#preventCascade(Class)}
      * has been called with the given event's listener class.
      *
      * @param event The event to check whether it should be prevented.
-     * @return If present, the optional holds the SynchronousEvent which
+     * @return If present, the optional holds the SequentialEvent which
      *         prevented the given one. If not present, the given event should
      *         not be prevented.
      * @see EventStackHelper#checkPrevent(EventStack, Event,
      *      java.util.function.BiConsumer, ExceptionCallback)
      */
-    Optional<SynchronousEvent<?, ?>> preventDispatch(Event<?, ?> event);
+    Optional<SequentialEvent<?, ?>> preventDispatch(Event<?, ?> event);
 
     /**
      * Checks whether dispatch for events with the given event should be
      * prevented. This is the case if there is at least one
-     * {@link SynchronousEvent} currently being dispatched, on which
-     * {@link SynchronousEvent#preventCascade(Class)} has been called with the
+     * {@link SequentialEvent} currently being dispatched, on which
+     * {@link SequentialEvent#preventCascade(Class)} has been called with the
      * given listener class.
      *
      * @param listenerClass The listener class to check for.
-     * @return If present, the optional holds the SynchronousEvent which
+     * @return If present, the optional holds the SequentialEvent which
      *         prevents dispatch of the given listener class. If not present,
      *         events should not be prevented for the given class.
      * @see EventStackHelper#checkPrevent(EventStack, Event,
      *      java.util.function.BiConsumer, ExceptionCallback)
      */
-    Optional<SynchronousEvent<?, ?>> preventDispatch(
+    Optional<SequentialEvent<?, ?>> preventDispatch(
             Class<? extends Listener> listenerClass);
-
 }

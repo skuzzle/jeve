@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.SynchronousEvent;
+import de.skuzzle.jeve.SequentialEvent;
 
 /**
  * Stack class which is used to keep track of currently dispatched {@link Event
@@ -144,19 +144,19 @@ class EventStackImpl implements EventStack {
     }
 
     @Override
-    public Optional<SynchronousEvent<?, ?>> preventDispatch(Event<?, ?> event) {
+    public Optional<SequentialEvent<?, ?>> preventDispatch(Event<?, ?> event) {
         return preventDispatch(event.getListenerClass());
     }
 
     @Override
-    public Optional<SynchronousEvent<?, ?>> preventDispatch(
+    public Optional<SequentialEvent<?, ?>> preventDispatch(
             Class<? extends Listener> listenerClass) {
         synchronized (this.stack) {
             final Iterator<Event<?, ?>> it = this.stack.descendingIterator();
             while (it.hasNext()) {
                 final Event<?, ?> event = it.next();
-                if (event instanceof SynchronousEvent<?, ?>) {
-                    SynchronousEvent<?, ?> synchEvent = (SynchronousEvent<?, ?>) event;
+                if (event instanceof SequentialEvent<?, ?>) {
+                    SequentialEvent<?, ?> synchEvent = (SequentialEvent<?, ?>) event;
                     if (synchEvent.getPrevented().contains(listenerClass)) {
                         return Optional.of(synchEvent);
                     }

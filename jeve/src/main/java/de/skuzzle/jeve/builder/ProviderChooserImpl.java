@@ -12,7 +12,7 @@ import de.skuzzle.jeve.builder.EventProviderConfigurator.ProviderConfigurator;
 import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
 
 class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S> {
@@ -99,10 +99,10 @@ class ProviderChooserImpl<S extends ListenerStore> implements ProviderChooser<S>
     }
 
     @Override
-    public Chainable<ProviderConfigurator<S, SynchronousEventProvider<S>>,
-            SynchronousEventProvider<S>> useSynchronousProvider() {
-        final Function<S, SynchronousEventProvider<S>> ctor =
-                SynchronousEventProvider<S>::new;
+    public Chainable<ProviderConfigurator<S, SequentialEventProvider<S>>,
+            SequentialEventProvider<S>> useSynchronousProvider() {
+        final Function<S, SequentialEventProvider<S>> ctor =
+                SequentialEventProvider<S>::new;
         return synchronAnd(ctor, this.storeSupplier);
     }
 

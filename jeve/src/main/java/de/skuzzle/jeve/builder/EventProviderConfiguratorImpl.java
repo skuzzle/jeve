@@ -3,7 +3,7 @@ package de.skuzzle.jeve.builder;
 import java.util.function.Supplier;
 
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 
 /**
@@ -15,8 +15,8 @@ import de.skuzzle.jeve.stores.DefaultListenerStore;
 class EventProviderConfiguratorImpl implements EventProviderConfigurator {
 
     @Override
-    public SynchronousEventProvider<DefaultListenerStore> createInstantly() {
-        return new SynchronousEventProvider<DefaultListenerStore>(
+    public SequentialEventProvider<DefaultListenerStore> createInstantly() {
+        return new SequentialEventProvider<DefaultListenerStore>(
                 DefaultListenerStore.create());
     }
 

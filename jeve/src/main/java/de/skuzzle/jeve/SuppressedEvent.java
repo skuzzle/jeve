@@ -1,6 +1,6 @@
 package de.skuzzle.jeve;
 
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 
 /**
  * Holds information about an event which has not been dispatched because it was
@@ -17,7 +17,7 @@ import de.skuzzle.jeve.providers.SynchronousEventProvider;
  *
  * @author Simon Taddiken
  * @since 3.0.0
- * @see SynchronousEventProvider
+ * @see SequentialEventProvider
  */
 public interface SuppressedEvent {
 

@@ -38,7 +38,7 @@ class EventInvocationImpl<L extends Listener, E extends Event<?, L>>
     public boolean equals(Object obj) {
         final EventInvocation other;
         return obj == this || obj instanceof EventInvocation &&
-            this.event.equals(((other = (EventInvocation) obj).getEvent())) &&
+            this.event.equals((other = (EventInvocation) obj).getEvent()) &&
             this.listener.equals(other.getListener());
     }
 
@@ -87,5 +87,4 @@ class EventInvocationImpl<L extends Listener, E extends Event<?, L>>
                 "AbortionException", this.ec, ignore);
         }
     }
-
 }

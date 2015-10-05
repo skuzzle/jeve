@@ -20,7 +20,7 @@ import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.SynchronousEvent;
+import de.skuzzle.jeve.SequentialEvent;
 import de.skuzzle.jeve.invoke.EventInvocation;
 import de.skuzzle.jeve.invoke.FailedEventInvocation;
 
@@ -32,7 +32,7 @@ public abstract class AbstractEventProviderTest<T extends AbstractEventProvider>
     }
 
     protected static interface SampleListener2 extends Listener {
-        public void onEvent(SynchronousEvent<?, SampleListener2> e);
+        public void onEvent(SequentialEvent<?, SampleListener2> e);
     }
 
     @Mock

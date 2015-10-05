@@ -12,21 +12,21 @@ import org.mockito.Mockito;
 
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.ListenerStore;
-import de.skuzzle.jeve.SynchronousEvent;
+import de.skuzzle.jeve.SequentialEvent;
 
-public class SynchronousEventProviderTest extends
-        AbstractEventProviderTest<SynchronousEventProvider> {
+public class SequentialEventProviderTest extends
+        AbstractEventProviderTest<SequentialEventProvider> {
 
     @Override
-    protected SynchronousEventProvider createSubject(ListenerStore store) {
-        return new SynchronousEventProvider(store);
+    protected SequentialEventProvider createSubject(ListenerStore store) {
+        return new SequentialEventProvider(store);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testNotifyListenersSynchronousEvent() throws Exception {
         final SampleListener listener2 = Mockito.mock(SampleListener.class);
-        final SynchronousEvent<?, SampleListener> event = Mockito.mock(SynchronousEvent.class);
+        final SequentialEvent<?, SampleListener> event = Mockito.mock(SequentialEvent.class);
         Mockito.when(event.getListenerClass()).thenReturn(SampleListener.class);
         Mockito.when(this.store.get(SampleListener.class)).thenReturn(
                 Arrays.asList(this.listener, listener2).stream());
@@ -44,15 +44,16 @@ public class SynchronousEventProviderTest extends
         final SampleListener listener = new SampleListener() {
             @Override
             public void onEvent(Event<?, SampleListener> e) {
-                final SynchronousEvent<Object, SampleListener2> e2 =
-                        new SynchronousEvent<Object, SampleListener2>(this, SampleListener2.class);
-                SynchronousEventProviderTest.this.subject.dispatch(e2, SampleListener2::onEvent);
+                final SequentialEvent<Object, SampleListener2> e2 =
+                        new SequentialEvent<Object, SampleListener2>(this, SampleListener2.class);
+                SequentialEventProviderTest.this.subject.dispatch(e2, SampleListener2::onEvent);
             }
         };
+
         final SampleListener2 listener2 = new SampleListener2() {
 
             @Override
-            public void onEvent(SynchronousEvent<?, SampleListener2> e) {
+            public void onEvent(SequentialEvent<?, SampleListener2> e) {
                 e.getEventStack().get().dumpStack(System.out);
                 assertTrue(e.getCause().isPresent());
                 assertSame(event, e.getCause().get());

@@ -23,6 +23,7 @@ public class AbortionException extends RuntimeException {
      * Creates a new AbortionException
      */
     public AbortionException() {
+        super();
     }
 
     /**

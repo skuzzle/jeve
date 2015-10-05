@@ -31,7 +31,7 @@ Jeve is available as dependency for your projects through Maven's Central Reposi
     <dependency>
         <groupId>de.skuzzle</groupId>
         <artifactId>jeve</artifactId>
-        <version>2.0.2</version>
+        <version>3.0.0</version>
     </dependency>
 ```
 

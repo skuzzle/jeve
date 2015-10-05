@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import de.skuzzle.jeve.Event;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.SynchronousEvent;
+import de.skuzzle.jeve.SequentialEvent;
 import de.skuzzle.jeve.annotation.ListenerInterface;
 import de.skuzzle.jeve.providers.EventStackImpl;
 
@@ -60,8 +60,8 @@ public class EventStackImplTest {
 
     @Test
     public void testPrevented() {
-        final SynchronousEvent<?, SampleListener> first = new SynchronousEvent<>(new Object(), SampleListener.class);
-        final SynchronousEvent<?, SampleListener> second = new SynchronousEvent<>(new Object(), SampleListener.class);
+        final SequentialEvent<?, SampleListener> first = new SequentialEvent<>(new Object(), SampleListener.class);
+        final SequentialEvent<?, SampleListener> second = new SequentialEvent<>(new Object(), SampleListener.class);
 
         this.subject.pushEvent(first);
         this.subject.pushEvent(second);
@@ -69,7 +69,7 @@ public class EventStackImplTest {
         first.preventCascade(SampleListener.class);
         second.preventCascade(SampleListener.class);
 
-        final Optional<SynchronousEvent<?, ?>> opt = this.subject.preventDispatch(first);
+        final Optional<SequentialEvent<?, ?>> opt = this.subject.preventDispatch(first);
         Assert.assertSame(first, opt.get());
     }
 

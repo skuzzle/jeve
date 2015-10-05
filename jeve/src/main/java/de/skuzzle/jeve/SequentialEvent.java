@@ -8,10 +8,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 
 /**
- * Specialized Event for use with {@link SynchronousEventProvider
+ * Specialized Event for use with {@link SequentialEventProvider
  * SynchronousEventProviders}. It supports prevention of nested Events when
  * being dispatched.
  *
@@ -20,9 +20,9 @@ import de.skuzzle.jeve.providers.SynchronousEventProvider;
  * @param <L> Type of the listener which can handle this event.
  * @since 3.0.0
  */
-public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
+public class SequentialEvent<T, L extends Listener> extends Event<T, L> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronousEvent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SequentialEvent.class);
 
     /**
      * Collects listener classes for which cascade should be prevented. Will be
@@ -54,14 +54,14 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      * @param listenerClass The type of the listener which can handle this
      *            event. This value must not be <code>null</code>.
      */
-    public SynchronousEvent(T source, Class<L> listenerClass) {
+    public SequentialEvent(T source, Class<L> listenerClass) {
         super(source, listenerClass);
         this.cause = Optional.empty();
     }
 
     /**
      * Sets the EventStack which is used while this event is dispatched. This
-     * method will be called by the {@link SynchronousEventProvider} right
+     * method will be called by the {@link SequentialEventProvider} right
      * before dispatching this event. The stack is only set once, subsequent
      * calls will have no effect.
      *
@@ -88,7 +88,7 @@ public class SynchronousEvent<T, L extends Listener> extends Event<T, L> {
      * Gets the current event stack. A stack will only be present if the event
      * is being dispatched by an event provider which calls
      * {@link #setEventStack(EventStack)} before dispatching (like
-     * {@link SynchronousEventProvider}).
+     * {@link SequentialEventProvider}).
      *
      * @return The current event stack if present.
      */

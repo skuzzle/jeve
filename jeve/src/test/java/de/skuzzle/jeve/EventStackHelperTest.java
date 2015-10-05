@@ -46,7 +46,7 @@ public class EventStackHelperTest {
 
     @Test
     public void testCheckPrevent() {
-        final SynchronousEvent<?, ?> cause = Mockito.mock(SynchronousEvent.class);
+        final SequentialEvent<?, ?> cause = Mockito.mock(SequentialEvent.class);
         Mockito.when(this.eventStack.preventDispatch(SampleListener.class)).thenReturn(
                 Optional.of(cause));
 

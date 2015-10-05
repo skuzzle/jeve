@@ -17,7 +17,7 @@ import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.BlockingParallelEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
 import de.skuzzle.jeve.providers.StatisticsEventProvider;
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
 
 /**

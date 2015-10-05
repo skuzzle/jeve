@@ -2,6 +2,8 @@ This is the jeve version history.
 Author: Simon Taddiken
 
 Version 3.0.0 [Released: TODO]
+    * [ADD] Property map added to Event
+    * [ADD] slf4j logging
     * [ADD] EventInvocation as atomic representation of a single listener notification
     * [ADD] PerformanceListenerStore implementation
     * [ADD] UnrollingEventProvider implementation
@@ -16,6 +18,7 @@ Version 3.0.0 [Released: TODO]
                AbstractEventProvider.notifyListeners is now void
     * [CHANGE] Exception thrown by Executor.execute is no longer handled by the 
                ExceptionCallback
+    * [CHANGE] ListenerStore no longer implements AutoClosable
     * [DEPRECATED] DefaultTargetEvent (use DefaultDispatchable instead)
     * [DEPRECATED] ExceptionCallback.exception(Exception, Listener, Event) (use
                    ExceptionCallback.exception(EventInvocation) instead)

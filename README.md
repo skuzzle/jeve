@@ -17,7 +17,7 @@ jeve is distributed under the MIT License. See `LICENSE.md` in this directory
 for detailed information.
 
 ## Documentation
-JavaDoc is available at www.jeve.skuzzle.de/2.0.x/doc
+JavaDoc is available at www.jeve.skuzzle.de/3.0.x/doc
 
 Scroll down in this readme for a quick start guide and some advanced topics.
 

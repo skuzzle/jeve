@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.skuzzle</groupId>
         <artifactId>jeve-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
 
     <artifactId>jeve-annotation-test</artifactId>

@@ -118,6 +118,7 @@ public class Event<T, L extends Listener> {
      * @param key The key of the value to retrieve.
      * @return The value or an empty optional if the value does not exist.
      * @since 3.0.0
+     * @see #getValueAs(String, Class)
      */
     @SuppressWarnings("unchecked")
     public <E> Optional<E> getValue(String key) {
@@ -125,6 +126,24 @@ public class Event<T, L extends Listener> {
             return Optional.empty();
         }
         return Optional.ofNullable((E) getProperties().get(key));
+    }
+
+    /**
+     * Returns a value that has been stored using
+     * {@link #setValue(String, Object)}. The value will be casted to the given
+     * type.
+     *
+     * @param <E> Type of the resulting value.
+     * @param key The key of the value to retrieve.
+     * @param type The type that the value will be casted to.
+     * @return The value or an empty optional if the value does not exist.
+     * @see #getValue(String)
+     */
+    public <E> Optional<E> getValueAs(String key, Class<E> type) {
+        if (this.properties == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(type.cast(getProperties().get(key)));
     }
 
     /**

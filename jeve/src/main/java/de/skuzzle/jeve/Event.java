@@ -114,6 +114,7 @@ public class Event<T, L extends Listener> {
      * which this method is called. So this method has to be used with caution
      * in respect to type safety.
      *
+     * @param <E> Type of the resulting value.
      * @param key The key of the value to retrieve.
      * @return The value or an empty optional if the value does not exist.
      * @since 3.0.0

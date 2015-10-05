@@ -35,6 +35,19 @@ Jeve is available as dependency for your projects through Maven's Central Reposi
     </dependency>
 ```
 
+Latest SNAPSHOT:
+
+```xml
+    <dependency>
+        <groupId>de.skuzzle</groupId>
+        <artifactId>jeve</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+    </dependency>
+```
+
+(Note: SNAPSHOT releases always represent intermediate development state. There is no 
+promise on their quality or API conformance of implementation!)
+
 # Why jeve?
 jeve avoids client code from ending up cluttered with event delegation routines
 like in the following **bad practice** example.

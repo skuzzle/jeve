@@ -16,8 +16,8 @@ import de.skuzzle.jeve.providers.AWTEventProvider;
 import de.skuzzle.jeve.providers.AsynchronousEventProvider;
 import de.skuzzle.jeve.providers.BlockingParallelEventProvider;
 import de.skuzzle.jeve.providers.ParallelEventProvider;
-import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.providers.SequentialEventProvider;
+import de.skuzzle.jeve.providers.StatisticsEventProvider;
 import de.skuzzle.jeve.providers.UnrollingEventProvider;
 
 /**
@@ -105,8 +105,8 @@ public interface EventProviderConfigurator {
          *
          * @return Fluent API object for further configuration.
          */
-        Chainable<ProviderConfigurator<SynchronousEventProvider>,
-                SynchronousEventProvider> useSynchronousProvider();
+        Chainable<ProviderConfigurator<SequentialEventProvider>,
+                SequentialEventProvider> useSynchronousProvider();
 
         /**
          * Configures an {@link EventProvider} which fires each event in a

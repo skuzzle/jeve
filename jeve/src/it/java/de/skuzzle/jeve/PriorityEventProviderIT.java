@@ -12,7 +12,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
 import de.skuzzle.jeve.util.StringListener;
@@ -29,8 +29,8 @@ public class PriorityEventProviderIT extends EventProviderTestBase {
     @Parameters
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
-                new Object[] { (Function<ListenerStore, ? extends EventProvider>) SynchronousEventProvider::new, (Supplier<ListenerStore>) PriorityListenerStore::create },
-                new Object[] {(Function<ListenerStore, ? extends EventProvider>) SynchronousEventProvider::new, (Supplier<ListenerStore>) () -> PriorityListenerStore.create(0) }
+                new Object[] { (Function<ListenerStore, ? extends EventProvider>) SequentialEventProvider::new, (Supplier<ListenerStore>) PriorityListenerStore::create },
+                new Object[] {(Function<ListenerStore, ? extends EventProvider>) SequentialEventProvider::new, (Supplier<ListenerStore>) () -> PriorityListenerStore.create(0) }
                 );
     }
 

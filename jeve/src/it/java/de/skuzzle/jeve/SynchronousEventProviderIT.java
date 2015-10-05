@@ -11,7 +11,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.skuzzle.jeve.invoke.FailedEventInvocation;
-import de.skuzzle.jeve.providers.SynchronousEventProvider;
+import de.skuzzle.jeve.providers.SequentialEventProvider;
 import de.skuzzle.jeve.stores.DefaultListenerStore;
 import de.skuzzle.jeve.stores.PriorityListenerStore;
 import de.skuzzle.jeve.util.StringEvent;
@@ -30,11 +30,11 @@ public class SynchronousEventProviderIT extends EventProviderTestBase {
     public static final Collection<Object[]> getParameters() {
         return Arrays.asList(
                 new Object[] {
-                        (Function<ListenerStore, ? extends EventProvider>) SynchronousEventProvider::new,
+                        (Function<ListenerStore, ? extends EventProvider>) SequentialEventProvider::new,
                         (Supplier<ListenerStore>) DefaultListenerStore::create
                     },
                 new Object[] {
-                        (Function<ListenerStore, ? extends EventProvider>) SynchronousEventProvider::new,
+                        (Function<ListenerStore, ? extends EventProvider>) SequentialEventProvider::new,
                         (Supplier<ListenerStore>) PriorityListenerStore::create
                     }
                 );

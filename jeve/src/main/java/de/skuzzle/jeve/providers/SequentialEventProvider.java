@@ -5,13 +5,12 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import de.skuzzle.jeve.Event;
-import de.skuzzle.jeve.EventPredicates;
 import de.skuzzle.jeve.EventProvider;
 import de.skuzzle.jeve.EventStack;
 import de.skuzzle.jeve.EventStackHelper;
 import de.skuzzle.jeve.ExceptionCallback;
 import de.skuzzle.jeve.Listener;
-import de.skuzzle.jeve.ListenerStore;
+import de.skuzzle.jeve.ListenerSource;
 import de.skuzzle.jeve.SequentialEvent;
 
 /**
@@ -62,7 +61,7 @@ import de.skuzzle.jeve.SequentialEvent;
  * @since 3.0.0
  * @see SequentialEvent
  */
-public class SequentialEventProvider extends AbstractEventProvider<S> {
+public class SequentialEventProvider extends AbstractEventProvider {
 
     private final EventStackImpl eventStack;
 

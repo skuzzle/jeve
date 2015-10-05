@@ -64,6 +64,12 @@
                 <artifactId>guice</artifactId>
                 <version>4.0</version>
             </dependency>
+            <!-- javax -->
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
             <!-- Tests -->
             <dependency>
                 <groupId>org.truth0</groupId>

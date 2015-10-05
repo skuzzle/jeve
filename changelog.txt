@@ -1,30 +1,30 @@
 This is the jeve version history.
 Author: Simon Taddiken
 
-Version 3.0.0 [Released: TODO]
-    * [ADD] Property map added to Event
-    * [ADD] slf4j logging
-    * [ADD] EventInvocation as atomic representation of a single listener notification
-    * [ADD] PerformanceListenerStore implementation
-    * [ADD] UnrollingEventProvider implementation
+Version 3.0.0 [Released: 05.10.2015]
+    * [ADD] Property map added to Event.
+    * [ADD] slf4j logging.
+    * [ADD] EventInvocation as atomic representation of a single listener notification.
+    * [ADD] PerformanceListenerStore implementation.
+    * [ADD] UnrollingEventProvider implementation.
     * [ADD] SynchronousEvent and EventStack to control cascading events when using 
             SynchronousEventProvider.
     * [CHANGE] Event#getListenerStore() throws an Exception when called if the event is 
                not dispatched.
-    * [CHANGE] Remove 'final' modifier from DefaultListenerStore 
-    * [CHANGE] Remove EventProvider.DEFAULT_HANDLER (deprecated since 2.0.1)
-    * [CHANGE] Event's source must not be null
+    * [CHANGE] Remove 'final' modifier from DefaultListenerStore .
+    * [CHANGE] Remove EventProvider.DEFAULT_HANDLER (deprecated since 2.0.1).
+    * [CHANGE] Event's source must not be null.
     * [CHANGE] Return type of AbstractEventProvider.notifySingle and 
-               AbstractEventProvider.notifyListeners is now void
+               AbstractEventProvider.notifyListeners is now void.
     * [CHANGE] Exception thrown by Executor.execute is no longer handled by the 
-               ExceptionCallback
-    * [CHANGE] ListenerStore no longer implements AutoClosable
-    * [DEPRECATED] DefaultTargetEvent (use DefaultDispatchable instead)
+               ExceptionCallback.
+    * [CHANGE] ListenerStore no longer implements AutoClosable.
+    * [DEPRECATED] DefaultTargetEvent (use DefaultDispatchable instead).
     * [DEPRECATED] ExceptionCallback.exception(Exception, Listener, Event) (use
-                   ExceptionCallback.exception(EventInvocation) instead)
+                   ExceptionCallback.exception(EventInvocation) instead).
     * [DEPRECATED] EventProvider.dispatch(DefaultTargetEvent) (use 
-                   EventProvider.dispatch(DefaultDispatchable) instead)
-    * [DEPRECATED] DefaultListenerStore.removeInternal
+                   EventProvider.dispatch(DefaultDispatchable) instead).
+    * [DEPRECATED] DefaultListenerStore.removeInternal.
 
 Version 2.0.2 [Released: 01.12.2014]
     * [FIXED] #4: PriorityListenerStore.close() does not call 'onUnregister'

@@ -27,7 +27,6 @@ public class UnrollingEventProvider<S extends ListenerStore> extends
         private final BiConsumer<L, E> consumer;
 
         private QueuedEvent(E event, ExceptionCallback ec, BiConsumer<L, E> consumer) {
-            super();
             this.event = event;
             this.ec = ec;
             this.consumer = consumer;

@@ -37,7 +37,7 @@
         <github.name>jeve</github.name>
 
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.jacoco.utReportPath>${project.basedir}/target/jacoco-ut.exec</sonar.jacoco.utReportPath>
+        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.itReportPath>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.itReportPath>
     </properties>
 
@@ -160,7 +160,7 @@
                     <execution>
                         <id>prepare-code-coverage-unit-tests</id>
                         <configuration>
-                            <destFile>${sonar.jacoco.utReportPath}</destFile>
+                            <destFile>${sonar.jacoco.reportPath}</destFile>
                         </configuration>
                     </execution>
                     <execution>

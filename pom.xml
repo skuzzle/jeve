@@ -30,6 +30,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <skuzzle.runtime.version>0.9.2</skuzzle.runtime.version>
 
+        <sonar.maven.version>2.5</sonar.maven.version>
+
         <!-- Activate Coveralls here -->
         <coveralls.skip>false</coveralls.skip>
 

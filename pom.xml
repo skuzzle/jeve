@@ -115,7 +115,7 @@
                     <version>3.0.1</version>
                     <configuration>
                         <jacocoReports>
-                            <jacocoReport>${sonar.jacoco.utReportPath}</jacocoReport>
+                            <jacocoReport>${sonar.jacoco.reportPath}</jacocoReport>
                             <jacocoReport>${sonar.jacoco.itReportPath}</jacocoReport>
                         </jacocoReports>
                     </configuration>

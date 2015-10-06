@@ -160,6 +160,7 @@
                     <execution>
                         <id>prepare-code-coverage-unit-tests</id>
                         <configuration>
+                            <append>true</append>
                             <destFile>${sonar.jacoco.reportPath}</destFile>
                         </configuration>
                     </execution>

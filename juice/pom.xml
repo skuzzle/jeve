@@ -15,6 +15,7 @@
 		<!-- Activate Coveralls here -->
 		<coveralls.skip>false</coveralls.skip>
 		<sonar.jacoco.itReportPath>${basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <sonar.jacoco.utReportPath>${basedir}/../target/jacoco-ut.exec</sonar.jacoco.utReportPath>
 	</properties>
 
 	<dependencies>

@@ -208,7 +208,7 @@ public interface EventProvider {
      * Convenience method for creating a synchronous event provider which uses
      * the given {@link ListenerSource}.
      *
-     * @param source
+     * @param source The source to use for the provider.
      * @return A ready to use event provider.
      * @see #configure()
      * @since 4.0.0

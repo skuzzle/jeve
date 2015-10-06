@@ -57,6 +57,7 @@ public interface ListenerSource {
      * Gets all listeners that should be notified for the given event. This is
      * short hand for {@code ListenerSource.get(event.getListenerClass)}.
      *
+     * @param <L> The listener type.
      * @param event The event to get the listeners to be notified for.
      * @return A Stream of listeners that should be notified about the event
      *         represented by the given listener class.

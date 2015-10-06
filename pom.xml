@@ -161,10 +161,6 @@
                 <executions>
                     <execution>
                         <id>prepare-code-coverage-unit-tests</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <phase>initialize</phase>
                         <configuration>
                             <append>true</append>
                             <destFile>${sonar.jacoco.reportPath}</destFile>
@@ -172,10 +168,6 @@
                     </execution>
                     <execution>
                         <id>prepare-code-coverage-integration-tests</id>
-                        <goals>
-                            <goal>prepare-agent-integration</goal>
-                        </goals>
-                        <phase>pre-integration-test</phase>
                         <configuration>
                             <destFile>${sonar.jacoco.itReportPath}</destFile>
                         </configuration>

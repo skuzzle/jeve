@@ -107,7 +107,7 @@ These are the main abstractions that jeve uses:
 | -------- | ----------- |
 | Listener        | An object that is notified about a certain `Event`          |
 | Event           | Object that is passed to a `Listener` by being 'dispatched' |
-| ListenerSource  | Supplies listeners to be notified to an `EventProvider`     |
+| ListenerSource  | Supplies listeners to be notified to an `EventProvider` (since v.4)     |
 | ListenerStore   | Modifiable extension to `ListenerSource` to which listeners can be added and removed |
 | EventProvider   | Notifies listeners supplied by a `ListenerSource` about an `Event` |
 | EventInvocation | Represents the action of notifying a single listener including all kind of error handling |
@@ -121,7 +121,7 @@ import de.skuzzle.jeve.EventProvider;
 
 public class UserManager {
     // Dispatches events sequentially within the current thread
-    private final EventProvider events = EventProvider.createDefault();
+    private final EventProvider<?> events = EventProvider.createDefault();
 }
 ```
 
@@ -238,7 +238,7 @@ allows to statically provide a default dispatch method and can be used with an o
 of `EventProvider.dispatch`:
 
 ```java
-public class UserEvent extends DefaultDispatchEvent<UserManager, UserListener> {
+public class UserEvent extends Event<UserManager, UserListener> implements DefaultDispatchable {
 
     public UserEvent(UserManager source) {
         super(source, UserListener.class);

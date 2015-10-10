@@ -31,7 +31,7 @@
         <skuzzle.runtime.version>0.9.2</skuzzle.runtime.version>
 
         <sonar.maven.version>2.5</sonar.maven.version>
-
+        
         <!-- Activate Coveralls here -->
         <coveralls.skip>false</coveralls.skip>
 
@@ -46,6 +46,11 @@
     <scm>
         <developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
     </scm>
+    
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>http://projectpolly.de:8080/job/jeve/</url>
+    </ciManagement>
 
     <dependencyManagement>
         <dependencies>

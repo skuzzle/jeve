@@ -42,7 +42,7 @@ class PerformanceListenerStoreImpl extends DefaultListenerStoreImpl implements
     }
 
     /** Whether {@link #optimizeGet()} has already been called. */
-    protected boolean optimized;
+    protected volatile boolean optimized;
 
     /** Auto {@link #optimizeGet()} on first call to {@link #get(Class)} */
     protected final boolean autoOptimize;

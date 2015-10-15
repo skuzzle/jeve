@@ -1,14 +1,25 @@
 This is the jeve version history.
 Author: Simon Taddiken
 
+Version 4.0.0 [Released: TODO]
+    * [ADD] ExceptionCallbacks class with some ExceptionCallback implementations.
+    * [ADD] ListenerSource interface as super interface to ListenerStores.
+    * [ADD] ChainOfResponsibility ListenerSource implementation.
+    * [ADD] Java Service Provider ListenerSource implementation.
+    * [ADD] 'juice' - an integration of jeve and Google's guice.
+    * [ADD] EventProviders can now be aware of a thread's interrupted flag.
+    * [CHANGE] EventProviders are no longer generic
+    * [CHANGE] EventProviders now use ListenerSource instead of ListenerStore.
+    * [CHANGE] Remove deprecated methods.
+    
 Version 3.0.0 [Released: 05.10.2015]
     * [ADD] Property map added to Event.
     * [ADD] slf4j logging.
     * [ADD] EventInvocation as atomic representation of a single listener notification.
     * [ADD] PerformanceListenerStore implementation.
     * [ADD] UnrollingEventProvider implementation.
-    * [ADD] SynchronousEvent and EventStack to control cascading events when using 
-            SynchronousEventProvider.
+    * [ADD] SequentialEvent and EventStack to control cascading events when using 
+            SequentialEventProvider.
     * [CHANGE] Event#getListenerStore() throws an Exception when called if the event is 
                not dispatched.
     * [CHANGE] Remove 'final' modifier from DefaultListenerStore .

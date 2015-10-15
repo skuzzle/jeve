@@ -104,9 +104,26 @@ public interface EventProviderConfigurator {
          * registered listeners.
          *
          * @return Fluent API object for further configuration.
+         * @deprecated - Since 4.0.0. Use {@link #useSequentialProvider()} instead.
          */
+        @Deprecated
         Chainable<ProviderConfigurator<SequentialEventProvider>,
                 SequentialEventProvider> useSynchronousProvider();
+
+        /**
+         * Configures a synchronous EventProvider which will dispatch all events
+         * from within the thread in which its {@code dispatch} method was
+         * called. The configured provider will be sequential, if the previously
+         * selected {@link ListenerStore} is sequential. Closing the returned
+         * Provider will have no additional effects besides removing all of its
+         * registered listeners.
+         *
+         * @return Fluent API object for further configuration.
+         */
+        default Chainable<ProviderConfigurator<SequentialEventProvider>,
+                SequentialEventProvider> useSequentialProvider() {
+            return useSynchronousProvider();
+        }
 
         /**
          * Configures an {@link EventProvider} which fires each event in a

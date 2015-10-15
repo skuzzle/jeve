@@ -214,7 +214,7 @@ public interface EventProvider {
      * @since 4.0.0
      */
     public static EventProvider createDefault(ListenerSource source) {
-        return configure().source(source).useSynchronousProvider().create();
+        return configure().source(source).useSequentialProvider().create();
     }
 
     /**
